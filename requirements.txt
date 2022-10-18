@@ -1,0 +1,7 @@
+# python -m pip install -r C:\dev\kleber\requirements.txt
+keyboard
+pynput
+pyautogui
+pypiwin32
+Pillow
+opencv-python
