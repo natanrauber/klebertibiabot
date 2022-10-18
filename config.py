@@ -6,7 +6,7 @@ HEAL = True
 ATTACK = True
 LOOT = True
 DROP = True
-WALK = True
+WALK = False
 
 # HEAL --------------------------------------------------
 HEAL_KEY = Key.f9
@@ -22,16 +22,6 @@ HEALTH_BAR_HEIGHT = 16
 ATTACK_KEY = Key.space
 ATTACK_TIMEOUT = 0  # 0 to disable
 
-TARGET_PIXEL_X = 1770
-TARGET_PIXEL_Y = 410
-
-IS_ATTACKING_PIXEL_X = 1745
-IS_ATTACKING_PIXEL_Y = 400
-
-TARGET_HEALTH_LEFT = 1765
-TARGET_HEALTH_TOP = 406
-TARGET_HEALTH_WIDTH = 136
-TARGET_HEALTH_HEIGHT = 9
 
 # LOOT --------------------------------------------------
 SCREEN_CENTER_X = 405

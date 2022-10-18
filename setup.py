@@ -1,6 +1,6 @@
 import os
 from config import *
-from lib.utils.datetime import dateTime
+from lib.actions.attack.attack import setupAttack
 from lib.utils.status import pause
 from lib.utils.window import activateAllWindows
 from lib.utils.log import *
@@ -34,6 +34,7 @@ def setup():
     log(f"ATTACK: {_status(ATTACK)}", color=_getColor(ATTACK))
     if ATTACK:
         log(f'\tkey: "{ATTACK_KEY}"', color=_getColor(ATTACK))
+        setupAttack()
 
     log(f"LOOT: {_status(LOOT)}", color=_getColor(LOOT))
 
