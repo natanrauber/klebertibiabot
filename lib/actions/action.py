@@ -1,12 +1,13 @@
 from config import *
 from lib.actions.attack.attack import attack, hasTarget, isAttacking
 from lib.actions.attack_timeout import *
-from lib.actions.clean import Cleaner, cleanerAmount
-from lib.actions.heal import Healer, healing, isWounded
-from lib.actions.loot import loot
-from lib.actions.walk import walk
+from lib.actions.clean.clean import Cleaner, cleanerAmount
+from lib.actions.heal.heal import Healer, healing, isWounded
+from lib.actions.loot.loot import loot
+from lib.actions.walk.walk import walk
 from lib.shared import hasLoot
-from lib.utils.window import checkActiveWindows
+from lib.utils.gui import checkActiveWindows
+
 
 def executeAction():
     checkActiveWindows()
@@ -18,7 +19,7 @@ def executeAction():
             healer.start()
 
     if DROP:
-        if cleanerAmount() < MAX_CLEANER_AMOUNT:
+        while cleanerAmount() < MAX_CLEANER_AMOUNT:
             cleaner = Cleaner()
             cleaner.daemon = True
             cleaner.start()
@@ -39,7 +40,7 @@ def executeAction():
                     attackTimeoutChecker.start()
                 if not isAttacking() and not hasLoot():
                     return attack()
-                if timeout() and not attackOnCooldown():
+                if timeout():
                     setTimeout(False)
                     setLoot(False)
                     if WALK:

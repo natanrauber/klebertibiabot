@@ -4,7 +4,7 @@ import win32con
 import pyautogui
 from config import SCREEN_CENTER_X, SCREEN_CENTER_Y, SQM_SIZE
 from lib.shared import setLoot
-from lib.utils.keyboard import Key, Keyboard
+from lib.utils.keyboard import key, keyboard_controller
 from lib.utils.log import log
 from lib.utils.mouse import isMouseLocked, lockMouse, unlockMouse
 
@@ -17,7 +17,7 @@ def loot():
 
     lockMouse()
     _initPos = pyautogui.position()
-    Keyboard.press(Key.alt)
+    keyboard_controller.press(key.alt)
     _loot(SCREEN_CENTER_X+SQM_SIZE, SCREEN_CENTER_Y-SQM_SIZE)
     _loot(SCREEN_CENTER_X, SCREEN_CENTER_Y-SQM_SIZE)
     _loot(SCREEN_CENTER_X-SQM_SIZE, SCREEN_CENTER_Y-SQM_SIZE)
@@ -27,7 +27,7 @@ def loot():
     _loot(SCREEN_CENTER_X+SQM_SIZE, SCREEN_CENTER_Y+SQM_SIZE)
     _loot(SCREEN_CENTER_X+SQM_SIZE, SCREEN_CENTER_Y)
     _loot(SCREEN_CENTER_X, SCREEN_CENTER_Y)
-    Keyboard.release(Key.alt)
+    keyboard_controller.release(key.alt)
     win32api.SetCursorPos(_initPos)
     unlockMouse()
     setLoot(False)

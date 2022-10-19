@@ -1,15 +1,15 @@
 
-from lib.utils.keyboard import Key
+from lib.utils.keyboard import key
 
 # ACTIONS --------------------------------------------------
 HEAL = True
 ATTACK = True
 LOOT = True
 DROP = True
-WALK = False
+WALK = True
 
 # HEAL --------------------------------------------------
-HEAL_KEY = Key.f9
+HEAL_KEY = key.f9
 HEAL_ON_YELLOW = False  # if False will heal on red
 
 HEALTH_BAR_LEFT = 971
@@ -19,7 +19,7 @@ HEALTH_BAR_HEIGHT = 16
 
 
 # ATTACK --------------------------------------------------
-ATTACK_KEY = Key.space
+ATTACK_KEY = key.space
 ATTACK_TIMEOUT = 0  # 0 to disable
 
 
@@ -29,6 +29,7 @@ SCREEN_CENTER_Y = 330
 SQM_SIZE = 50
 
 # DROP --------------------------------------------------
+DROP_CONTAINER = "backpack"
 MAX_CLEANER_AMOUNT = 4  # each cleaner is a thread
 
 SLOT_AREA_LEFT = 1745
@@ -37,7 +38,7 @@ SLOT_AREA_WIDTH = 155
 SLOT_AREA_HEIGHT = 40
 
 # WALK --------------------------------------------------
-STOP_ALL_ACTIONS_KEY = Key.pause
+STOP_ALL_ACTIONS_KEY = key.pause
 WALK_COOLDOWN = 60
 
 WALK_AREA_LEFT = 990

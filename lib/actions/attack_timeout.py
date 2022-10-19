@@ -29,13 +29,12 @@ def _checking(value: bool):
 def _checkTimeout():
     _checking(True)
     while isAttacking():
-        if not attackOnCooldown():
-            _box = pyautogui.locateOnScreen(
+        _box = pyautogui.locateOnScreen(
                 targetHealthBar(), region=targetHealthBarBox(), confidence=0.9)
-            if type(_box) == Box:
-                log("attack timeout")
-                global _timeout
-                setTimeout(True)
+        if type(_box) == Box:
+            log("attack timeout")
+            global _timeout
+            setTimeout(True)
         saveTargetHealth()
         time.sleep(ATTACK_TIMEOUT)
     _checking(False)

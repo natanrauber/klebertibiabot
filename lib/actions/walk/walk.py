@@ -7,9 +7,13 @@ from os.path import isfile, join
 from os import listdir
 from pyscreeze import Box
 from config import *
-from lib.utils.keyboard import Keyboard
+from lib.utils.keyboard import keyboard_controller
 from lib.utils.mouse import isMouseLocked, lockMouse, unlockMouse
 from lib.utils.log import log
+
+_dir = "C:/dev/kleber/lib/actions/walk/waypoints"
+_waypoints = [_dir +
+              f for f in listdir(_dir) if isfile(join(_dir, f))]
 
 dirMap = "C:/dev/kleber/images/waypoints/map/"
 dirScreen = "C:/dev/kleber/images/waypoints/screen/"
@@ -47,7 +51,7 @@ def _getWaypointName(image):
 
 
 def _walk(box: Box, isMap: bool):
-    Keyboard.tap(STOP_ALL_ACTIONS_KEY)
+    keyboard_controller.tap(STOP_ALL_ACTIONS_KEY)
     lockMouse()
     _initPos = pyautogui.position()
     offset = 4 if isMap else int(SQM_SIZE / 2)
@@ -80,4 +84,3 @@ def walk():
         if _found and not isMouseLocked():
             log("walking {}...".format(_getWaypointName(image)))
             return _walk(_box, False)
-

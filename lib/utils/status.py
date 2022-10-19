@@ -2,7 +2,7 @@ import time
 
 from lib.utils.log import *
 from lib.utils.wsh import wsh
-from lib.utils.window import activateAllWindows
+from lib.utils.gui import activateAllWindows
 
 _isPaused = True
 
@@ -21,5 +21,5 @@ def pause(value: bool):
     _isPaused = value
     if value:
         wsh.AppActivate("Administrador: Windows PowerShell")
-    log(status(), color=Colors.YELLOW)
+    log(status(), color=Colors.yellow)
     time.sleep(2)
