@@ -1,5 +1,8 @@
 
-from lib.utils.keyboard import key
+from lib.utils.keyboard import Key
+
+SESSION_DIR = 'C:/dev/kleber/images/session'
+
 
 # ACTIONS --------------------------------------------------
 HEAL = True
@@ -9,8 +12,8 @@ DROP = True
 WALK = True
 
 # HEAL --------------------------------------------------
-HEAL_KEY = key.f9
-HEAL_ON_YELLOW = False  # if False will heal on red
+HEAL_KEY = Key.f9
+HEAL_ON_YELLOW = True  # if False will heal on red
 
 HEALTH_BAR_LEFT = 971
 HEALTH_BAR_TOP = 36
@@ -19,27 +22,29 @@ HEALTH_BAR_HEIGHT = 16
 
 
 # ATTACK --------------------------------------------------
-ATTACK_KEY = key.space
+ATTACK_KEY = Key.space
 ATTACK_TIMEOUT = 0  # 0 to disable
 
 
 # LOOT --------------------------------------------------
-SCREEN_CENTER_X = 405
-SCREEN_CENTER_Y = 330
-SQM_SIZE = 50
+SCREEN_CENTER_X = 500
+SCREEN_CENTER_Y = 260
+SQM_SIZE = 40
+
 
 # DROP --------------------------------------------------
-DROP_CONTAINER = "backpack"
-MAX_CLEANER_AMOUNT = 4  # each cleaner is a thread
+DROP_CONTAINER = 'shopping_bag'
+MAX_CLEANER_AMOUNT = 3  # each cleaner runs in a thread
 
 SLOT_AREA_LEFT = 1745
 SLOT_AREA_TOP = 450
 SLOT_AREA_WIDTH = 155
 SLOT_AREA_HEIGHT = 40
 
+
 # WALK --------------------------------------------------
-STOP_ALL_ACTIONS_KEY = key.pause
-WALK_COOLDOWN = 60
+HUNT_NAME = 'secret_spider_lair'
+STOP_ALL_ACTIONS_KEY = Key.pause
 
 WALK_AREA_LEFT = 990
 WALK_AREA_TOP = 50

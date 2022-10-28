@@ -1,26 +1,26 @@
 import sys
 import ctypes
-import time
-import keyboard
+from config import SESSION_DIR
 from lib.actions.action import executeAction
+from lib.utils.keyboard import Keyboard
 from lib.utils.status import *
 from setup import setup
-# from datetime import datetime
+from datetime import datetime
+import pyautogui
 
-# _start = datetime.now()
 
 
 def run():
-    # global _start
-    # while (datetime.now()-_start).seconds < 18000:
-    while 1:
+    pyautogui.screenshot(f'{SESSION_DIR}/start.png')
 
-        if keyboard.is_pressed('='):
+    while datetime.now().hour != 5:
+        if Keyboard.isPressed('='):
             pause(not isPaused())
 
         if not isPaused():
             executeAction()
-            time.sleep(0.1)
+
+    pyautogui.screenshot(f'{SESSION_DIR}/end.png')
 
 
 def is_admin():
@@ -35,4 +35,4 @@ if is_admin():
     run()
 else:
     ctypes.windll.shell32.ShellExecuteW(
-        None, "runas", sys.executable, " ".join(sys.argv), None, 1)
+        None, 'runas', sys.executable, ' '.join(sys.argv), None, 1)

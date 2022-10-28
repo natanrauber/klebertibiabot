@@ -30,9 +30,9 @@ def _checkTimeout():
     _checking(True)
     while isAttacking():
         _box = pyautogui.locateOnScreen(
-                targetHealthBar(), region=targetHealthBarBox(), confidence=0.9)
+            targetHealthBar(), region=targetHealthBarBox(), confidence=0.9)
         if type(_box) == Box:
-            log("attack timeout")
+            log('attack timeout')
             global _timeout
             setTimeout(True)
         saveTargetHealth()

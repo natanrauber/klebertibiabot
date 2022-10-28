@@ -1,12 +1,12 @@
 from datetime import datetime
-import pyautogui
+from lib.utils.mouse import Mouse
 from pyscreeze import Box
-import win32api
-import win32con
 
-from lib.utils.mouse import lockMouse, unlockMouse
-from lib.utils.items import foodList
+from os.path import isfile, join
+from os import listdir
 
+foodDir = 'C:/dev/kleber/images/food/'
+foodList = [foodDir + f for f in listdir(foodDir) if isfile(join(foodDir, f))]
 
 _lastEat = datetime.now()
 
@@ -20,12 +20,10 @@ def isFood(image) -> bool:
 
 
 def eat(box: Box):
-    lockMouse()
-    _initPos = pyautogui.position()
-    win32api.SetCursorPos((box.left-944, box.top+16))
-    win32api.mouse_event(win32con.MOUSEEVENTF_LEFTDOWN, 0, 0)
-    win32api.mouse_event(win32con.MOUSEEVENTF_LEFTUP, 0, 0)
-    win32api.SetCursorPos(_initPos)
-    unlockMouse()
+    Mouse.lock(True)
+    _initPos = Mouse.getPos()
+    Mouse.clickLeft((box.left-944, box.top+16))
+    Mouse.setPos(_initPos)
+    Mouse.lock(False)
     global _lastEat
     _lastEat = datetime.now()

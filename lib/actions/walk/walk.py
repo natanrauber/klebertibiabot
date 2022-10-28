@@ -1,86 +1,109 @@
 import time
-import pyautogui
-import win32api
-import win32con
 from datetime import datetime
-from os.path import isfile, join
 from os import listdir
-from pyscreeze import Box
+from os.path import isfile, join
+
 from config import *
-from lib.utils.keyboard import keyboard_controller
-from lib.utils.mouse import isMouseLocked, lockMouse, unlockMouse
-from lib.utils.log import log
+from lib.utils.gui import getPos, getPosOnRegion
+from lib.utils.keyboard import Keyboard
+from lib.utils.log import Colors, log
+from lib.utils.mouse import Mouse
+from pyscreeze import Box
 
-_dir = "C:/dev/kleber/lib/actions/walk/waypoints"
-_waypoints = [_dir +
-              f for f in listdir(_dir) if isfile(join(_dir, f))]
+_map_controls = 'C:/dev/kleber/lib/actions/walk/images/map_controls.png'
+_map = None
 
-dirMap = "C:/dev/kleber/images/waypoints/map/"
-dirScreen = "C:/dev/kleber/images/waypoints/screen/"
-
-waypointsMap = [dirMap + f for f in listdir(dirMap) if isfile(join(dirMap, f))]
-waypointsScreen = [dirScreen +
-                   f for f in listdir(dirScreen) if isfile(join(dirScreen, f))]
+_waypoints_dir = f'C:/dev/kleber/lib/actions/walk/waypoints/{HUNT_NAME}/'
+_waypoints = [_waypoints_dir +
+              f for f in listdir(_waypoints_dir) if isfile(join(_waypoints_dir, f))]
 
 _lastWalkTime = datetime.now()
+_walk_cooldown = 1
 
 
-def locateOnMap(image):
-    _region = (MAP_AREA_LEFT, MAP_AREA_TOP,
-               MAP_AREA_WIDTH, MAP_AREA_HEIGHT)
-    box = pyautogui.locateOnScreen(
-        image, region=_region, grayscale=True, confidence=0.9)
-    if box != None:
-        return box
+def setupWalk():
+    _locateMap()
 
 
-def locateOnScreen(image):
-    _region = (WALK_AREA_LEFT, WALK_AREA_TOP,
-               WALK_AREA_WIDTH, WALK_AREA_HEIGHT)
-    box = pyautogui.locateOnScreen(
-        image, region=_region, grayscale=True, confidence=0.7)
-    if box != None:
-        return box
+def _locateMap():
+    _box = getPos(_map_controls)
+    if _box == None:
+        log('cannot find map', color=Colors.red)
+        exit()
+    global _map
+    _map = Box(_box.left-117, _box.top-50, 106, 109)
+
+
+def _locateOnMap(image):
+    return getPosOnRegion(image, _map, grayscale=True)
+
+
+def _locateOnMapCenter(image):
+    _centerx = int(_map.left + (_map.width/2))
+    _centery = int(_map.top + (_map.height/2))
+    _region = (_centerx-14, _centery-14, 28, 28)
+    return getPosOnRegion(image, region=_region, grayscale=True)
 
 
 def _getWaypointName(image):
-    aux = image.split(".")[0]
-    aux = aux.split("/")
+    aux = image.split('.')[0]
+    aux = aux.split('/')
     aux = aux[len(aux)-1]
     return aux
 
 
-def _walk(box: Box, isMap: bool):
-    keyboard_controller.tap(STOP_ALL_ACTIONS_KEY)
-    lockMouse()
-    _initPos = pyautogui.position()
-    offset = 4 if isMap else int(SQM_SIZE / 2)
-    win32api.SetCursorPos((box.left-960+offset, box.top+offset))
-    win32api.mouse_event(win32con.MOUSEEVENTF_LEFTDOWN, 0, 0)
-    win32api.mouse_event(win32con.MOUSEEVENTF_LEFTUP, 0, 0)
-    win32api.SetCursorPos(_initPos)
-    unlockMouse()
+def _walk(box: Box):
+    if Mouse.isLocked():
+        time.sleep(0.1)
+        return _walk(box)
+    Keyboard.press(STOP_ALL_ACTIONS_KEY)
+    time.sleep(0.5)
+    Mouse.lock(True)
+    _initPos = Mouse.getPos()
+    Mouse.clickLeft((box.left-960+3, box.top+3))
+    Mouse.setPos(_initPos)
+    Mouse.lock(False)
     global _lastWalkTime
     _lastWalkTime = datetime.now()
-    time.sleep(3)
 
 
-def _onCooldown():
-    return (datetime.now() - _lastWalkTime).seconds < WALK_COOLDOWN
+def walkOnCooldown():
+    return (datetime.now() - _lastWalkTime).seconds < _walk_cooldown
+
+
+def _repeatLastWaypoint():
+    _waypoint = _waypoints[len(_waypoints)-1]
+    _waypoints.remove(_waypoint)
+    _waypoints.insert(0, _waypoint)
+    log('repeating last waypoint')
+
+
+def _reachedLastWaypoint():
+    _waypoint = _waypoints[len(_waypoints)-1]
+    if 'stairs' in _getWaypointName(_waypoint):
+        return not _isLastWaypointVisible()
+    _box = _locateOnMapCenter(_waypoint)
+    if type(_box) == Box:
+        return True
+    return False
+
+
+def _isLastWaypointVisible():
+    _waypoint = _waypoints[len(_waypoints)-1]
+    _box = getPosOnRegion(_waypoint, _map, grayscale=True)
+    if type(_box) == Box:
+        return True
+    return False
 
 
 def walk():
-    if _onCooldown():
-        return
-    for image in waypointsMap:
-        _box = locateOnMap(image)
-        _found = type(_box) == Box
-        if _found and not isMouseLocked():
-            log("walking {}...".format(_getWaypointName(image)))
-            return _walk(_box, True)
-    for image in waypointsScreen:
-        _box = locateOnScreen(image)
-        _found = type(_box) == Box
-        if _found and not isMouseLocked():
-            log("walking {}...".format(_getWaypointName(image)))
-            return _walk(_box, False)
+    if not _reachedLastWaypoint():
+        if _isLastWaypointVisible():
+            _repeatLastWaypoint()
+    _waypoint = _waypoints[0]
+    _box = _locateOnMap(_waypoint)
+    if type(_box) == Box:
+        log(f'walking to waypoint {_getWaypointName(_waypoint)}')
+        _walk(_box)
+    _waypoints.remove(_waypoint)
+    _waypoints.append(_waypoint)

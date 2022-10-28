@@ -11,4 +11,4 @@ class Colors:
 
 
 def log(value, color=Colors.default):
-    return print(f"[{dateTime()}] {color}{value}{Colors.default}")
+    return print(f'[{dateTime()}] {color}{value}{Colors.default}')
