@@ -7,12 +7,32 @@ from lib.utils.log import Colors, log
 from lib.actions.loot.loot import setLoot
 from pyscreeze import Box
 
+_enabled = True  # local controller, keep this on
 _battle_window_title = 'C:/dev/kleber/lib/actions/attack/images/battle_window_title.png'
 # _target_health_bar = 'C:/dev/kleber/lib/actions/attack/images/target_health.png'
 _is_attacking = 'C:/dev/kleber/lib/actions/attack/images/is_attacking.png'
 _battle_window = None
 _target_pixel_x = None
 _target_pixel_y = None
+
+
+def isAttackEnabled():
+    global _enabled
+    return _enabled
+
+
+def enable_attack():
+    global _enabled
+    if not _enabled:
+        _enabled = True
+        log('attack enabled', color=Colors.green)
+
+
+def disable_attack():
+    global _enabled
+    if _enabled:
+        _enabled = False
+        log('attack disabled', color=Colors.red)
 
 
 def setupAttack():

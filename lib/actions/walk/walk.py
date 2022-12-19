@@ -1,9 +1,11 @@
 import time
+import pyautogui
 from datetime import datetime
 from os import listdir
 from os.path import isfile, join
 
 from config import *
+from lib.actions.attack.attack import attack, disable_attack, enable_attack, hasTarget
 from lib.utils.gui import getPos, getPosOnRegion
 from lib.utils.keyboard import Keyboard
 from lib.utils.log import Colors, log
@@ -17,7 +19,7 @@ _waypoints_dir = f'C:/dev/kleber/lib/actions/walk/waypoints/{HUNT_NAME}/'
 _waypoints = [_waypoints_dir +
               f for f in listdir(_waypoints_dir) if isfile(join(_waypoints_dir, f))]
 
-_lastWalkTime = datetime.now()
+_lastWalkTime = None
 _walk_cooldown = 1
 
 
@@ -32,16 +34,20 @@ def _locateMap():
         exit()
     global _map
     _map = Box(_box.left-117, _box.top-50, 106, 109)
+    pyautogui.screenshot(
+        f'{SESSION_DIR}/map.png', region=_map)
+    pyautogui.screenshot(
+        f'{TEMP_DIR}/last_map_view.png', region=_map)
 
 
 def _locateOnMap(image):
     return getPosOnRegion(image, _map, grayscale=True)
 
 
-def _locateOnMapCenter(image):
+def _locateOnMapCenter(image, size=28):
     _centerx = int(_map.left + (_map.width/2))
     _centery = int(_map.top + (_map.height/2))
-    _region = (_centerx-14, _centery-14, 28, 28)
+    _region = (int(_centerx-(size/2)), int(_centery-(size/2)), size, size)
     return getPosOnRegion(image, region=_region, grayscale=True)
 
 
@@ -68,6 +74,8 @@ def _walk(box: Box):
 
 
 def walkOnCooldown():
+    if _lastWalkTime == None:
+        return False
     return (datetime.now() - _lastWalkTime).seconds < _walk_cooldown
 
 
@@ -75,17 +83,28 @@ def _repeatLastWaypoint():
     _waypoint = _waypoints[len(_waypoints)-1]
     _waypoints.remove(_waypoint)
     _waypoints.insert(0, _waypoint)
-    log('repeating last waypoint')
+
+    global _maybe_stuck
+    _maybe_stuck = True
+    pyautogui.screenshot(
+        f'{TEMP_DIR}/last_map_view.png', region=_map)
 
 
 def _reachedLastWaypoint():
     _waypoint = _waypoints[len(_waypoints)-1]
-    if 'stairs' in _getWaypointName(_waypoint):
+    _name = _getWaypointName(_waypoint)
+    _box = None
+
+    if 'stairs' in _name or 'hole' in _name:
         return not _isLastWaypointVisible()
-    _box = _locateOnMapCenter(_waypoint)
-    if type(_box) == Box:
-        return True
-    return False
+    elif 'ladder' in _name or 'ropespot' in _name:
+        if not _isLastWaypointVisible():
+            return True
+        _box = _locateOnMapCenter(_waypoint, size=8)
+    else:
+        _box = _locateOnMapCenter(_waypoint)
+
+    return type(_box) == Box
 
 
 def _isLastWaypointVisible():
@@ -96,10 +115,81 @@ def _isLastWaypointVisible():
     return False
 
 
-def walk():
-    if not _reachedLastWaypoint():
+_maybe_stuck = False
+
+
+def _maybeStuck():
+    global _maybe_stuck
+    return _maybe_stuck
+
+
+def _isStuck():
+    if _maybeStuck():
+        _last_map_view = f'{TEMP_DIR}/last_map_view.png'
+        _box = getPos(_last_map_view)
+        if type(_box) == Box:
+            return True
+    return False
+
+
+def _unstuck():
+    global _maybe_stuck
+    _maybe_stuck = False
+    if hasTarget():
+        attack()
+
+
+def _checkLastWaypointSpecial():
+    _waypoint = _waypoints[len(_waypoints)-1]
+
+    if 'ladder' in _getWaypointName(_waypoint):
         if _isLastWaypointVisible():
-            _repeatLastWaypoint()
+            _useLadder()
+    if 'ropespot' in _getWaypointName(_waypoint):
+        if _isLastWaypointVisible():
+            _useRope()
+    if 'enable_attack' in _getWaypointName(_waypoint):
+        enable_attack()
+    elif 'disable_attack' in _getWaypointName(_waypoint):
+        disable_attack()
+
+
+def _useLadder():
+    if Mouse.isLocked():
+        time.sleep(0.1)
+        return _useLadder()
+    Keyboard.press(STOP_ALL_ACTIONS_KEY)
+    time.sleep(0.5)
+    Mouse.lock(True)
+    _initPos = Mouse.getPos()
+    Mouse.clickLeft((SCREEN_CENTER_X, SCREEN_CENTER_Y))
+    Mouse.setPos(_initPos)
+    Mouse.lock(False)
+
+
+def _useRope():
+    if Mouse.isLocked():
+        time.sleep(0.1)
+        return _useRope()
+    Keyboard.press(STOP_ALL_ACTIONS_KEY)
+    time.sleep(0.5)
+    Mouse.lock(True)
+    _initPos = Mouse.getPos()
+    Keyboard.press(ROPE_KEY)
+    Mouse.clickLeft((SCREEN_CENTER_X, SCREEN_CENTER_Y))
+    Mouse.setPos(_initPos)
+    Mouse.lock(False)
+
+
+def walk():
+    if not _lastWalkTime == None:
+        if _reachedLastWaypoint():
+            _checkLastWaypointSpecial()
+        else:
+            if _isLastWaypointVisible():
+                if _isStuck():
+                    return _unstuck()
+                _repeatLastWaypoint()
     _waypoint = _waypoints[0]
     _box = _locateOnMap(_waypoint)
     if type(_box) == Box:

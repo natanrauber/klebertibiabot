@@ -33,9 +33,9 @@ def executeAction():
         if _has_loot and not _is_attacking:
             return loot()
 
-    _has_target = hasTarget()
+    _has_target = isAttackEnabled() and hasTarget()
 
-    if ATTACK:
+    if ATTACK and isAttackEnabled():
         if _has_target:
             if ATTACK_TIMEOUT == 0:
                 if not _is_attacking and not _has_loot:
