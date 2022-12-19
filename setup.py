@@ -1,4 +1,5 @@
 import os
+import pyautogui
 from config import *
 from lib.actions.attack.attack import setupAttack
 from lib.actions.clean.clean import setupDrop
@@ -55,6 +56,8 @@ def setup():
     if WALK:
         log(f'\thunt: {HUNT_NAME}', color=Colors.yellow)
         setupWalk()
+
+    pyautogui.screenshot(f'{SESSION_DIR}/start.png')
 
     pause(True)
     openFolder(SESSION_DIR)

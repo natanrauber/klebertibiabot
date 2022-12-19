@@ -9,11 +9,8 @@ from datetime import datetime
 import pyautogui
 
 
-
 def run():
-    pyautogui.screenshot(f'{SESSION_DIR}/start.png')
-
-    while datetime.now().hour != 5:
+    while not (datetime.now().hour == 6 and datetime.now().minute == 0):
         if Keyboard.isPressed('='):
             pause(not isPaused())
 
