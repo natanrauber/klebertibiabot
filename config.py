@@ -2,6 +2,7 @@
 from lib.utils.keyboard import Key
 
 SESSION_DIR = 'C:/dev/kleber/images/session'
+TEMP_DIR = 'C:/dev/kleber/images/temp'
 
 
 # ACTIONS --------------------------------------------------
@@ -43,7 +44,8 @@ SLOT_AREA_HEIGHT = 40
 
 
 # WALK --------------------------------------------------
-HUNT_NAME = 'secret_spider_lair'
+HUNT_NAME = 'poison_spider_cave'
+ROPE_KEY = Key.f5
 STOP_ALL_ACTIONS_KEY = Key.pause
 
 WALK_AREA_LEFT = 990
