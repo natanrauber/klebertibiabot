@@ -40,19 +40,6 @@ def executeAction():
             if ATTACK_TIMEOUT == 0:
                 if not _is_attacking and not _has_loot:
                     return attack()
-            # else:
-            #     if not checkingTimeout():
-            #         attackTimeoutChecker = AttackTimeoutChecker()
-            #         attackTimeoutChecker.daemon = True
-            #         attackTimeoutChecker.start()
-            #     if not _is_attacking and not _has_loot:
-            #         return attack()
-            #     if timeout():
-            #         setTimeout(False)
-            #         setLoot(False)
-            #         if WALK:
-            #             return walk()
-            #         return attack()
 
     if WALK:
         if not walkOnCooldown():

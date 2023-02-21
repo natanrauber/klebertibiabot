@@ -1,9 +1,10 @@
 from datetime import datetime
-from lib.utils.mouse import Mouse
+from os import listdir
+from os.path import isfile, join
+
 from pyscreeze import Box
 
-from os.path import isfile, join
-from os import listdir
+from lib.utils.mouse import Mouse
 
 foodDir = 'C:/dev/kleber/images/food/'
 foodList = [foodDir + f for f in listdir(foodDir) if isfile(join(foodDir, f))]
@@ -22,7 +23,7 @@ def isFood(image) -> bool:
 def eat(box: Box):
     Mouse.lock(True)
     _initPos = Mouse.getPos()
-    Mouse.clickLeft((box.left-944, box.top+16))
+    Mouse.clickLeft((box.left-884, box.top+16))
     Mouse.setPos(_initPos)
     Mouse.lock(False)
     global _lastEat

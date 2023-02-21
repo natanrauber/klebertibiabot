@@ -66,7 +66,7 @@ def _walk(box: Box):
     time.sleep(0.5)
     Mouse.lock(True)
     _initPos = Mouse.getPos()
-    Mouse.clickLeft((box.left-960+3, box.top+3))
+    Mouse.clickLeft((box.left-900+3, box.top+3))
     Mouse.setPos(_initPos)
     Mouse.lock(False)
     global _lastWalkTime

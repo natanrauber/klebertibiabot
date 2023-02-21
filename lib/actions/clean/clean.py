@@ -3,14 +3,14 @@ import time
 from os import listdir
 from os.path import isfile, join
 
+from pyscreeze import Box
+
 from config import *
-from lib.actions.eat import canEat, eat, isFood
+from lib.actions.eat import canEat, eat, foodList, isFood
 from lib.utils.gui import getPosOnRegion, locateAllWindows, locateWindow
-from lib.actions.eat import foodList
 from lib.utils.log import log
 from lib.utils.mouse import Mouse
 from lib.utils.status import isPaused
-from pyscreeze import Box
 
 _active_cleaners = []
 _last_checked = []
@@ -55,7 +55,7 @@ def _drop(box: Box):
         return _drop(box)
     Mouse.lock(True)
     _initPos = Mouse.getPos()
-    Mouse.pressLeft((box.left-944, box.top+16))
+    Mouse.pressLeft((box.left-884, box.top+16))
     Mouse.releaseLeft((SCREEN_CENTER_X, SCREEN_CENTER_Y))
     Mouse.setPos(_initPos)
     Mouse.lock(False)
