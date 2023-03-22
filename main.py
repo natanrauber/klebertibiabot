@@ -1,8 +1,9 @@
 import ctypes
 import sys
 
+from main_loop import loop_thread
 from setup import setup
-from window import callPauseButton, loop_thread, rootWindow
+from window import callPauseButton, rootWindow
 
 
 def is_admin():
@@ -16,6 +17,7 @@ if is_admin():
     setup()
     callPauseButton()
     rootWindow.mainloop()
+    callPauseButton()
     loop_thread.join()
 else:
     ctypes.windll.shell32.ShellExecuteW(

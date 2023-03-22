@@ -1,26 +1,13 @@
 import threading
 import tkinter as tk
-from datetime import datetime
 from tkinter import ttk
 
-import pyautogui
-
-from config import SESSION_DIR
-from lib.actions.action import executeAction
-from lib.utils.status import isPaused, pause
+from lib.utils.status import pause
+from main_loop import loop
 
 rootWindow = tk.Tk()
 rootWindow.title("Kleber")
-rootWindow.resizable(0, 0)  # Disable window resizing
-
-
-def loop():
-    while not (datetime.now().hour == 6 and datetime.now().minute == 0):
-        if isPaused():
-            break
-        executeAction()
-
-    pyautogui.screenshot(f'{SESSION_DIR}/end.png')
+rootWindow.resizable(False, False)  # Disable window resizing
 
 
 def callPauseButton():
@@ -37,10 +24,6 @@ def callResumeButton():
     status_label.config(text="Running", foreground="green")
     loop_thread = threading.Thread(target=loop)
     loop_thread.start()
-
-
-loop_thread = threading.Thread(target=loop)
-loop_thread.start()
 
 
 style = ttk.Style()
