@@ -1,6 +1,7 @@
-from win32gui import GetWindowText, GetForegroundWindow
-from lib.utils.wsh import wsh
+from win32gui import GetForegroundWindow, GetWindowText
+
 from lib.utils.log import log
+from lib.utils.wsh import wsh
 
 _CHAR_NAME = ''
 

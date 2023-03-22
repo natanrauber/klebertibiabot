@@ -1,10 +1,9 @@
-import time
-from config import SESSION_DIR
+import pyautogui
 
+from config import SESSION_DIR
+from lib.utils.gui import activateAllWindows
 from lib.utils.log import *
 from lib.utils.wsh import wsh
-from lib.utils.gui import activateAllWindows
-import pyautogui
 
 _isPaused = True
 
@@ -25,4 +24,3 @@ def pause(value: bool):
         wsh.AppActivate('Administrador: Windows PowerShell')
         pyautogui.screenshot(f'{SESSION_DIR}/end.png')
     log(status(), color=Colors.yellow)
-    time.sleep(2)

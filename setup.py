@@ -1,15 +1,17 @@
 import os
+
 import pyautogui
+
 from config import *
 from lib.actions.attack.attack import setupAttack
 from lib.actions.clean.clean import setupDrop
 from lib.actions.heal.heal import setupHeal
 from lib.actions.walk.walk import setupWalk
+from lib.utils.character import *
 from lib.utils.clear_folder import clearFolder
-from lib.utils.status import pause
 from lib.utils.gui import activateAllWindows, openFolder
 from lib.utils.log import *
-from lib.utils.character import *
+from lib.utils.status import pause
 
 
 def _clear(): return os.system('cls')

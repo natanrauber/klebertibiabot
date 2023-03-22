@@ -1,12 +1,15 @@
 import os
+
+import cv2
+import numpy as np
 import pyautogui
-from config import SESSION_DIR
-from lib.utils.character import _CHAR_NAME
-from lib.utils.wsh import wsh
 from pyscreeze import Box
 from screeninfo import get_monitors
 from win32gui import GetForegroundWindow, GetWindowText
 
+from config import SESSION_DIR
+from lib.utils.character import _CHAR_NAME
+from lib.utils.wsh import wsh
 
 _interface_dir = 'C:/dev/kleber/images/interface'
 _window_footer = f'{_interface_dir}/window_footer.png'
@@ -30,18 +33,42 @@ def isTibiaActive():
 
 def activateAllWindows():
     wsh.AppActivate('Projetor em janela (prévia)')
+    wsh.AppActivate('Kleber')
     wsh.AppActivate(f'Tibia - {_CHAR_NAME}')
 
 
 def getPos(image, grayscale=False, confidence=0.9):
-    _box = pyautogui.locateOnScreen(
-        image, grayscale=grayscale, confidence=confidence)
-    return _box
+    screenshot = pyautogui.screenshot()
+    screenshot = cv2.cvtColor(np.array(screenshot), cv2.COLOR_RGB2BGR)
+    template = cv2.imread(
+        image, cv2.IMREAD_GRAYSCALE if grayscale else cv2.IMREAD_COLOR)
+    res = cv2.matchTemplate(screenshot, template, cv2.TM_CCOEFF_NORMED)
+    loc = np.where(res >= confidence)
+    if len(loc[0]) > 0:
+        left = loc[1][0]
+        top = loc[0][0]
+        right = left + template.shape[1]
+        bottom = top + template.shape[0]
+        return Box(left, top, right, bottom)
+    else:
+        return None
 
 
 def getAllPos(image, grayscale=False, confidence=0.9):
-    return pyautogui.locateAllOnScreen(
-        image, grayscale=grayscale, confidence=confidence)
+    screenshot = pyautogui.screenshot()
+    screenshot = cv2.cvtColor(np.array(screenshot), cv2.COLOR_RGB2BGR)
+    template = cv2.imread(
+        image, cv2.IMREAD_GRAYSCALE if grayscale else cv2.IMREAD_COLOR)
+    res = cv2.matchTemplate(screenshot, template, cv2.TM_CCOEFF_NORMED)
+    loc = np.where(res >= confidence)
+    boxes = []
+    for pt in zip(*loc[::-1]):
+        left = pt[0]
+        top = pt[1]
+        right = left + template.shape[1]
+        bottom = top + template.shape[0]
+        boxes.append(Box(left, top, right, bottom))
+    return boxes
 
 
 def getPosOnRegion(image, region, grayscale=False, confidence=0.9):
@@ -51,57 +78,58 @@ def getPosOnRegion(image, region, grayscale=False, confidence=0.9):
 
 
 def locateWindow(image, save_as=None):
-    _header = getPos(image)
-    if _header == None:
+    header = getPos(image)
+    if header is None:
         return None
     try:
-        for i in range(int((get_monitors()[0].height-_header.top)/100)):
-            _region = (_header.left, _header.top, _header.width, (i+1)*100)
-            _footer = getPosOnRegion(_window_footer, _region)
-            if _footer != None:
+        footer = None
+        for i in range(int((get_monitors()[0].height - header.top) / 100)):
+            region = (header.left, header.top, header.width, (i + 1) * 100)
+            footer = getPosOnRegion(_window_footer, region)
+            if footer is not None:
                 break
-        if _footer == None:
-            _region = (_header.left, _header.top, _header.width,
-                       get_monitors()[0].height-_header.top)
-            _footer = getPosOnRegion(_window_footer, _region)
-        if _footer == None:
+        if footer is None:
+            region = (header.left, header.top, header.width,
+                      get_monitors()[0].height - header.top)
+            footer = getPosOnRegion(_window_footer, region)
+        if footer is None:
             return None
-        global _window
-        _window = Box(
-            _header.left, _header.top, _footer.left+_footer.width-_header.left, _footer.top+_footer.height-_header.top)
-        if save_as != None and type(_window) == Box:
-            pyautogui.screenshot(
-                f'{SESSION_DIR}/{save_as}.png', region=_window)
-        return _window
-    except:
+        window = Box(header.left, header.top, footer.left + footer.width -
+                     header.left, footer.top + footer.height - header.top)
+        if save_as is not None and isinstance(window, Box):
+            screenshot_path = f"{SESSION_DIR}/{save_as}.png"
+            pyautogui.screenshot(screenshot_path, region=window)
+        return window
+    except Exception as e:
+        print(f"An error occurred: {e}")
         return None
 
 
 def locateAllWindows(image, save_as=None):
+    windows = []
     try:
-        _windows = []
-        for _header in getAllPos(image):
-            for i in range(int((get_monitors()[0].height-_header.top)/100)):
-                _region = (_header.left, _header.top,
-                           _header.width, (i+1)*100)
-                _footer = getPosOnRegion(_window_footer, _region)
-                if _footer != None:
+        for header in getAllPos(image):
+            footer = None
+            for i in range(int(get_monitors()[0].height - header.top) // 100):
+                region = (header.left, header.top, header.width, (i + 1) * 100)
+                footer = getPosOnRegion(_window_footer, region)
+                if footer is not None:
                     break
-            if _footer == None:
-                _region = (_header.left, _header.top, _header.width,
-                           get_monitors()[0].height-_header.top)
-                _footer = getPosOnRegion(_window_footer, _region)
-            if type(_footer) == Box:
-                global _window
-                _window = Box(
-                    _header.left, _header.top, _footer.left+_footer.width-_header.left, _footer.top+_footer.height-_header.top)
-                if type(_window) == Box:
-                    if save_as != None and type(_window) == Box:
-                        pyautogui.screenshot(
-                            f'{SESSION_DIR}/{save_as}{len(_windows)}.png', region=_window)
-                    _windows.append(_window)
-        return _windows
-    except:
+            if footer is None:
+                region = (header.left, header.top, header.width,
+                          get_monitors()[0].height - header.top)
+                footer = getPosOnRegion(_window_footer, region)
+            if isinstance(footer, Box):
+                window = Box(header.left, header.top, footer.left + footer.width -
+                             header.left, footer.top + footer.height - header.top)
+                if isinstance(window, Box):
+                    if save_as is not None:
+                        screenshot_path = f"{SESSION_DIR}/{save_as}{len(windows)}.png"
+                        pyautogui.screenshot(screenshot_path, region=window)
+                    windows.append(window)
+        return windows
+    except Exception as e:
+        print(f"An error occurred: {e}")
         return None
 
 

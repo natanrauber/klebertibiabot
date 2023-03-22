@@ -7,41 +7,30 @@ from lib.actions.loot.loot import loot
 from lib.actions.walk.walk import walk, walkOnCooldown
 from lib.shared import hasLoot
 from lib.utils.gui import checkActiveWindows
+from lib.utils.status import *
 
 
 def executeAction():
     checkActiveWindows()
 
-    _healing = healing()
-
     if HEAL:
-        if not _healing:
+        if not healing():
             healer = Healer()
             healer.daemon = True
             return healer.start()
 
     if DROP:
-        while cleanerAmount() < MAX_CLEANER_AMOUNT:
+        for i in range(MAX_CLEANER_AMOUNT - cleanerAmount()):
             cleaner = Cleaner()
             cleaner.daemon = True
             cleaner.start()
 
-    _has_loot = hasLoot()
-    _is_attacking = isAttacking()
+    if LOOT and hasLoot() and not isAttacking():
+        return loot()
 
-    if LOOT:
-        if _has_loot and not _is_attacking:
-            return loot()
+    if ATTACK and isAttackEnabled() and hasTarget():
+        if ATTACK_TIMEOUT == 0 and not isAttacking() and not hasLoot():
+            return attack()
 
-    _has_target = isAttackEnabled() and hasTarget()
-
-    if ATTACK and isAttackEnabled():
-        if _has_target:
-            if ATTACK_TIMEOUT == 0:
-                if not _is_attacking and not _has_loot:
-                    return attack()
-
-    if WALK:
-        if not walkOnCooldown():
-            if not _has_target and not _has_loot:
-                return walk()
+    if WALK and not walkOnCooldown() and not hasTarget() and not hasLoot():
+        return walk()
