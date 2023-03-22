@@ -8,9 +8,9 @@ from pyscreeze import Box
 from config import *
 from lib.actions.eat import canEat, eat, foodList, isFood
 from lib.utils.console import Console
+from lib.utils.image_locator import ImageLocator
 from lib.utils.mouse import Mouse
 from lib.utils.status import Status
-from lib.utils.window_manager import get_pos_on_region, locate_all_windows
 
 _active_cleaners = []
 _last_checked = []
@@ -32,7 +32,7 @@ def setupDrop():
 
 def _locateDropContainer():
     global _loot_windows
-    _loot_windows = locate_all_windows(getContainerImage(
+    _loot_windows = ImageLocator.locate_all_windows(getContainerImage(
         DROP_CONTAINER), save_as='container')
 
 
@@ -110,7 +110,8 @@ def dropBlackList():
     while not Status.is_paused():
         for _window in _loot_windows:
             for _image in _list:
-                _box = get_pos_on_region(_image, _window, grayscale=True)
+                _box = ImageLocator.get_pos_on_region(
+                    _image, _window, grayscale=True)
                 _found = type(_box) == Box
                 if _found and not _isLocked():
                     _lockDrop(True)

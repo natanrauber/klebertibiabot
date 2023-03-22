@@ -10,9 +10,9 @@ from config import *
 from lib.actions.attack.attack import (attack, disable_attack, enable_attack,
                                        hasTarget)
 from lib.utils.console import Colors, Console
+from lib.utils.image_locator import ImageLocator
 from lib.utils.keyboard import Keyboard
 from lib.utils.mouse import Mouse
-from lib.utils.window_manager import get_pos, get_pos_on_region
 
 _map_controls = 'C:/dev/kleber/lib/actions/walk/images/map_controls.png'
 _map = None
@@ -30,7 +30,7 @@ def setupWalk():
 
 
 def _locateMap():
-    _box = get_pos(_map_controls)
+    _box = ImageLocator.get_pos(_map_controls)
     if _box == None:
         Console.log('cannot find map', color=Colors.red)
         exit()
@@ -43,14 +43,14 @@ def _locateMap():
 
 
 def _locateOnMap(image):
-    return get_pos_on_region(image, _map, grayscale=True)
+    return ImageLocator.get_pos_on_region(image, _map, grayscale=True)
 
 
 def _locateOnMapCenter(image, size=28):
     _centerx = int(_map.left + (_map.width/2))
     _centery = int(_map.top + (_map.height/2))
     _region = (int(_centerx-(size/2)), int(_centery-(size/2)), size, size)
-    return get_pos_on_region(image, region=_region, grayscale=True)
+    return ImageLocator.get_pos_on_region(image, region=_region, grayscale=True)
 
 
 def _getWaypointName(image):
@@ -111,7 +111,7 @@ def _reachedLastWaypoint():
 
 def _isLastWaypointVisible():
     _waypoint = _waypoints[len(_waypoints)-1]
-    _box = get_pos_on_region(_waypoint, _map, grayscale=True)
+    _box = ImageLocator.get_pos_on_region(_waypoint, _map, grayscale=True)
     if type(_box) == Box:
         return True
     return False
@@ -128,7 +128,7 @@ def _maybeStuck():
 def _isStuck():
     if _maybeStuck():
         _last_map_view = f'{TEMP_DIR}/last_map_view.png'
-        _box = get_pos(_last_map_view)
+        _box = ImageLocator.get_pos(_last_map_view)
         if type(_box) == Box:
             return True
     return False

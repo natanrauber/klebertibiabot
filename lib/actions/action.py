@@ -7,11 +7,11 @@ from lib.actions.loot.loot import hasLoot, loot
 from lib.actions.walk.walk import walk, walkOnCooldown
 from lib.utils.character import Character
 from lib.utils.status import *
-from lib.utils.window_manager import check_active_windows
+from lib.utils.window_manager import WindowManager
 
 
 def executeAction():
-    check_active_windows(Character.name())
+    WindowManager.check_active_windows(Character.name())
 
     if HEAL:
         if not healing():

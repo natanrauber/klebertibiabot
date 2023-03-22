@@ -6,7 +6,7 @@ from pyscreeze import Box
 from config import *
 from lib.actions.loot.loot import setLoot
 from lib.utils.console import Colors, Console
-from lib.utils.window_manager import get_pos_on_region, locate_window
+from lib.utils.image_locator import ImageLocator
 from lib.utils.keyboard import Keyboard
 
 _enabled = True  # local controller, keep this on
@@ -43,7 +43,8 @@ def setupAttack():
 
 def _locateBattle():
     global _battle_window
-    _battle_window = locate_window(_battle_window_title, save_as='battle')
+    _battle_window = ImageLocator.locate_window(
+        _battle_window_title, save_as='battle')
     if _battle_window == None:
         Console.log('cannot find battle window', color=Colors.red)
         exit()
@@ -63,7 +64,8 @@ def hasTarget():
 
 
 def isAttacking():
-    _box = get_pos_on_region(_is_attacking, _battle_window, confidence=0.8)
+    _box = ImageLocator.get_pos_on_region(
+        _is_attacking, _battle_window, confidence=0.8)
     if type(_box) == Box:
         return True
     return False

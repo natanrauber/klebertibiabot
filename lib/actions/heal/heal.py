@@ -8,6 +8,7 @@ from pyscreeze import Box
 
 from config import *
 from lib.utils.console import Colors, Console
+from lib.utils.image_locator import ImageLocator
 from lib.utils.keyboard import Keyboard
 from lib.utils.status import Status
 from lib.utils.window_manager import *
@@ -29,7 +30,7 @@ def _locateHealthBar():
     global _health_bar_box
     try:
         for i in _all_health_bars:
-            _box = get_pos(i)
+            _box = ImageLocator.get_pos(i)
             if type(_box) == Box:
                 _health_bar_box = _box
                 break
@@ -49,7 +50,8 @@ def _getImageName(image):
 
 def isWounded():
     for _image in _heal_colors:
-        _box = get_pos_on_region(_image, _health_bar_box, confidence=0.95)
+        _box = ImageLocator.get_pos_on_region(
+            _image, _health_bar_box, confidence=0.95)
         if type(_box) == Box:
             Console.log(f'healing on {_getImageName(_image)}')
             return True

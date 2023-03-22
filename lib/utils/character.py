@@ -1,5 +1,5 @@
 from lib.utils.console import Console
-from lib.utils.window_manager import check_active_windows, is_tibia_active
+from lib.utils.window_manager import WindowManager
 
 
 class Character:
@@ -39,10 +39,10 @@ class Character:
             str: The character name.
         """
         Character.prompt_for_name()
-        check_active_windows()
-        while not is_tibia_active():
+        WindowManager.check_active_windows()
+        while not WindowManager.is_tibia_active():
             Console.log(
                 'Cannot find Tibia window with the given character name.')
             Character.prompt_for_name()
-            check_active_windows()
+            WindowManager.check_active_windows()
         return Character.name()
