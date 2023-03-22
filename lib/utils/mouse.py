@@ -1,35 +1,90 @@
-from ctypes import *
+from ctypes import windll
 
 import win32api
 import win32con
 
-_lock = False
-
 
 class Mouse:
-    def isLocked():
-        return _lock
+    """
+    A class for simulating mouse input.
 
-    def lock(value: bool):
-        global _lock
-        _lock = value
+    Note:
+        Documented using Google style docstrings by ChatGPT, an OpenAI language model.
+    """
+
+    _lock: bool = False
+
+    @staticmethod
+    def is_locked() -> bool:
+        """
+        Returns True if the mouse is locked, False otherwise.
+
+        Returns:
+            bool: True if the mouse is locked, False otherwise.
+        """
+        return Mouse._lock
+
+    @staticmethod
+    def lock(value: bool) -> None:
+        """
+        Locks or unlocks the mouse.
+
+        Args:
+            value (bool): True to lock the mouse, False to unlock it.
+        """
+        Mouse._lock = value
         windll.user32.BlockInput(value)
 
-    def getPos():
+    @staticmethod
+    def get_pos() -> tuple:
+        """
+        Returns the current position of the mouse.
+
+        Returns:
+            tuple: The x and y coordinates of the mouse position.
+        """
         return win32api.GetCursorPos()
 
-    def setPos(pos: tuple):
+    @staticmethod
+    def set_pos(pos: tuple) -> None:
+        """
+        Sets the position of the mouse.
+
+        Args:
+            pos (tuple): The x and y coordinates of the mouse position.
+        """
         win32api.SetCursorPos(pos)
 
-    def clickLeft(pos: tuple):
+    @staticmethod
+    def click_left(pos: tuple) -> None:
+        """
+        Simulates a left mouse click at the specified position.
+
+        Args:
+            pos (tuple): The x and y coordinates of the mouse position.
+        """
         win32api.SetCursorPos(pos)
         win32api.mouse_event(win32con.MOUSEEVENTF_LEFTDOWN,  0, 0)
         win32api.mouse_event(win32con.MOUSEEVENTF_LEFTUP, 0, 0)
 
-    def pressLeft(pos: tuple):
+    @staticmethod
+    def press_left(pos: tuple) -> None:
+        """
+        Simulates a left mouse button press at the specified position.
+
+        Args:
+            pos (tuple): The x and y coordinates of the mouse position.
+        """
         win32api.SetCursorPos(pos)
         win32api.mouse_event(win32con.MOUSEEVENTF_LEFTDOWN,  0, 0)
 
-    def releaseLeft(pos: tuple):
+    @staticmethod
+    def release_left(pos: tuple) -> None:
+        """
+        Simulates a left mouse button release at the specified position.
+
+        Args:
+            pos (tuple): The x and y coordinates of the mouse position.
+        """
         win32api.SetCursorPos(pos)
         win32api.mouse_event(win32con.MOUSEEVENTF_LEFTUP, 0, 0)

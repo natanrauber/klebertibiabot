@@ -22,9 +22,9 @@ def isFood(image) -> bool:
 
 def eat(box: Box):
     Mouse.lock(True)
-    _initPos = Mouse.getPos()
-    Mouse.clickLeft((box.left-884, box.top+16))
-    Mouse.setPos(_initPos)
+    _initPos = Mouse.get_pos()
+    Mouse.click_left((box.left-884, box.top+16))
+    Mouse.set_pos(_initPos)
     Mouse.lock(False)
     global _lastEat
     _lastEat = datetime.now()

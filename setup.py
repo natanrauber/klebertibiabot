@@ -1,4 +1,4 @@
-import os
+from pathlib import Path
 
 import pyautogui
 
@@ -7,59 +7,85 @@ from lib.actions.attack.attack import setupAttack
 from lib.actions.clean.clean import setupDrop
 from lib.actions.heal.heal import setupHeal
 from lib.actions.walk.walk import setupWalk
-from lib.utils.character import *
-from lib.utils.clear_folder import clearFolder
-from lib.utils.gui import activateAllWindows, openFolder
-from lib.utils.log import *
-from lib.utils.status import pause
+from lib.utils.character import Character
+from lib.utils.colors import Colors
+from lib.utils.console import Console
+from lib.utils.folder_manager import FolderManager
+from lib.utils.status import Status
+from lib.utils.window_manager import activate_all_windows
+
+SESSION_DIR: str = "C:/dev/kleber/images/session"
+START_SCREENSHOT: str = SESSION_DIR + "/start.png"
 
 
-def _clear(): return os.system('cls')
+def _status(on: bool) -> str:
+    """
+    Returns a string representation of a boolean value, indicating if a feature is enabled or not.
+
+    Args:
+        on (bool): A boolean value indicating if a feature is enabled.
+
+    Returns:
+        str: A string representation of the boolean value.
+    """
+    return "on" if on else "off"
 
 
-def _status(on: bool):
-    return 'on' if on else 'off'
+def colorize(value: bool) -> str:
+    """
+    Returns a string representation of a color, based on a boolean value.
 
+    Args:
+        value (bool): A boolean value indicating if a color should be green or red.
 
-def _getColor(value: bool):
+    Returns:
+        str: A string representation of a color.
+    """
     return Colors.green if value else Colors.red
 
 
-def setup():
-    _clear()
-    getCharacterName()
-    _clear()
-    activateAllWindows()
-    clearFolder('C:/dev/kleber/images/session')
+def setup() -> None:
+    """
+    Configures the player's character behavior, based on global settings.
+    Prints logs indicating the enabled features and their specific settings.
 
-    log(f'CHARACTER: {charName()}', color=Colors.yellow)
+    Returns:
+        None
+    """
+    Console.clear()
+    Character.get_character_name()
+    Console.clear()
+    activate_all_windows(Character.name())
+    FolderManager.clear_folder(SESSION_DIR)
 
-    log(f'HEAL: {_status(HEAL)}', color=_getColor(HEAL))
+    Console.log(f"CHARACTER: {Character.name()}", color=Colors.yellow)
+
+    Console.log(f"HEAL: {_status(HEAL)}", color=colorize(HEAL))
     if HEAL:
-        log(f'\thealth: {"yellow" if HEAL_ON_YELLOW else "red"}',
-            color=Colors.yellow)
-        log(f'\tkey: {HEAL_KEY}', color=Colors.yellow)
+        Console.log(f"\thealth: {'yellow' if HEAL_ON_YELLOW else 'red'}",
+                    color=Colors.yellow)
+        Console.log(f"\tkey: {HEAL_KEY}", color=Colors.yellow)
         setupHeal()
 
-    log(f'ATTACK: {_status(ATTACK)}', color=_getColor(ATTACK))
+    Console.log(f"ATTACK: {_status(ATTACK)}", color=colorize(ATTACK))
     if ATTACK:
-        log(f'\tkey: {ATTACK_KEY}', color=Colors.yellow)
+        Console.log(f"\tkey: {ATTACK_KEY}", color=Colors.yellow)
         setupAttack()
 
-    log(f'LOOT: {_status(LOOT)}', color=_getColor(LOOT))
+    Console.log(f"LOOT: {_status(LOOT)}", color=colorize(LOOT))
 
-    log(f'DROP: {_status(DROP)}', color=_getColor(DROP))
+    Console.log(f"DROP: {_status(DROP)}", color=colorize(DROP))
     if DROP:
-        log(f'\tthreads: {MAX_CLEANER_AMOUNT}', color=Colors.yellow)
-        log(f'\tcontainer: {DROP_CONTAINER}', color=Colors.yellow)
+        Console.log(f"\tthreads: {MAX_CLEANER_AMOUNT}", color=Colors.yellow)
+        Console.log(f"\tcontainer: {DROP_CONTAINER}", color=Colors.yellow)
         setupDrop()
 
-    log(f'WALK: {_status(WALK)}', color=_getColor(WALK))
+    Console.log(f"WALK: {_status(WALK)}", color=colorize(WALK))
     if WALK:
-        log(f'\thunt: {HUNT_NAME}', color=Colors.yellow)
+        Console.log(f"\thunt: {HUNT_NAME}", color=Colors.yellow)
         setupWalk()
 
-    pyautogui.screenshot(f'{SESSION_DIR}/start.png')
+    pyautogui.screenshot(START_SCREENSHOT)
 
-    pause(True)
-    openFolder(SESSION_DIR)
+    Status.pause()
+    FolderManager.open_folder(SESSION_DIR)

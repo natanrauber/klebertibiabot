@@ -1,18 +1,40 @@
-import keyboard
-from pynput.keyboard import Controller, Key as KEY
-
-Key = KEY
+from pynput.keyboard import Controller, Key
 
 
 class Keyboard:
-    def isPressed(key):
-        return keyboard.is_pressed(key)
+    """
+    A class for simulating keyboard input.
 
-    def press(key: Key):
-        return Controller().tap(key)
+    Note:
+        Documented using Google style docstrings by ChatGPT, an OpenAI language model.
+    """
 
-    def hold(key: Key):
-        return Controller().press(key)
+    @staticmethod
+    def press(key: Key) -> None:
+        """
+        Presses a key.
 
-    def release(key: Key):
-        return Controller().release(key)
+        Args:
+            key (Key): The key to press.
+        """
+        Controller().tap(key)
+
+    @staticmethod
+    def hold(key: Key) -> None:
+        """
+        Holds a key down.
+
+        Args:
+            key (Key): The key to hold down.
+        """
+        Controller().press(key)
+
+    @staticmethod
+    def release(key: Key) -> None:
+        """
+        Releases a key.
+
+        Args:
+            key (Key): The key to release.
+        """
+        Controller().release(key)

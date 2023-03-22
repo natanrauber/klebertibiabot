@@ -7,10 +7,10 @@ from pyscreeze import Box
 
 from config import *
 from lib.actions.eat import canEat, eat, foodList, isFood
-from lib.utils.gui import getPosOnRegion, locateAllWindows, locateWindow
-from lib.utils.log import log
+from lib.utils.console import Console
 from lib.utils.mouse import Mouse
-from lib.utils.status import isPaused
+from lib.utils.status import Status
+from lib.utils.window_manager import get_pos_on_region, locate_all_windows
 
 _active_cleaners = []
 _last_checked = []
@@ -32,7 +32,7 @@ def setupDrop():
 
 def _locateDropContainer():
     global _loot_windows
-    _loot_windows = locateAllWindows(getContainerImage(
+    _loot_windows = locate_all_windows(getContainerImage(
         DROP_CONTAINER), save_as='container')
 
 
@@ -50,14 +50,14 @@ def _lockDrop(value):
 
 
 def _drop(box: Box):
-    if Mouse.isLocked():
+    if Mouse.is_locked():
         time.sleep(0.1)
         return _drop(box)
     Mouse.lock(True)
-    _initPos = Mouse.getPos()
-    Mouse.pressLeft((box.left-884, box.top+16))
-    Mouse.releaseLeft((SCREEN_CENTER_X, SCREEN_CENTER_Y))
-    Mouse.setPos(_initPos)
+    _initPos = Mouse.get_pos()
+    Mouse.press_left((box.left-884, box.top+16))
+    Mouse.release_left((SCREEN_CENTER_X, SCREEN_CENTER_Y))
+    Mouse.set_pos(_initPos)
     Mouse.lock(False)
 
 
@@ -107,18 +107,18 @@ def dropBlackList():
     _id = getCleanerId()
     _list = getList(_id)
     addCleaner(_id)
-    while not isPaused():
+    while not Status.is_paused():
         for _window in _loot_windows:
             for _image in _list:
-                _box = getPosOnRegion(_image, _window, grayscale=True)
+                _box = get_pos_on_region(_image, _window, grayscale=True)
                 _found = type(_box) == Box
                 if _found and not _isLocked():
                     _lockDrop(True)
                     if canEat() and isFood(_image):
-                        log(f'eating {_getItemName(_image)}')
+                        Console.log(f'eating {_getItemName(_image)}')
                         eat(_box)
                     else:
-                        log(f'dropping {_getItemName(_image)}')
+                        Console.log(f'dropping {_getItemName(_image)}')
                         _drop(_box)
                     time.sleep(0.5)
                     _lockDrop(False)

@@ -5,12 +5,12 @@ import pyautogui
 
 from config import SESSION_DIR
 from lib.actions.action import executeAction
-from lib.utils.status import isPaused
+from lib.utils.status import Status
 
 
 def loop():
     while not (datetime.now().hour == 6 and datetime.now().minute == 0):
-        if isPaused():
+        if Status.is_paused():
             break
         executeAction()
 

@@ -1,8 +1,11 @@
 import threading
+
 import pyautogui
 from pyscreeze import Box
+
 from config import *
 from lib.actions.attack.attack import *
+from lib.utils.console import Console
 
 _timeout = False
 _checkingTimeout = False
@@ -32,7 +35,7 @@ def _checkTimeout():
         _box = pyautogui.locateOnScreen(
             targetHealthBar(), region=targetHealthBarBox(), confidence=0.9)
         if type(_box) == Box:
-            log('attack timeout')
+            Console.log('attack timeout')
             global _timeout
             setTimeout(True)
         saveTargetHealth()

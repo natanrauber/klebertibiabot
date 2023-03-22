@@ -3,15 +3,15 @@ from lib.actions.attack.attack import attack, hasTarget, isAttacking
 from lib.actions.attack_timeout import *
 from lib.actions.clean.clean import Cleaner, cleanerAmount
 from lib.actions.heal.heal import Healer, healing
-from lib.actions.loot.loot import loot
+from lib.actions.loot.loot import hasLoot, loot
 from lib.actions.walk.walk import walk, walkOnCooldown
-from lib.shared import hasLoot
-from lib.utils.gui import checkActiveWindows
+from lib.utils.character import Character
 from lib.utils.status import *
+from lib.utils.window_manager import check_active_windows
 
 
 def executeAction():
-    checkActiveWindows()
+    check_active_windows(Character.name())
 
     if HEAL:
         if not healing():

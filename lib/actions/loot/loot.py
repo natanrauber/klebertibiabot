@@ -1,30 +1,42 @@
 import time
 
-from config import SCREEN_CENTER_X, SCREEN_CENTER_Y, SQM_SIZE
-from lib.shared import setLoot
+from config import LOOT, SCREEN_CENTER_X, SCREEN_CENTER_Y, SQM_SIZE
+from lib.utils.console import Console
 from lib.utils.keyboard import Key, Keyboard
-from lib.utils.log import log
 from lib.utils.mouse import Mouse
+
+_hasLoot = False
+
+
+def hasLoot():
+    if not LOOT:
+        return False
+    return _hasLoot
+
+
+def setLoot(value):
+    global _hasLoot
+    _hasLoot = value
 
 
 def loot():
-    if Mouse.isLocked():
+    if Mouse.is_locked():
         time.sleep(0.1)
         return loot()
-    log('looting...')
+    Console.log('looting...')
     Mouse.lock(True)
-    _initPos = Mouse.getPos()
+    _initPos = Mouse.get_pos()
     Keyboard.hold(Key.alt)
-    Mouse.clickLeft((SCREEN_CENTER_X+SQM_SIZE, SCREEN_CENTER_Y-SQM_SIZE))
-    Mouse.clickLeft((SCREEN_CENTER_X, SCREEN_CENTER_Y-SQM_SIZE))
-    Mouse.clickLeft((SCREEN_CENTER_X-SQM_SIZE, SCREEN_CENTER_Y-SQM_SIZE))
-    Mouse.clickLeft((SCREEN_CENTER_X-SQM_SIZE, SCREEN_CENTER_Y))
-    Mouse.clickLeft((SCREEN_CENTER_X-SQM_SIZE, SCREEN_CENTER_Y+SQM_SIZE))
-    Mouse.clickLeft((SCREEN_CENTER_X, SCREEN_CENTER_Y+SQM_SIZE))
-    Mouse.clickLeft((SCREEN_CENTER_X+SQM_SIZE, SCREEN_CENTER_Y+SQM_SIZE))
-    Mouse.clickLeft((SCREEN_CENTER_X+SQM_SIZE, SCREEN_CENTER_Y))
-    Mouse.clickLeft((SCREEN_CENTER_X, SCREEN_CENTER_Y))
+    Mouse.click_left((SCREEN_CENTER_X+SQM_SIZE, SCREEN_CENTER_Y-SQM_SIZE))
+    Mouse.click_left((SCREEN_CENTER_X, SCREEN_CENTER_Y-SQM_SIZE))
+    Mouse.click_left((SCREEN_CENTER_X-SQM_SIZE, SCREEN_CENTER_Y-SQM_SIZE))
+    Mouse.click_left((SCREEN_CENTER_X-SQM_SIZE, SCREEN_CENTER_Y))
+    Mouse.click_left((SCREEN_CENTER_X-SQM_SIZE, SCREEN_CENTER_Y+SQM_SIZE))
+    Mouse.click_left((SCREEN_CENTER_X, SCREEN_CENTER_Y+SQM_SIZE))
+    Mouse.click_left((SCREEN_CENTER_X+SQM_SIZE, SCREEN_CENTER_Y+SQM_SIZE))
+    Mouse.click_left((SCREEN_CENTER_X+SQM_SIZE, SCREEN_CENTER_Y))
+    Mouse.click_left((SCREEN_CENTER_X, SCREEN_CENTER_Y))
     Keyboard.release(Key.alt)
-    Mouse.setPos(_initPos)
+    Mouse.set_pos(_initPos)
     Mouse.lock(False)
     setLoot(False)

@@ -3,13 +3,14 @@ import time
 from os import listdir
 from os.path import isfile, join
 
-from config import *
 from genericpath import isfile
-from lib.utils.gui import *
-from lib.utils.keyboard import Keyboard
-from lib.utils.log import Colors, log
-from lib.utils.status import isPaused
 from pyscreeze import Box
+
+from config import *
+from lib.utils.console import Colors, Console
+from lib.utils.keyboard import Keyboard
+from lib.utils.status import Status
+from lib.utils.window_manager import *
 
 _dir = 'C:/dev/kleber/lib/actions/heal/images/'
 _all_health_bars = [_dir + f for f in listdir(_dir) if isfile(join(_dir, f))]
@@ -28,14 +29,14 @@ def _locateHealthBar():
     global _health_bar_box
     try:
         for i in _all_health_bars:
-            _box = getPos(i)
+            _box = get_pos(i)
             if type(_box) == Box:
                 _health_bar_box = _box
                 break
         if _health_bar_box == None:
             exit()
     except:
-        log('cannot find health bar', color=Colors.red)
+        Console.log('cannot find health bar', color=Colors.red)
         exit()
 
 
@@ -48,9 +49,9 @@ def _getImageName(image):
 
 def isWounded():
     for _image in _heal_colors:
-        _box = getPosOnRegion(_image, _health_bar_box, confidence=0.95)
+        _box = get_pos_on_region(_image, _health_bar_box, confidence=0.95)
         if type(_box) == Box:
-            log(f'healing on {_getImageName(_image)}')
+            Console.log(f'healing on {_getImageName(_image)}')
             return True
     return False
 
@@ -61,7 +62,7 @@ _healing = False
 def heal():
     global _healing
     _healing = True
-    while not isPaused():
+    while not Status.is_paused():
         if isWounded():
             Keyboard.press(HEAL_KEY)
         time.sleep(0.5)

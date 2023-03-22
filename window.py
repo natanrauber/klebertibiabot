@@ -2,7 +2,7 @@ import threading
 import tkinter as tk
 from tkinter import ttk
 
-from lib.utils.status import pause
+from lib.utils.status import Status
 from main_loop import loop
 
 rootWindow = tk.Tk()
@@ -11,14 +11,14 @@ rootWindow.resizable(False, False)  # Disable window resizing
 
 
 def callPauseButton():
-    pause(True)
+    Status.pause()
     pause_button.config(state=tk.DISABLED)
     resume_button.config(state=tk.NORMAL)
     status_label.config(text="Paused", foreground="red")
 
 
 def callResumeButton():
-    pause(False)
+    Status.resume()
     pause_button.config(state=tk.NORMAL)
     resume_button.config(state=tk.DISABLED)
     status_label.config(text="Running", foreground="green")

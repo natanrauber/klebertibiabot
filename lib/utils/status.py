@@ -1,26 +1,54 @@
 import pyautogui
 
 from config import SESSION_DIR
-from lib.utils.gui import activateAllWindows
-from lib.utils.log import *
+from lib.utils.console import Colors, Console
 from lib.utils.wsh import wsh
 
-_isPaused = True
 
+class Status:
+    """
+    A class for managing the status of an operation.
 
-def status():
-    return 'PAUSED' if _isPaused else 'RUNNING'
+    Note:
+        Documented using Google style docstrings by ChatGPT, an OpenAI language model.
+    """
 
+    _is_paused: bool = True
 
-def isPaused():
-    return _isPaused
+    @staticmethod
+    def get_status() -> str:
+        """
+        Returns the current status of the operation.
 
+        Returns:
+            str: The current status, either "PAUSED" or "RUNNING".
+        """
+        return 'PAUSED' if Status._is_paused else 'RUNNING'
 
-def pause(value: bool):
-    activateAllWindows()
-    global _isPaused
-    _isPaused = value
-    if _isPaused:
+    @staticmethod
+    def is_paused() -> bool:
+        """
+        Returns whether the operation is currently paused.
+
+        Returns:
+            bool: Whether the operation is currently paused.
+        """
+        return Status._is_paused
+
+    @staticmethod
+    def pause() -> None:
+        """
+        Pauses the operation.
+        """
+        Status._is_paused = True
         wsh.AppActivate('Administrador: Windows PowerShell')
         pyautogui.screenshot(f'{SESSION_DIR}/end.png')
-    log(status(), color=Colors.yellow)
+        Console.log(Status.get_status(), color=Colors.yellow)
+
+    @staticmethod
+    def resume() -> None:
+        """
+        Resumes the operation.
+        """
+        Status._is_paused = False
+        Console.log(Status.get_status(), color=Colors.yellow)

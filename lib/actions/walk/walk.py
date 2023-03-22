@@ -1,16 +1,18 @@
 import time
-import pyautogui
 from datetime import datetime
 from os import listdir
 from os.path import isfile, join
 
-from config import *
-from lib.actions.attack.attack import attack, disable_attack, enable_attack, hasTarget
-from lib.utils.gui import getPos, getPosOnRegion
-from lib.utils.keyboard import Keyboard
-from lib.utils.log import Colors, log
-from lib.utils.mouse import Mouse
+import pyautogui
 from pyscreeze import Box
+
+from config import *
+from lib.actions.attack.attack import (attack, disable_attack, enable_attack,
+                                       hasTarget)
+from lib.utils.console import Colors, Console
+from lib.utils.keyboard import Keyboard
+from lib.utils.mouse import Mouse
+from lib.utils.window_manager import get_pos, get_pos_on_region
 
 _map_controls = 'C:/dev/kleber/lib/actions/walk/images/map_controls.png'
 _map = None
@@ -28,9 +30,9 @@ def setupWalk():
 
 
 def _locateMap():
-    _box = getPos(_map_controls)
+    _box = get_pos(_map_controls)
     if _box == None:
-        log('cannot find map', color=Colors.red)
+        Console.log('cannot find map', color=Colors.red)
         exit()
     global _map
     _map = Box(_box.left-117, _box.top-50, 106, 109)
@@ -41,14 +43,14 @@ def _locateMap():
 
 
 def _locateOnMap(image):
-    return getPosOnRegion(image, _map, grayscale=True)
+    return get_pos_on_region(image, _map, grayscale=True)
 
 
 def _locateOnMapCenter(image, size=28):
     _centerx = int(_map.left + (_map.width/2))
     _centery = int(_map.top + (_map.height/2))
     _region = (int(_centerx-(size/2)), int(_centery-(size/2)), size, size)
-    return getPosOnRegion(image, region=_region, grayscale=True)
+    return get_pos_on_region(image, region=_region, grayscale=True)
 
 
 def _getWaypointName(image):
@@ -59,15 +61,15 @@ def _getWaypointName(image):
 
 
 def _walk(box: Box):
-    if Mouse.isLocked():
+    if Mouse.is_locked():
         time.sleep(0.1)
         return _walk(box)
     Keyboard.press(STOP_ALL_ACTIONS_KEY)
     time.sleep(0.5)
     Mouse.lock(True)
-    _initPos = Mouse.getPos()
-    Mouse.clickLeft((box.left-900+3, box.top+3))
-    Mouse.setPos(_initPos)
+    _initPos = Mouse.get_pos()
+    Mouse.click_left((box.left-900+3, box.top+3))
+    Mouse.set_pos(_initPos)
     Mouse.lock(False)
     global _lastWalkTime
     _lastWalkTime = datetime.now()
@@ -109,7 +111,7 @@ def _reachedLastWaypoint():
 
 def _isLastWaypointVisible():
     _waypoint = _waypoints[len(_waypoints)-1]
-    _box = getPosOnRegion(_waypoint, _map, grayscale=True)
+    _box = get_pos_on_region(_waypoint, _map, grayscale=True)
     if type(_box) == Box:
         return True
     return False
@@ -126,7 +128,7 @@ def _maybeStuck():
 def _isStuck():
     if _maybeStuck():
         _last_map_view = f'{TEMP_DIR}/last_map_view.png'
-        _box = getPos(_last_map_view)
+        _box = get_pos(_last_map_view)
         if type(_box) == Box:
             return True
     return False
@@ -155,29 +157,29 @@ def _checkLastWaypointSpecial():
 
 
 def _useLadder():
-    if Mouse.isLocked():
+    if Mouse.is_locked():
         time.sleep(0.1)
         return _useLadder()
     Keyboard.press(STOP_ALL_ACTIONS_KEY)
     time.sleep(0.5)
     Mouse.lock(True)
-    _initPos = Mouse.getPos()
-    Mouse.clickLeft((SCREEN_CENTER_X, SCREEN_CENTER_Y))
-    Mouse.setPos(_initPos)
+    _initPos = Mouse.get_pos()
+    Mouse.click_left((SCREEN_CENTER_X, SCREEN_CENTER_Y))
+    Mouse.set_pos(_initPos)
     Mouse.lock(False)
 
 
 def _useRope():
-    if Mouse.isLocked():
+    if Mouse.is_locked():
         time.sleep(0.1)
         return _useRope()
     Keyboard.press(STOP_ALL_ACTIONS_KEY)
     time.sleep(0.5)
     Mouse.lock(True)
-    _initPos = Mouse.getPos()
+    _initPos = Mouse.get_pos()
     Keyboard.press(ROPE_KEY)
-    Mouse.clickLeft((SCREEN_CENTER_X, SCREEN_CENTER_Y))
-    Mouse.setPos(_initPos)
+    Mouse.click_left((SCREEN_CENTER_X, SCREEN_CENTER_Y))
+    Mouse.set_pos(_initPos)
     Mouse.lock(False)
 
 
@@ -193,7 +195,7 @@ def walk():
     _waypoint = _waypoints[0]
     _box = _locateOnMap(_waypoint)
     if type(_box) == Box:
-        log(f'walking to waypoint {_getWaypointName(_waypoint)}')
+        Console.log(f'walking to waypoint {_getWaypointName(_waypoint)}')
         _walk(_box)
     _waypoints.remove(_waypoint)
     _waypoints.append(_waypoint)
