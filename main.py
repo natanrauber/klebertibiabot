@@ -1,12 +1,19 @@
 import ctypes
 import sys
 
-from main_loop import loop_thread
+from lib.utils.gui_manager import GUIManager
 from setup import setup
-from window import callPauseButton, rootWindow
+
+gui_manager: GUIManager
 
 
-def is_admin():
+def is_admin() -> bool:
+    """
+    Determines if the current user has administrative privileges.
+
+    Returns:
+        bool: True if the user has administrative privileges, False otherwise.
+    """
     try:
         return ctypes.windll.shell32.IsUserAnAdmin()
     except:
@@ -15,10 +22,8 @@ def is_admin():
 
 if is_admin():
     setup()
-    callPauseButton()
-    rootWindow.mainloop()
-    callPauseButton()
-    loop_thread.join()
+    gui_manager = GUIManager()
+    gui_manager.start()
 else:
     ctypes.windll.shell32.ShellExecuteW(
         None, 'runas', sys.executable, ' '.join(sys.argv), None, 1)

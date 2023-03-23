@@ -1,6 +1,5 @@
 import pyautogui
 
-
 dir = 'C:/dev/kleber/'
 
 slot = (1753, 454, 32, 22)
