@@ -32,7 +32,7 @@ SQM_SIZE = 40
 
 # DROP --------------------------------------------------
 DROP_CONTAINER = 'shopping_bag'
-MAX_CLEANER_AMOUNT = 3  # each cleaner runs in a CPU thread
+MAX_CLEANER_AMOUNT = 1  # each cleaner runs in a CPU thread
 
 
 # WALK --------------------------------------------------
