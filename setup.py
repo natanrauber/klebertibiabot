@@ -5,7 +5,6 @@ from lib.actions.attack.attack import setupAttack
 from lib.actions.clean.clean import setupDrop
 from lib.actions.heal.heal import setupHeal
 from lib.actions.walk.walk import setupWalk
-from lib.utils.character import Character
 from lib.utils.colors import Colors
 from lib.utils.console import Console
 from lib.utils.folder_manager import FolderManager
@@ -25,12 +24,9 @@ def setup() -> None:
         None
     """
     Console.clear()
-    Character.get_character_name()
-    Console.clear()
-    WindowManager.activate_all_windows(Character.name())
+    WindowManager.activate_all_windows()
     FolderManager.clear_folder(SESSION_DIR)
 
-    Console.log(f"CHARACTER: {Character.name()}", color=Colors.yellow)
     printConfigs()
 
     if HEAL:
@@ -43,6 +39,4 @@ def setup() -> None:
         setupWalk()
 
     pyautogui.screenshot(START_SCREENSHOT)
-
-    Status.pause()
     FolderManager.open_folder(SESSION_DIR)

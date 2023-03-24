@@ -5,13 +5,12 @@ from lib.actions.clean.clean import Cleaner, cleanerAmount
 from lib.actions.heal.heal import Healer, healing
 from lib.actions.loot.loot import hasLoot, loot
 from lib.actions.walk.walk import walk, walkOnCooldown
-from lib.utils.character import Character
 from lib.utils.status import *
 from lib.utils.window_manager import WindowManager
 
 
 def executeAction():
-    WindowManager.check_active_windows(Character.name())
+    WindowManager.check_active_windows()
 
     if HEAL:
         if not healing():
