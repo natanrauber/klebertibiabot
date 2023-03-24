@@ -1,3 +1,4 @@
+import datetime as dt
 import threading
 import tkinter as tk
 from tkinter import ttk
@@ -17,11 +18,9 @@ class GUIManager:
         pause_button (ttk.Button): The button to pause the main loop.
         buttons_separator (ttk.Separator): The separator between the pause and resume buttons.
         resume_button (ttk.Button): The button to resume the main loop.
-        status_separator (ttk.Separator): The separator between the buttons and the status label.
-        status_frame (ttk.Frame): The frame containing the status label.
-        status_label (ttk.Label): The label displaying the current status of the main loop.
 
     Methods:
+        close(): Close the window and quit the application
         pause(): Pauses the main loop and updates the GUI accordingly.
         resume(): Resumes the main loop and updates the GUI accordingly.
         configure_widgets(): Configures the styles and layout of the GUI widgets.
@@ -41,36 +40,48 @@ class GUIManager:
         Initializes a new instance of the GUIManager class.
         """
         self.rootWindow = tk.Tk()
-        self.frame = ttk.Frame(self.rootWindow, style="Custom.TFrame")
-        self.buttons_frame = ttk.Frame(self.frame, style="Custom.TFrame")
+        self.frame = ttk.Frame(self.rootWindow)
+        self.buttons_frame = ttk.Frame(self.frame)
         self.pause_button = ttk.Button(
-            self.buttons_frame, text="Pause", command=self.pause, state=tk.DISABLED, style="Custom.TButton")
-        self.buttons_separator = ttk.Separator(
-            self.buttons_frame, orient=tk.VERTICAL)
+            self.buttons_frame, text="Paused", command=self.pause, state=tk.DISABLED, style="Pause.TButton")
+        self.buttons_separator = ttk.Frame(self.buttons_frame)
         self.resume_button = ttk.Button(
-            self.buttons_frame, text="Resume", command=self.resume, state=tk.NORMAL, style="Custom.TButton")
-        self.status_separator = ttk.Separator(self.frame)
-        self.status_frame = ttk.Frame(self.frame, style="Custom.TFrame")
-        self.status_label = ttk.Label(
-            self.status_frame, text="Paused", style="Custom.TLabel", foreground="red")
+            self.buttons_frame, text="Resume", command=self.resume, state=tk.NORMAL, style="Resume.TButton")
+
+        # Schedule the close method to be called at the next 6 AM
+        now = dt.datetime.now()
+        next_6am = now.replace(hour=6, minute=0, second=0, microsecond=0)
+        if now >= next_6am:
+            next_6am += dt.timedelta(days=1)
+        time_to_wait = (next_6am - now).total_seconds() * 1000
+        self.rootWindow.after(int(time_to_wait), self.close)
+
+    def close(self):
+        """
+        Close the window and quit the application
+        """
+        self.pause()
+        self.rootWindow.destroy()
+        self.rootWindow.quit()
 
     def pause(self):
         """
         Pauses the main loop and updates the GUI accordingly.
         """
+        self.rootWindow.focus()
         Status.pause()  # stops the "main_loop", consequently the "loop_thread" is terminated
-        self.pause_button.config(state=tk.DISABLED)
-        self.resume_button.config(state=tk.NORMAL)
-        self.status_label.config(text="Paused", foreground="red")
+        self.pause_button.config(state=tk.DISABLED, text="Paused")
+        self.resume_button.config(state=tk.NORMAL, text="Resume")
 
     def resume(self):
         """
         Resumes the main loop and updates the GUI accordingly.
         """
+        self.rootWindow.focus()
         Status.resume()
-        self.pause_button.config(state=tk.NORMAL)
-        self.resume_button.config(state=tk.DISABLED)
-        self.status_label.config(text="Running", foreground="green")
+        self.rootWindow.focus()
+        self.pause_button.config(state=tk.NORMAL, text="Pause")
+        self.resume_button.config(state=tk.DISABLED, text="Running")
         loop_thread = threading.Thread(
             target=main_loop)  # create a "loop_thread" thread to run "main_loop"
         loop_thread.start()  # start the "loop_thread"
@@ -82,26 +93,22 @@ class GUIManager:
         style = ttk.Style()
 
         # Define custom style for buttons
-        style.configure("Custom.TButton", foreground="#333", font=(
-            "Helvetica", 12), padding=10, width=15, borderwidth=0, bordercolor="#333", borderRadius=11)
-
-        # Define custom style for labels
-        style.configure("Custom.TLabel", foreground="#333",
-                        font=("Helvetica", 14), padding=5)
+        style.configure("Pause.TButton", foreground="#333", font=(
+            "Helvetica", 12), padding=10, width=15, borderRadius=11)
+        style.configure("Resume.TButton", foreground="#333",  font=(
+            "Helvetica", 12), padding=10, width=15, borderRadius=11)
 
         # Define custom style for disabled buttons
-        style.map("Custom.TButton", foreground=[('disabled', '#ccc')])
+        style.map("Pause.TButton", foreground=[('disabled', 'red')])
+        style.map("Resume.TButton", foreground=[('disabled', 'green')])
 
         self.rootWindow.title("Kleber")
         self.rootWindow.resizable(False, False)
         self.frame.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
-        self.buttons_frame.pack(side=tk.TOP)
+        self.buttons_frame.pack()
         self.pause_button.pack(side=tk.LEFT)
-        self.buttons_separator.pack(side=tk.LEFT, padx=5, fill=tk.Y)
+        self.buttons_separator.pack(side=tk.LEFT, padx=3)
         self.resume_button.pack(side=tk.LEFT)
-        self.status_separator.pack(side=tk.TOP, pady=10, fill=tk.X)
-        self.status_frame.pack(side=tk.TOP)
-        self.status_label.pack()
 
     def start(self):
         """
