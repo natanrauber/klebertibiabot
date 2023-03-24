@@ -3,6 +3,7 @@ import threading
 import tkinter as tk
 from tkinter import ttk
 
+from lib.utils.console import Console
 from lib.utils.status import Status
 from main_loop import main_loop
 
@@ -18,6 +19,7 @@ class GUIManager:
         pause_button (ttk.Button): The button to pause the main loop.
         buttons_separator (ttk.Separator): The separator between the pause and resume buttons.
         resume_button (ttk.Button): The button to resume the main loop.
+        console (Console): The console widget for displaying logs.
 
     Methods:
         close(): Close the window and quit the application
@@ -47,6 +49,7 @@ class GUIManager:
         self.buttons_separator = ttk.Frame(self.buttons_frame)
         self.resume_button = ttk.Button(
             self.buttons_frame, text="Resume", command=self.resume, state=tk.NORMAL, style="Resume.TButton")
+        self.console = Console(self.rootWindow)
 
         # Schedule the close method to be called at the next 6 AM
         now = dt.datetime.now()
@@ -90,7 +93,7 @@ class GUIManager:
         """
         Configures the style and layout of the widgets in the GUI.
         """
-        style = ttk.Style()
+        style = ttk.Style(self.rootWindow)
 
         # Define custom style for buttons
         style.configure("Pause.TButton", foreground="#333", font=(
@@ -103,12 +106,14 @@ class GUIManager:
         style.map("Resume.TButton", foreground=[('disabled', 'green')])
 
         self.rootWindow.title("Kleber")
+        self.rootWindow.geometry("668x157")
         self.rootWindow.resizable(False, False)
         self.frame.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
         self.buttons_frame.pack()
         self.pause_button.pack(side=tk.LEFT)
         self.buttons_separator.pack(side=tk.LEFT, padx=3)
         self.resume_button.pack(side=tk.LEFT)
+        self.console.pack(side="top", fill="both")
 
     def start(self):
         """
