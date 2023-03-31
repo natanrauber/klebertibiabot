@@ -26,7 +26,7 @@ class Console(tk.Frame):
             **kw: Additional keyword arguments to pass to the tkinter Frame.
         """
         tk.Frame.__init__(self, master=master, **kw)
-        self.text = tk.Text(self, wrap="word")
+        self.text = tk.Text(self, wrap="word", bg="#F9F9F9")
         self.text.pack(side="left", fill="both", expand=True)
         sys.stdout = self
         sys.stderr = self
