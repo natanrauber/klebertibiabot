@@ -1,4 +1,5 @@
 import time
+from typing import Optional
 
 import pyautogui
 from pyscreeze import Box
@@ -11,10 +12,10 @@ from lib.utils.keyboard import Keyboard
 
 _enabled = True  # local controller, keep this on
 _battle_window_title = 'C:/dev/kleber/lib/actions/attack/images/battle_window_title.png'
-_is_attacking = 'C:/dev/kleber/lib/actions/attack/images/is_attacking.png'
-_battle_window = None
-_target_pixel_x = None
-_target_pixel_y = None
+# _is_attacking = 'C:/dev/kleber/lib/actions/attack/images/is_attacking.png'
+_battle_window: Optional[Box]
+_target_pixel_x: int
+_target_pixel_y: int
 
 
 def isAttackEnabled():
@@ -63,11 +64,20 @@ def hasTarget():
     return _hasTarget
 
 
+# def isAttacking():
+#     _box = ImageLocator.get_pos_on_region(
+#         _is_attacking, _battle_window, confidence=0.8)
+#     if type(_box) == Box:
+#         return True
+#     return False
+
 def isAttacking():
-    _box = ImageLocator.get_pos_on_region(
-        _is_attacking, _battle_window, confidence=0.8)
-    if type(_box) == Box:
-        return True
+    for i in range(int(_battle_window.height/20)):
+        _pixel = pyautogui.pixel(
+            int(_battle_window.left+23), int(_battle_window.top+(i*20)))
+        _is_attacking = _pixel[0] > 250
+        if _is_attacking:
+            return True
     return False
 
 
