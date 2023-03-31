@@ -42,14 +42,17 @@ class GUIManager:
         Initializes a new instance of the GUIManager class.
         """
         self.rootWindow = tk.Tk()
-        self.frame = ttk.Frame(self.rootWindow)
-        self.buttons_frame = ttk.Frame(self.frame)
+        self.frame = ttk.Frame(self.rootWindow, style="Custom.TFrame")
+        self.buttons_frame = ttk.Frame(self.frame, style="Custom.TFrame")
         self.pause_button = ttk.Button(
             self.buttons_frame, text="Paused", command=self.pause, state=tk.DISABLED, style="Pause.TButton")
-        self.buttons_separator = ttk.Frame(self.buttons_frame)
+        self.buttons_separator = ttk.Frame(
+            self.buttons_frame, height=8, width=8, style="Custom.TFrame")
         self.resume_button = ttk.Button(
             self.buttons_frame, text="Resume", command=self.resume, state=tk.NORMAL, style="Resume.TButton")
-        self.console = Console(self.rootWindow)
+        self.console_separator = ttk.Frame(
+            self.frame, height=10, width=10, style="Custom.TFrame")
+        self.console = Console(self.frame)
 
         # Schedule the close method to be called at the next 6 AM
         now = dt.datetime.now()
@@ -95,11 +98,13 @@ class GUIManager:
         """
         style = ttk.Style(self.rootWindow)
 
+        style.configure("Custom.TFrame", background="#F9F9F9")
+
         # Define custom style for buttons
-        style.configure("Pause.TButton", foreground="#333", font=(
-            "Helvetica", 12), padding=10, width=15, borderRadius=11)
-        style.configure("Resume.TButton", foreground="#333",  font=(
-            "Helvetica", 12), padding=10, width=15, borderRadius=11)
+        style.configure("Pause.TButton", background="#F9F9F9", foreground="#333",
+                        padding=5, width=10, borderRadius=11)
+        style.configure("Resume.TButton", background="#F9F9F9", foreground="#333",
+                        padding=5, width=10, borderRadius=11)
 
         # Define custom style for disabled buttons
         style.map("Pause.TButton", foreground=[('disabled', 'red')])
@@ -107,13 +112,15 @@ class GUIManager:
 
         self.rootWindow.title("Kleber")
         self.rootWindow.geometry("668x157")
+        self.rootWindow.configure(bg="#F9F9F9")
         self.rootWindow.resizable(False, False)
         self.frame.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
         self.buttons_frame.pack()
         self.pause_button.pack(side=tk.LEFT)
-        self.buttons_separator.pack(side=tk.LEFT, padx=3)
+        self.buttons_separator.pack(side=tk.LEFT)
         self.resume_button.pack(side=tk.LEFT)
-        self.console.pack(side="top", fill="both")
+        self.console_separator.pack()
+        self.console.pack(fill="both")
 
     def start(self):
         """
