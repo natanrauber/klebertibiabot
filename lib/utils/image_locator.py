@@ -8,9 +8,6 @@ from screeninfo import get_monitors
 
 from config import SESSION_DIR
 
-_interface_dir: str = 'C:/dev/kleber/images/interface'
-_window_footer: str = f'{_interface_dir}/window_footer.png'
-
 
 class ImageLocator:
     """
@@ -95,7 +92,7 @@ class ImageLocator:
         return _box
 
     @staticmethod
-    def locate_window(image: str, save_as: Optional[str] = None) -> Optional[Box]:
+    def locate_window(header_image: str, footer_image: str, save_as: Optional[str] = None) -> Optional[Box]:
         """
         Attempt to locate the window containing the given image and return its position as a Box object.
 
@@ -106,7 +103,7 @@ class ImageLocator:
         Returns:
             Optional[Box]: If the window is found, return a Box object representing its position. Otherwise, return None.
         """
-        header = ImageLocator.get_pos(image)
+        header = ImageLocator.get_pos(header_image)
         if header is None:
             return None
         try:
@@ -114,13 +111,13 @@ class ImageLocator:
             for i in range(int((get_monitors()[0].height - header.top) / 100)):
                 region = Box(header.left, header.top,
                              header.width, (i + 1) * 100)
-                footer = ImageLocator.get_pos_on_region(_window_footer, region)
+                footer = ImageLocator.get_pos_on_region(footer_image, region)
                 if footer is not None:
                     break
             if footer is None:
                 region = Box(header.left, header.top, header.width,
                              get_monitors()[0].height - header.top)
-                footer = ImageLocator.get_pos_on_region(_window_footer, region)
+                footer = ImageLocator.get_pos_on_region(footer_image, region)
             if footer is None:
                 return None
             window = Box(header.left, header.top, footer.left + footer.width -
@@ -134,7 +131,7 @@ class ImageLocator:
             return None
 
     @staticmethod
-    def locate_all_windows(image: str, save_as: Optional[str] = None) -> Optional[List[Box]]:
+    def locate_all_windows(header_image: str, footer_image: str, save_as: Optional[str] = None) -> Optional[List[Box]]:
         """
         Locate all windows that match the given image and return their positions as a list of Box objects.
 
@@ -147,20 +144,20 @@ class ImageLocator:
         """
         windows: List[Box] = []
         try:
-            for header in ImageLocator.get_all_pos(image):
+            for header in ImageLocator.get_all_pos(header_image):
                 footer: Optional[Box] = None
                 for i in range(int(get_monitors()[0].height - header.top) // 100):
                     region = Box(header.left, header.top,
                                  header.width, (i + 1) * 100)
                     footer = ImageLocator.get_pos_on_region(
-                        _window_footer, region)
+                        footer_image, region)
                     if footer is not None:
                         break
                 if footer is None:
                     region = Box(header.left, header.top, header.width,
                                  get_monitors()[0].height - header.top)
                     footer = ImageLocator.get_pos_on_region(
-                        _window_footer, region)
+                        footer_image, region)
                 if isinstance(footer, Box):
                     window = Box(header.left, header.top, footer.left + footer.width -
                                  header.left, footer.top + footer.height - header.top)

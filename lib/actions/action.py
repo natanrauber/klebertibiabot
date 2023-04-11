@@ -2,6 +2,7 @@ from config import *
 from lib.actions.attack.attack import attack, hasTarget, isAttacking
 from lib.actions.attack_timeout import *
 from lib.actions.clean.clean import Cleaner, cleanerAmount
+from lib.actions.destroy.destroy import Destroyer, destroying
 from lib.actions.heal.heal import Healer, healing
 from lib.actions.loot.loot import hasLoot, loot
 from lib.actions.walk.walk import walk, walkOnCooldown
@@ -17,6 +18,12 @@ def executeAction():
             healer = Healer()
             healer.daemon = True
             return healer.start()
+
+    if DESTROY:
+        if not destroying():
+            destroyer = Destroyer()
+            destroyer.daemon = True
+            return destroyer.start()
 
     if DROP:
         for i in range(MAX_CLEANER_AMOUNT - cleanerAmount()):

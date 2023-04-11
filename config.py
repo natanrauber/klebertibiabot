@@ -9,6 +9,7 @@ TEMP_DIR = 'C:/dev/kleber/images/temp'
 
 # ACTIONS --------------------------------------------------
 HEAL = True
+DESTROY = True
 ATTACK = True
 LOOT = True
 DROP = True
@@ -18,6 +19,8 @@ WALK = True
 HEAL_KEY = Key.f9
 HEAL_ON_YELLOW = True  # if False will heal on red
 
+# DESTROY --------------------------------------------------
+DESTROY_KEY = Key.f4
 
 # ATTACK --------------------------------------------------
 ATTACK_KEY = Key.space
@@ -73,6 +76,10 @@ def printConfigs() -> None:
         Console.log(f"\thealth: {'yellow' if HEAL_ON_YELLOW else 'red'}",
                     color=Colors.yellow)
         Console.log(f"\tkey: {HEAL_KEY}", color=Colors.yellow)
+
+    Console.log(f"DESTROY: {_status(DESTROY)}", color=_colorize(DESTROY))
+    if DESTROY:
+        Console.log(f"\tkey: {DESTROY_KEY}", color=Colors.yellow)
 
     Console.log(f"ATTACK: {_status(ATTACK)}", color=_colorize(ATTACK))
     if ATTACK:

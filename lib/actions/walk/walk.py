@@ -2,6 +2,7 @@ import time
 from datetime import datetime
 from os import listdir
 from os.path import isfile, join
+from typing import Optional
 
 import pyautogui
 from pyscreeze import Box
@@ -15,7 +16,7 @@ from lib.utils.keyboard import Keyboard
 from lib.utils.mouse import Mouse
 
 _map_controls = 'C:/dev/kleber/lib/actions/walk/images/map_controls.png'
-_map = None
+_map: Optional[Box] = None
 
 _waypoints_dir = f'C:/dev/kleber/lib/actions/walk/waypoints/{HUNT_NAME}/'
 _waypoints = [_waypoints_dir +
@@ -46,11 +47,13 @@ def _locateOnMap(image):
     return ImageLocator.get_pos_on_region(image, _map, grayscale=True)
 
 
-def _locateOnMapCenter(image, size=28):
-    _centerx = int(_map.left + (_map.width/2))
-    _centery = int(_map.top + (_map.height/2))
-    _region = (int(_centerx-(size/2)), int(_centery-(size/2)), size, size)
-    return ImageLocator.get_pos_on_region(image, region=_region, grayscale=True)
+def _locateOnMapCenter(image, size=28) -> Optional[Box]:
+    if type(_map) == Box:
+        _centerx = int(_map.left + (_map.width/2))
+        _centery = int(_map.top + (_map.height/2))
+        _region = Box(int(_centerx-(size/2)),
+                      int(_centery-(size/2)), size, size)
+        return ImageLocator.get_pos_on_region(image, region=_region, grayscale=True)
 
 
 def _getWaypointName(image):

@@ -15,6 +15,7 @@ from lib.utils.status import Status
 _active_cleaners = []
 _last_checked = []
 _lock_drop = False
+_container_window_footer = 'C:/dev/kleber/images/interface/window_footer.png'
 _containers_dir = 'C:/dev/kleber/lib/actions/clean/images/containers'
 _blacklist_dir = 'C:/dev/kleber/lib/actions/clean/images/blacklist/'
 _blackList = foodList + [_blacklist_dir +
@@ -33,7 +34,7 @@ def setupDrop():
 def _locateDropContainer():
     global _loot_windows
     _loot_windows = ImageLocator.locate_all_windows(getContainerImage(
-        DROP_CONTAINER), save_as='container')
+        DROP_CONTAINER), _container_window_footer, save_as='container')
 
 
 def cleanerAmount():
