@@ -1,4 +1,5 @@
 import time
+from datetime import datetime
 from typing import Optional
 
 import pyautogui
@@ -16,6 +17,7 @@ _battle_window_title = 'C:/dev/kleber/lib/actions/attack/images/battle_window_ti
 _battle_window: Optional[Box]
 _target_pixel_x: int
 _target_pixel_y: int
+_attack_start_time = datetime.now()
 
 
 def isAttackEnabled():
@@ -61,7 +63,14 @@ def _defTargetPixel():
 def hasTarget():
     _pixel = pyautogui.pixel(_target_pixel_x, _target_pixel_y)
     _hasTarget = _pixel[0] > 90 or _pixel[1] > 90
-    return _hasTarget
+    if not _hasTarget:
+        global _attack_start_time
+        _attack_start_time = datetime(1, 1, 1)
+        return False
+    time = datetime.now() - _attack_start_time
+    if time.seconds > 10 and time.seconds < 15:
+        return False
+    return True
 
 
 # def isAttacking():
@@ -72,6 +81,9 @@ def hasTarget():
 #     return False
 
 def isAttacking():
+    if (datetime.now() - _attack_start_time).seconds > 10:
+        Keyboard.press(STOP_ALL_ACTIONS_KEY)
+        return False
     for i in range(int(_battle_window.height/20)):
         _pixel = pyautogui.pixel(
             int(_battle_window.left+23), int(_battle_window.top+(i*20)))
@@ -84,6 +96,8 @@ def isAttacking():
 def attack():
     Keyboard.press(STOP_ALL_ACTIONS_KEY)
     time.sleep(0.5)
+    global _attack_start_time
+    _attack_start_time = datetime.now()
     Console.log('attacking...')
     Keyboard.press(ATTACK_KEY)
     setLoot(True)

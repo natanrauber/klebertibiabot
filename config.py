@@ -36,7 +36,7 @@ MAX_CLEANER_AMOUNT = 1  # each cleaner runs in a CPU thread
 
 
 # WALK --------------------------------------------------
-HUNT_NAME = 'secret_spider_lair'
+HUNT_NAME = 'poison_spider_cave'
 ROPE_KEY = Key.f5
 STOP_ALL_ACTIONS_KEY = Key.pause
 
