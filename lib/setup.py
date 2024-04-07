@@ -1,17 +1,14 @@
 import pyautogui
 
-from config import *
 from lib.actions.attack.attack import setupAttack
 from lib.actions.clean.clean import setupDrop
 from lib.actions.destroy.destroy import setup_destroy
 from lib.actions.heal.heal import setupHeal
 from lib.actions.walk.walk import setupWalk
+from lib.config import *
 from lib.utils.console import Console
 from lib.utils.folder_manager import FolderManager
 from lib.utils.window_manager import WindowManager
-
-SESSION_DIR: str = "C:/dev/kleber/images/session"
-START_SCREENSHOT: str = SESSION_DIR + "/start.png"
 
 
 def setup() -> None:
@@ -24,6 +21,13 @@ def setup() -> None:
     """
     Console.clear()
     WindowManager.activate_all_windows()
+
+    if not os.path.exists(SESSION_DIR):
+        os.makedirs(SESSION_DIR)
+
+    if not os.path.exists(TEMP_DIR):
+        os.makedirs(TEMP_DIR)
+
     FolderManager.clear_folder(SESSION_DIR)
 
     printConfigs()
@@ -39,5 +43,5 @@ def setup() -> None:
     if WALK:
         setupWalk()
 
-    pyautogui.screenshot(START_SCREENSHOT)
+    pyautogui.screenshot(SESSION_DIR + "/start.png")
     FolderManager.open_folder(SESSION_DIR)

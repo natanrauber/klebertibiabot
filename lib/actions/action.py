@@ -1,4 +1,4 @@
-from config import *
+from lib.config import *
 from lib.actions.attack.attack import attack, hasTarget, isAttacking
 from lib.actions.attack_timeout import *
 from lib.actions.clean.clean import Cleaner, cleanerAmount
@@ -12,6 +12,10 @@ from lib.utils.window_manager import WindowManager
 
 def executeAction():
     WindowManager.check_active_windows()
+
+    if Status.is_sleeping():
+        time.sleep(1)
+        return executeAction()
 
     if HEAL:
         if not healing():

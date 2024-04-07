@@ -1,8 +1,5 @@
 from datetime import datetime
 
-import pyautogui
-
-from config import SESSION_DIR
 from lib.actions.action import executeAction
 from lib.utils.status import Status
 
@@ -20,4 +17,5 @@ def main_loop() -> None:
             break
         executeAction()
 
-    pyautogui.screenshot(f'{SESSION_DIR}/end.png')
+    if datetime.now().hour == 5 and datetime.now().minute == 0:
+        Status.exit()

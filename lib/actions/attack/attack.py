@@ -5,16 +5,17 @@ from typing import Optional
 import pyautogui
 from pyscreeze import Box
 
-from config import *
 from lib.actions.loot.loot import setLoot
+from lib.config import *
 from lib.utils.console import Colors, Console
 from lib.utils.image_locator import ImageLocator
 from lib.utils.keyboard import Keyboard
+from lib.utils.status import Status
 
 _enabled = True  # local controller, keep this on
-_battle_window_header = 'C:/dev/kleber/lib/actions/attack/images/battle_window_title.png'
-_battle_window_footer = 'C:/dev/kleber/images/interface/window_footer.png'
-# _is_attacking = 'C:/dev/kleber/lib/actions/attack/images/is_attacking.png'
+_battle_window_header = CWD + "/lib/actions/attack/images/battle_window_title.png"
+_battle_window_footer = CWD + "/images/interface/window_footer.png"
+# _is_attacking = CWD + '/lib/actions/attack/images/is_attacking.png'
 _battle_window: Optional[Box]
 _target_pixel_x: int
 _target_pixel_y: int
@@ -30,14 +31,14 @@ def enable_attack():
     global _enabled
     if not _enabled:
         _enabled = True
-        Console.log('attack enabled', color=Colors.green)
+        Console.log("attack enabled", color=Colors.green)
 
 
 def disable_attack():
     global _enabled
     if _enabled:
         _enabled = False
-        Console.log('attack disabled', color=Colors.red)
+        Console.log("attack disabled", color=Colors.red)
 
 
 def setupAttack():
@@ -48,16 +49,17 @@ def setupAttack():
 def _locateBattle():
     global _battle_window
     _battle_window = ImageLocator.locate_window(
-        _battle_window_header, _battle_window_footer, save_as='battle')
+        _battle_window_header, _battle_window_footer, save_as="battle"
+    )
     if _battle_window == None:
-        Console.log('cannot find battle window', color=Colors.red)
-        exit()
+        Console.log("cannot find battle window", color=Colors.red)
+        Status.exit()
 
 
 def _defTargetPixel():
     if type(_battle_window) == Box:
         global _target_pixel_x
-        _target_pixel_x = int(_battle_window.left + 28)
+        _target_pixel_x = int(_battle_window.left + 27)
         global _target_pixel_y
         _target_pixel_y = int(_battle_window.top + 32)
 
@@ -70,19 +72,20 @@ def hasTarget():
         _attack_start_time = datetime(1, 1, 1)
         return False
     time = datetime.now() - _attack_start_time
-    if time.seconds > 10 and time.seconds < 15:
+    if time.seconds > 30 and time.seconds < 40:
         return False
     return True
 
 
 def isAttacking():
     if type(_battle_window) is Box:
-        if (datetime.now() - _attack_start_time).seconds > 10:
+        if (datetime.now() - _attack_start_time).seconds > 30:
             Keyboard.press(STOP_ALL_ACTIONS_KEY)
             return False
-        for i in range(int(_battle_window.height/20)):
+        for i in range(int(_battle_window.height / 20)):
             _pixel = pyautogui.pixel(
-                int(_battle_window.left+23), int(_battle_window.top+(i*20)))
+                int(_battle_window.left + 23), int(_battle_window.top + (i * 20))
+            )
             _is_attacking = _pixel[0] > 250
             if _is_attacking:
                 return True
@@ -94,7 +97,7 @@ def attack():
     time.sleep(0.5)
     global _attack_start_time
     _attack_start_time = datetime.now()
-    Console.log('attacking...')
+    Console.log("attacking...")
     Keyboard.press(ATTACK_KEY)
     setLoot(True)
     time.sleep(0.1)

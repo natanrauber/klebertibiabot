@@ -3,7 +3,7 @@ import threading
 import pyautogui
 from pyscreeze import Box
 
-from config import *
+from lib.config import *
 from lib.actions.attack.attack import *
 from lib.utils.console import Console
 

@@ -152,3 +152,7 @@ cython_debug/
 
 images/session/
 images/temp/
+build/
+dist/
+!compiler.spec
+lib/uid.py

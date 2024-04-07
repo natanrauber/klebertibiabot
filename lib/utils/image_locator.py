@@ -6,7 +6,7 @@ import pyautogui
 from pyscreeze import Box
 from screeninfo import get_monitors
 
-from config import SESSION_DIR
+from lib.config import SESSION_DIR
 
 
 class ImageLocator:
@@ -18,7 +18,9 @@ class ImageLocator:
     """
 
     @staticmethod
-    def get_pos(image: str, grayscale: bool = False, confidence: float = 0.9) -> Optional[Box]:
+    def get_pos(
+        image: str, grayscale: bool = False, confidence: float = 0.9
+    ) -> Optional[Box]:
         """
         Returns the coordinates of the first match of the given image in the current screen.
 
@@ -33,7 +35,8 @@ class ImageLocator:
         screenshot = pyautogui.screenshot()
         screenshot = cv2.cvtColor(np.array(screenshot), cv2.COLOR_RGB2BGR)
         template = cv2.imread(
-            image, cv2.IMREAD_GRAYSCALE if grayscale else cv2.IMREAD_COLOR)
+            image, cv2.IMREAD_GRAYSCALE if grayscale else cv2.IMREAD_COLOR
+        )
         res = cv2.matchTemplate(screenshot, template, cv2.TM_CCOEFF_NORMED)
         loc = np.where(res >= np.full(res.shape, confidence))
         if len(loc[0]) > 0:
@@ -46,7 +49,9 @@ class ImageLocator:
             return None
 
     @staticmethod
-    def get_all_pos(image: str, grayscale: bool = False, confidence: float = 0.9) -> List[Box]:
+    def get_all_pos(
+        image: str, grayscale: bool = False, confidence: float = 0.9
+    ) -> List[Box]:
         """
         Get a list of all positions where the given image appears in the current screen.
 
@@ -61,7 +66,8 @@ class ImageLocator:
         screenshot = pyautogui.screenshot()
         screenshot = cv2.cvtColor(np.array(screenshot), cv2.COLOR_RGB2BGR)
         template = cv2.imread(
-            image, cv2.IMREAD_GRAYSCALE if grayscale else cv2.IMREAD_COLOR)
+            image, cv2.IMREAD_GRAYSCALE if grayscale else cv2.IMREAD_COLOR
+        )
         res = cv2.matchTemplate(screenshot, template, cv2.TM_CCOEFF_NORMED)
         loc = np.where(res >= np.full(res.shape, confidence))
         boxes = []
@@ -74,7 +80,12 @@ class ImageLocator:
         return boxes
 
     @staticmethod
-    def get_pos_on_region(image: str, region: Optional[Box] = None, grayscale: bool = False, confidence: float = 0.9) -> Optional[Box]:
+    def get_pos_on_region(
+        image: str,
+        region: Optional[Box] = None,
+        grayscale: bool = False,
+        confidence: float = 0.9,
+    ) -> Optional[Box]:
         """
         Get the position of the given image on the screen within the specified region.
 
@@ -88,11 +99,14 @@ class ImageLocator:
             Box: A Box object representing the position of the image, or None if the image was not found in the specified region.
         """
         _box = pyautogui.locateOnScreen(
-            image, region=region, grayscale=grayscale, confidence=confidence)
+            image, region=region, grayscale=grayscale, confidence=confidence
+        )
         return _box
 
     @staticmethod
-    def locate_window(header_image: str, footer_image: str, save_as: Optional[str] = None) -> Optional[Box]:
+    def locate_window(
+        header_image: str, footer_image: str, save_as: Optional[str] = None
+    ) -> Optional[Box]:
         """
         Attempt to locate the window containing the given image and return its position as a Box object.
 
@@ -108,20 +122,27 @@ class ImageLocator:
             return None
         try:
             footer = None
-            for i in range(int((get_monitors()[0].height - header.top) / 100)):
-                region = Box(header.left, header.top,
-                             header.width, (i + 1) * 100)
+            for i in range(int((get_monitors()[0].height - header.top) // 100)):
+                region = Box(header.left, header.top, header.width, (i + 1) * 100)
                 footer = ImageLocator.get_pos_on_region(footer_image, region)
                 if footer is not None:
                     break
             if footer is None:
-                region = Box(header.left, header.top, header.width,
-                             get_monitors()[0].height - header.top)
+                region = Box(
+                    header.left,
+                    header.top,
+                    header.width,
+                    get_monitors()[0].height - header.top,
+                )
                 footer = ImageLocator.get_pos_on_region(footer_image, region)
             if footer is None:
                 return None
-            window = Box(header.left, header.top, footer.left + footer.width -
-                         header.left, footer.top + footer.height - header.top)
+            window = Box(
+                header.left,
+                header.top,
+                footer.left + footer.width - header.left,
+                footer.top + footer.height - header.top,
+            )
             if save_as is not None and isinstance(window, Box):
                 screenshot_path = f"{SESSION_DIR}/{save_as}.png"
                 pyautogui.screenshot(screenshot_path, region=window)
@@ -131,7 +152,9 @@ class ImageLocator:
             return None
 
     @staticmethod
-    def locate_all_windows(header_image: str, footer_image: str, save_as: Optional[str] = None) -> Optional[List[Box]]:
+    def locate_all_windows(
+        header_image: str, footer_image: str, save_as: Optional[str] = None
+    ) -> Optional[List[Box]]:
         """
         Locate all windows that match the given image and return their positions as a list of Box objects.
 
@@ -147,25 +170,31 @@ class ImageLocator:
             for header in ImageLocator.get_all_pos(header_image):
                 footer: Optional[Box] = None
                 for i in range(int(get_monitors()[0].height - header.top) // 100):
-                    region = Box(header.left, header.top,
-                                 header.width, (i + 1) * 100)
-                    footer = ImageLocator.get_pos_on_region(
-                        footer_image, region)
+                    region = Box(header.left, header.top, header.width, (i + 1) * 100)
+                    footer = ImageLocator.get_pos_on_region(footer_image, region)
                     if footer is not None:
                         break
                 if footer is None:
-                    region = Box(header.left, header.top, header.width,
-                                 get_monitors()[0].height - header.top)
-                    footer = ImageLocator.get_pos_on_region(
-                        footer_image, region)
+                    region = Box(
+                        header.left,
+                        header.top,
+                        header.width,
+                        get_monitors()[0].height - header.top,
+                    )
+                    footer = ImageLocator.get_pos_on_region(footer_image, region)
                 if isinstance(footer, Box):
-                    window = Box(header.left, header.top, footer.left + footer.width -
-                                 header.left, footer.top + footer.height - header.top)
+                    window = Box(
+                        header.left,
+                        header.top,
+                        footer.left + footer.width - header.left,
+                        footer.top + footer.height - header.top,
+                    )
                     if isinstance(window, Box):
                         if save_as is not None:
-                            screenshot_path = f"{SESSION_DIR}/{save_as}{len(windows)}.png"
-                            pyautogui.screenshot(
-                                screenshot_path, region=window)
+                            screenshot_path = (
+                                f"{SESSION_DIR}/{save_as}{len(windows)}.png"
+                            )
+                            pyautogui.screenshot(screenshot_path, region=window)
                         windows.append(window)
             return windows
         except Exception as e:

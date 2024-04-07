@@ -1,11 +1,13 @@
 import datetime as dt
+import os
 import threading
 import tkinter as tk
 from tkinter import ttk
 
+from lib.main_loop import main_loop
+from lib.uid import uid
 from lib.utils.console import Console
 from lib.utils.status import Status
-from main_loop import main_loop
 
 
 class GUIManager:
@@ -45,13 +47,25 @@ class GUIManager:
         self.frame = ttk.Frame(self.rootWindow, style="Custom.TFrame")
         self.buttons_frame = ttk.Frame(self.frame, style="Custom.TFrame")
         self.pause_button = ttk.Button(
-            self.buttons_frame, text="Paused", command=self.pause, state=tk.DISABLED, style="Pause.TButton")
+            self.buttons_frame,
+            text="Paused",
+            command=self.pause,
+            state=tk.DISABLED,
+            style="Pause.TButton",
+        )
         self.buttons_separator = ttk.Frame(
-            self.buttons_frame, height=8, width=8, style="Custom.TFrame")
+            self.buttons_frame, height=8, width=8, style="Custom.TFrame"
+        )
         self.resume_button = ttk.Button(
-            self.buttons_frame, text="Resume", command=self.resume, state=tk.NORMAL, style="Resume.TButton")
+            self.buttons_frame,
+            text="Resume",
+            command=self.resume,
+            state=tk.NORMAL,
+            style="Resume.TButton",
+        )
         self.console_separator = ttk.Frame(
-            self.frame, height=10, width=10, style="Custom.TFrame")
+            self.frame, height=10, width=10, style="Custom.TFrame"
+        )
         self.console = Console(self.frame)
 
         # Schedule the close method to be called at the next 6 AM
@@ -89,7 +103,8 @@ class GUIManager:
         self.pause_button.config(state=tk.NORMAL, text="Pause")
         self.resume_button.config(state=tk.DISABLED, text="Running")
         loop_thread = threading.Thread(
-            target=main_loop)  # create a "loop_thread" thread to run "main_loop"
+            target=main_loop
+        )  # create a "loop_thread" thread to run "main_loop"
         loop_thread.start()  # start the "loop_thread"
 
     def configure_widgets(self):
@@ -101,16 +116,28 @@ class GUIManager:
         style.configure("Custom.TFrame", background="#F9F9F9")
 
         # Define custom style for buttons
-        style.configure("Pause.TButton", background="#F9F9F9", foreground="#333",
-                        padding=5, width=10, borderRadius=11)
-        style.configure("Resume.TButton", background="#F9F9F9", foreground="#333",
-                        padding=5, width=10, borderRadius=11)
+        style.configure(
+            "Pause.TButton",
+            background="#F9F9F9",
+            foreground="#333",
+            padding=5,
+            width=10,
+            borderRadius=11,
+        )
+        style.configure(
+            "Resume.TButton",
+            background="#F9F9F9",
+            foreground="#333",
+            padding=5,
+            width=10,
+            borderRadius=11,
+        )
 
         # Define custom style for disabled buttons
-        style.map("Pause.TButton", foreground=[('disabled', 'red')])
-        style.map("Resume.TButton", foreground=[('disabled', 'green')])
+        style.map("Pause.TButton", foreground=[("disabled", "red")])
+        style.map("Resume.TButton", foreground=[("disabled", "green")])
 
-        self.rootWindow.title("Kleber")
+        self.rootWindow.title(uid)
         self.rootWindow.geometry("668x157")
         self.rootWindow.configure(bg="#F9F9F9")
         self.rootWindow.resizable(False, False)

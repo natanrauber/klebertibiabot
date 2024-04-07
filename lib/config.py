@@ -1,15 +1,17 @@
+import os
 
 from lib.utils.colors import Colors
 from lib.utils.console import Console
+from lib.utils.cwd import CWD
 from lib.utils.keyboard import Key
 
-SESSION_DIR = 'C:/dev/kleber/images/session'
-TEMP_DIR = 'C:/dev/kleber/images/temp'
+SESSION_DIR = CWD + "/images/session"
+TEMP_DIR = CWD + "/images/temp"
 
 
 # ACTIONS --------------------------------------------------
 HEAL = True
-DESTROY = True
+DESTROY = False
 ATTACK = True
 LOOT = True
 DROP = True
@@ -17,7 +19,7 @@ WALK = True
 
 # HEAL --------------------------------------------------
 HEAL_KEY = Key.f9
-HEAL_ON_YELLOW = True  # if False will heal on red
+HEAL_ON_YELLOW = False  # if False will heal on red
 
 # DESTROY --------------------------------------------------
 DESTROY_KEY = Key.f4
@@ -28,18 +30,18 @@ ATTACK_TIMEOUT = 0  # 0 to disable
 
 
 # LOOT --------------------------------------------------
-SCREEN_CENTER_X = 530
-SCREEN_CENTER_Y = 285
+SCREEN_CENTER_X = 1425
+SCREEN_CENTER_Y = 635
 SQM_SIZE = 40
 
 
 # DROP --------------------------------------------------
-DROP_CONTAINER = 'shopping_bag'
-MAX_CLEANER_AMOUNT = 1  # each cleaner runs in a CPU thread
+DROP_CONTAINER = "shopping_bag"
+MAX_CLEANER_AMOUNT = 4  # each cleaner runs in a CPU thread
 
 
 # WALK --------------------------------------------------
-HUNT_NAME = 'poison_spider_cave'
+HUNT_NAME = "cave_rats"
 ROPE_KEY = Key.f5
 STOP_ALL_ACTIONS_KEY = Key.pause
 
@@ -73,8 +75,9 @@ def _colorize(value: bool) -> str:
 def printConfigs() -> None:
     Console.log(f"HEAL: {_status(HEAL)}", color=_colorize(HEAL))
     if HEAL:
-        Console.log(f"\thealth: {'yellow' if HEAL_ON_YELLOW else 'red'}",
-                    color=Colors.yellow)
+        Console.log(
+            f"\thealth: {'yellow' if HEAL_ON_YELLOW else 'red'}", color=Colors.yellow
+        )
         Console.log(f"\tkey: {HEAL_KEY}", color=Colors.yellow)
 
     Console.log(f"DESTROY: {_status(DESTROY)}", color=_colorize(DESTROY))

@@ -1,8 +1,11 @@
+import os
+import time
+
 import pyautogui
 
-from config import SESSION_DIR
+from lib.config import SESSION_DIR
+from lib.uid import uid
 from lib.utils.console import Colors, Console
-from lib.utils.wsh import wsh
 
 
 class Status:
@@ -14,6 +17,7 @@ class Status:
     """
 
     _is_paused: bool = True
+    _sleeping: bool = False
 
     @staticmethod
     def get_status() -> str:
@@ -23,7 +27,7 @@ class Status:
         Returns:
             str: The current status, either "PAUSED" or "RUNNING".
         """
-        return 'PAUSED' if Status._is_paused else 'RUNNING'
+        return "PAUSED" if Status._is_paused else "RUNNING"
 
     @staticmethod
     def is_paused() -> bool:
@@ -41,8 +45,7 @@ class Status:
         Pauses the operation.
         """
         Status._is_paused = True
-        wsh.AppActivate('Administrador: Windows PowerShell')
-        pyautogui.screenshot(f'{SESSION_DIR}/end.png')
+        pyautogui.screenshot(f"{SESSION_DIR}/end.png")
         Console.log(Status.get_status(), color=Colors.yellow)
 
     @staticmethod
@@ -52,3 +55,25 @@ class Status:
         """
         Status._is_paused = False
         Console.log(Status.get_status(), color=Colors.yellow)
+
+    @staticmethod
+    def sleep(duration: int) -> None:
+        """ """
+        Status._sleep = True
+        time.sleep(duration)
+        Status._sleep = False
+
+    @staticmethod
+    def is_sleeping() -> bool:
+        """
+        Returns whether the operation is currently paused.
+
+        Returns:
+            bool: Whether the operation is currently paused.
+        """
+        return Status._sleeping
+
+    @staticmethod
+    def exit() -> None:
+        Status.pause()
+        os.system(f"taskkill /f /im {uid}.exe")

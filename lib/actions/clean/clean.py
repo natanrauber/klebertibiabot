@@ -5,8 +5,8 @@ from os.path import isfile, join
 
 from pyscreeze import Box
 
-from config import *
 from lib.actions.eat import canEat, eat, foodList, isFood
+from lib.config import *
 from lib.utils.console import Console
 from lib.utils.image_locator import ImageLocator
 from lib.utils.mouse import Mouse
@@ -15,16 +15,19 @@ from lib.utils.status import Status
 _active_cleaners = []
 _last_checked = []
 _lock_drop = False
-_container_window_footer = 'C:/dev/kleber/images/interface/window_footer.png'
-_containers_dir = 'C:/dev/kleber/lib/actions/clean/images/containers'
-_blacklist_dir = 'C:/dev/kleber/lib/actions/clean/images/blacklist/'
-_blackList = foodList + [_blacklist_dir +
-                         f for f in listdir(_blacklist_dir) if isfile(join(_blacklist_dir, f))]
+_container_window_footer = CWD + "/images/interface/window_footer.png"
+_containers_dir = CWD + "/lib/actions/clean/images/containers"
+_blacklist_dir = CWD + "/lib/actions/clean/images/blacklist/"
+_blackList = foodList + [
+    _blacklist_dir + f
+    for f in listdir(_blacklist_dir)
+    if isfile(join(_blacklist_dir, f))
+]
 _loot_windows = []
 
 
 def getContainerImage(name):
-    return f'{_containers_dir}/{name}.png'
+    return f"{_containers_dir}/{name}.png"
 
 
 def setupDrop():
@@ -33,8 +36,9 @@ def setupDrop():
 
 def _locateDropContainer():
     global _loot_windows
-    _loot_windows = ImageLocator.locate_all_windows(getContainerImage(
-        DROP_CONTAINER), _container_window_footer, save_as='container')
+    _loot_windows = ImageLocator.locate_all_windows(
+        getContainerImage(DROP_CONTAINER), _container_window_footer, save_as="container"
+    )
 
 
 def cleanerAmount():
@@ -56,16 +60,16 @@ def _drop(box: Box):
         return _drop(box)
     Mouse.lock(True)
     _initPos = Mouse.get_pos()
-    Mouse.press_left((box.left-884, box.top+16))
+    Mouse.press_left((box.left + 16, box.top + 350 + 16))
     Mouse.release_left((SCREEN_CENTER_X, SCREEN_CENTER_Y))
     Mouse.set_pos(_initPos)
     Mouse.lock(False)
 
 
 def _getItemName(image):
-    aux = image.split('.')[0]
-    aux = aux.split('/')
-    aux = aux[len(aux)-1]
+    aux = image.split(".")[0]
+    aux = aux.split("/")
+    aux = aux[len(aux) - 1]
     return aux
 
 
@@ -79,9 +83,9 @@ def getCleanerId():
 def getList(id: int):
     _len = len(_blackList)
     _eachLen = int(_len / MAX_CLEANER_AMOUNT)
-    _start = (_eachLen * (id+1)) - _eachLen
-    _end = (_eachLen * (id+1))
-    if (_end-1 + _eachLen) > _len:
+    _start = (_eachLen * (id + 1)) - _eachLen
+    _end = _eachLen * (id + 1)
+    if (_end - 1 + _eachLen) > _len:
         _end = _len
     return _blackList[_start:_end]
 
@@ -111,23 +115,22 @@ def dropBlackList():
     while not Status.is_paused():
         for _window in _loot_windows:
             for _image in _list:
-                _box = ImageLocator.get_pos_on_region(
-                    _image, _window, grayscale=True)
+                _box = ImageLocator.get_pos_on_region(_image, _window, grayscale=True)
                 _found = type(_box) == Box
                 if _found and not _isLocked():
                     _lockDrop(True)
                     if canEat() and isFood(_image):
-                        Console.log(f'eating {_getItemName(_image)}')
+                        Console.log(f"eating {_getItemName(_image)}")
                         eat(_box)
                     else:
-                        Console.log(f'dropping {_getItemName(_image)}')
+                        Console.log(f"dropping {_getItemName(_image)}")
                         _drop(_box)
                     time.sleep(0.5)
                     _lockDrop(False)
     removeCleaner(_id)
 
 
-class Cleaner (threading.Thread):
+class Cleaner(threading.Thread):
     def __init__(self):
         threading.Thread.__init__(self)
 
