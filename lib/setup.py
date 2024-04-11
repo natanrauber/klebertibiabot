@@ -20,7 +20,7 @@ def setup() -> None:
         None
     """
     Console.clear()
-    WindowManager.activate_all_windows()
+    WindowManager.activate_projector_window()
 
     if not os.path.exists(SESSION_DIR):
         os.makedirs(SESSION_DIR)
@@ -43,5 +43,6 @@ def setup() -> None:
     if WALK:
         setupWalk()
 
+    WindowManager.activate_all_windows()
     pyautogui.screenshot(SESSION_DIR + "/start.png")
     FolderManager.open_folder(SESSION_DIR)

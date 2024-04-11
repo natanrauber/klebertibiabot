@@ -41,3 +41,8 @@ class WindowManager:
         wsh.AppActivate('Kleber')
         wsh.AppActivate('Windowed Projector')
         wsh.AppActivate('Tibia -')
+        
+    @staticmethod
+    def activate_projector_window() -> None:
+        wsh.AppActivate('Windowed Projector')
+

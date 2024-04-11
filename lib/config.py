@@ -13,13 +13,13 @@ TEMP_DIR = CWD + "/images/temp"
 HEAL = True
 DESTROY = False
 ATTACK = True
-LOOT = True
+LOOT = False
 DROP = True
 WALK = True
 
 # HEAL --------------------------------------------------
 HEAL_KEY = Key.f9
-HEAL_ON_YELLOW = False  # if False will heal on red
+HEAL_ON_YELLOW = True  # if False will heal on red
 
 # DESTROY --------------------------------------------------
 DESTROY_KEY = Key.f4
@@ -30,7 +30,7 @@ ATTACK_TIMEOUT = 0  # 0 to disable
 
 
 # LOOT --------------------------------------------------
-SCREEN_CENTER_X = 1425
+SCREEN_CENTER_X = 585
 SCREEN_CENTER_Y = 635
 SQM_SIZE = 40
 
@@ -41,7 +41,7 @@ MAX_CLEANER_AMOUNT = 4  # each cleaner runs in a CPU thread
 
 
 # WALK --------------------------------------------------
-HUNT_NAME = "cave_rats"
+HUNT_NAME = "FL_troll_mountain"
 ROPE_KEY = Key.f5
 STOP_ALL_ACTIONS_KEY = Key.pause
 
@@ -98,3 +98,7 @@ def printConfigs() -> None:
     Console.log(f"WALK: {_status(WALK)}", color=_colorize(WALK))
     if WALK:
         Console.log(f"\thunt: {HUNT_NAME}", color=Colors.yellow)
+
+
+# Expected Tibia window size: 1020x650
+# Expected projector window size: 1020x318
