@@ -22,6 +22,6 @@ subprocess.run(["powershell", "-Command", buildCmd])
 FolderManager.clear_folder("./build")
 FolderManager.delete_file(f"./{uid}.spec")
 
-# run new .exe
-runCmd = f"./dist/{uid}.exe"
-subprocess.run(["powershell", "-Command", runCmd])
+# Write uid to a file
+with open("./uid.txt", "w") as uid_file:
+    uid_file.write(uid)
