@@ -15,7 +15,7 @@ from lib.utils.keyboard import Keyboard
 from lib.utils.mouse import Mouse
 from lib.utils.status import Status
 
-_map_controls = CWD + "/lib/actions/walk/images/map_controls.png"
+_map_controls = CWD + "/images/interface/map_controls.png"
 _map: Optional[Box] = None
 
 

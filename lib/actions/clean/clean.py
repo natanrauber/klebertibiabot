@@ -17,8 +17,8 @@ _active_cleaners = []
 _last_checked = []
 _lock_drop = False
 _container_window_footer = CWD + "/images/interface/window_footer.png"
-_containers_dir = CWD + "/lib/actions/clean/images/containers"
-_blacklist_dir = CWD + "/lib/actions/clean/images/blacklist/"
+_containers_dir = CWD + "/images/containers"
+_blacklist_dir = CWD + "/images/blacklist/"
 _blackList = foodList + [
     _blacklist_dir + f
     for f in listdir(_blacklist_dir)

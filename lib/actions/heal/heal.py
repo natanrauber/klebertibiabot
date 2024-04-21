@@ -3,6 +3,7 @@ import time
 from os import listdir
 from os.path import isfile, join
 
+import pyautogui
 from genericpath import isfile
 from pyscreeze import Box
 
@@ -13,7 +14,7 @@ from lib.utils.keyboard import Keyboard
 from lib.utils.status import Status
 from lib.utils.window_manager import *
 
-_dir = CWD + "/lib/actions/heal/images/"
+_dir = CWD + "/images/heal/"
 _all_health_bars = [_dir + f for f in listdir(_dir) if isfile(join(_dir, f))]
 _yellow = ["health_yellow.png"]
 _red = ["health_red1.png", "health_red2.png"]
@@ -32,6 +33,8 @@ def _locateHealthBar():
             _box = ImageLocator.get_pos(i)
             if type(_box) == Box:
                 _health_bar_box = _box
+                screenshot_path = f"{SESSION_DIR}/health.png"
+                pyautogui.screenshot(screenshot_path, region=_box)
                 break
         if _health_bar_box == None:
             Status.exit()

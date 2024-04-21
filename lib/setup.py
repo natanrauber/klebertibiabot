@@ -42,5 +42,4 @@ def setup() -> None:
         setupWalk()
 
     WindowManager.activate_all_windows()
-    pyautogui.screenshot(SESSION_DIR + "/start.png")
     FolderManager.open_folder(SESSION_DIR)

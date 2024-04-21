@@ -33,6 +33,7 @@ def toggleAttack():
 def toggleHeal():
     if cfg.HEAL == True:
         cfg.setHeal(False)
+        FolderManager.delete_file(f"{cfg.SESSION_DIR}/health.png")
     else:
         cfg.setHeal(True)
         setupHeal()

@@ -13,9 +13,8 @@ from lib.utils.keyboard import Keyboard
 from lib.utils.status import Status
 
 _enabled = True  # local controller, keep this on
-_battle_window_header = CWD + "/lib/actions/attack/images/battle_window_title.png"
+_battle_window_header = CWD + "/images/interface/battle_window_title.png"
 _battle_window_footer = CWD + "/images/interface/window_footer.png"
-# _is_attacking = CWD + '/lib/actions/attack/images/is_attacking.png'
 _battle_window: Optional[Box]
 _target_pixel_x: int
 _target_pixel_y: int

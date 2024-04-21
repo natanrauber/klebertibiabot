@@ -17,5 +17,5 @@ def main_loop() -> None:
             break
         executeAction()
 
-    if datetime.now().hour == 5 and datetime.now().minute == 0:
+    if datetime.now().hour == 6 and datetime.now().minute == 0:
         Status.exit()

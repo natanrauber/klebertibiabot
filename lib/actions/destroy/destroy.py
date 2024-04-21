@@ -14,11 +14,11 @@ from lib.utils.mouse import Mouse
 from lib.utils.status import Status
 from lib.utils.window_manager import *
 
-_dir: str = CWD + "/lib/actions/destroy/images/"
+_dir: str = CWD + "/images/destroy/"
 _barriers = [_dir + f for f in listdir(_dir) if isfile(join(_dir, f))]
 _game_window = None
 
-_interface_dir: str = CWD + "/lib/actions/destroy"
+_interface_dir: str = CWD + "/images/interface"
 _window_header: str = f"{_interface_dir}/header.png"
 _window_footer: str = f"{_interface_dir}/footer.png"
 

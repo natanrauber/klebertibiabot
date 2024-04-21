@@ -45,7 +45,6 @@ class Status:
         Pauses the operation.
         """
         Status._is_paused = True
-        pyautogui.screenshot(f"{SESSION_DIR}/end.png")
         Console.log(Status.get_status(), color=Colors.yellow)
 
     @staticmethod

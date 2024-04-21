@@ -56,7 +56,7 @@ def setLoot(value: bool):
 
 # WALK --------------------------------------------------
 WALK: bool = False
-WAYPOINTS_DIR = f"{CWD}/lib/actions/walk/waypoints"
+WAYPOINTS_DIR = f"{CWD}/images/waypoints"
 ROPE_KEY = Key.f5
 STOP_ALL_ACTIONS_KEY = Key.pause
 
