@@ -274,7 +274,7 @@ class GUIManager:
         )
 
         self.rootWindow.title(uid)
-        self.rootWindow.geometry("668x200")
+        self.rootWindow.geometry("500x250")
         self.rootWindow.configure(bg="#f9f9f9")
         self.rootWindow.resizable(False, False)
         self.frame.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
