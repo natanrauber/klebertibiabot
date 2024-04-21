@@ -1,4 +1,3 @@
-from lib.config import *
 from lib.actions.attack.attack import attack, hasTarget, isAttacking
 from lib.actions.attack_timeout import *
 from lib.actions.clean.clean import Cleaner, cleanerAmount
@@ -6,6 +5,7 @@ from lib.actions.destroy.destroy import Destroyer, destroying
 from lib.actions.heal.heal import Healer, healing
 from lib.actions.loot.loot import hasLoot, loot
 from lib.actions.walk.walk import walk, walkOnCooldown
+from lib.config import *
 from lib.utils.status import *
 from lib.utils.window_manager import WindowManager
 
@@ -17,7 +17,7 @@ def executeAction():
         time.sleep(1)
         return executeAction()
 
-    if HEAL:
+    if getHeal():
         if not healing():
             healer = Healer()
             healer.daemon = True
@@ -29,7 +29,7 @@ def executeAction():
             destroyer.daemon = True
             return destroyer.start()
 
-    if DROP:
+    if getEat() or getDrop():
         for i in range(MAX_CLEANER_AMOUNT - cleanerAmount()):
             cleaner = Cleaner()
             cleaner.daemon = True
@@ -38,9 +38,9 @@ def executeAction():
     if LOOT and hasLoot() and not isAttacking():
         return loot()
 
-    if ATTACK and isAttackEnabled() and hasTarget():
+    if getAttack() and isAttackEnabled() and hasTarget():
         if ATTACK_TIMEOUT == 0 and not isAttacking() and not hasLoot():
             return attack()
 
-    if WALK and not walkOnCooldown() and not hasTarget() and not hasLoot():
+    if getWalk() and not walkOnCooldown() and not hasTarget() and not hasLoot():
         return walk()

@@ -18,17 +18,32 @@ from lib.utils.status import Status
 _map_controls = CWD + "/lib/actions/walk/images/map_controls.png"
 _map: Optional[Box] = None
 
-_waypoints_dir = f"{CWD}/lib/actions/walk/waypoints/{HUNT_NAME}/"
-_waypoints = [
-    _waypoints_dir + f
-    for f in listdir(_waypoints_dir)
-    if isfile(join(_waypoints_dir, f))
-]
 
 _lastWalkTime = None
 _walk_cooldown = 1
 
 _try = 0
+
+HUNT_LIST = [
+    d
+    for d in os.listdir(WAYPOINTS_DIR)
+    if os.path.isdir(os.path.join(WAYPOINTS_DIR, d))
+]
+
+
+SELECTED_HUNT: str = ""
+_waypoints = []
+
+
+def setHunt(value: str):
+    global SELECTED_HUNT
+    SELECTED_HUNT = f"{WAYPOINTS_DIR}/{value}/"
+    global _waypoints
+    _waypoints = [
+        SELECTED_HUNT + f
+        for f in listdir(SELECTED_HUNT)
+        if isfile(join(SELECTED_HUNT, f))
+    ]
 
 
 def setupWalk():
@@ -36,14 +51,15 @@ def setupWalk():
 
 
 def _locateMap():
-    _box = ImageLocator.get_pos(_map_controls)
+    _box: Optional[Box] = ImageLocator.get_pos(_map_controls)
     if _box == None:
         Console.log("cannot find map", color=Colors.red)
         Status.exit()
-    global _map
-    _map = Box(_box.left - 117, _box.top - 50, 106, 109)
-    pyautogui.screenshot(f"{SESSION_DIR}/map.png", region=_map)
-    pyautogui.screenshot(f"{TEMP_DIR}/last_map_view.png", region=_map)
+    else:
+        global _map
+        _map = Box(_box.left - 117, _box.top - 50, 106, 109)
+        pyautogui.screenshot(f"{SESSION_DIR}/map.png", region=_map)
+        pyautogui.screenshot(f"{TEMP_DIR}/last_map_view.png", region=_map)
 
 
 def _locateOnMap(image):

@@ -36,7 +36,7 @@ def _locateHealthBar():
         if _health_bar_box == None:
             Status.exit()
     except:
-        Console.log("cannot find health bar", color=Colors.red)
+        Console.log("Cannot find health bar", color=Colors.red)
         Status.exit()
 
 
@@ -51,7 +51,7 @@ def isWounded():
     for _image in _heal_colors:
         _box = ImageLocator.get_pos_on_region(_image, _health_bar_box, confidence=0.95)
         if type(_box) == Box:
-            Console.log(f"healing on {_getImageName(_image)}")
+            Console.log(f"Healing on {_getImageName(_image)}")
             return True
     return False
 
@@ -62,7 +62,7 @@ _healing = False
 def heal():
     global _healing
     _healing = True
-    while not Status.is_paused():
+    while not Status.is_paused() and getHeal():
         if isWounded():
             Keyboard.press(HEAL_KEY)
         time.sleep(0.5)

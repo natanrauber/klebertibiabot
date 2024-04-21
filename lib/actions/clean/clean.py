@@ -2,6 +2,7 @@ import threading
 import time
 from os import listdir
 from os.path import isfile, join
+from typing import List, Optional
 
 from pyscreeze import Box
 
@@ -23,7 +24,7 @@ _blackList = foodList + [
     for f in listdir(_blacklist_dir)
     if isfile(join(_blacklist_dir, f))
 ]
-_loot_windows = []
+_loot_windows: Optional[List[Box]] = []
 
 
 def getContainerImage(name):
@@ -112,21 +113,25 @@ def dropBlackList():
     _id = getCleanerId()
     _list = getList(_id)
     addCleaner(_id)
-    while not Status.is_paused():
-        for _window in _loot_windows:
-            for _image in _list:
-                _box = ImageLocator.get_pos_on_region(_image, _window, grayscale=True)
-                _found = type(_box) == Box
-                if _found and not _isLocked():
-                    _lockDrop(True)
-                    if canEat() and isFood(_image):
-                        Console.log(f"eating {_getItemName(_image)}")
-                        eat(_box)
-                    else:
-                        Console.log(f"dropping {_getItemName(_image)}")
-                        _drop(_box)
-                    time.sleep(0.5)
-                    _lockDrop(False)
+    while not Status.is_paused() and (getEat() or getDrop()):
+        if _loot_windows:
+            for _window in _loot_windows:
+                for _image in _list:
+                    _box = ImageLocator.get_pos_on_region(
+                        _image, _window, grayscale=True
+                    )
+                    _found = type(_box) == Box
+                    if _found and not _isLocked():
+                        _lockDrop(True)
+                        if canEat() and isFood(_image):
+                            Console.log(f"Eating {_getItemName(_image)}")
+                            eat(_box)
+                        else:
+                            Console.log(f"Dropping {_getItemName(_image)}")
+                            _drop(_box)
+                        time.sleep(0.5)
+                        _lockDrop(False)
+    Console.log(f"Removing cleaner {_id}")
     removeCleaner(_id)
 
 

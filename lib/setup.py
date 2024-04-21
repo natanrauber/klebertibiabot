@@ -30,8 +30,6 @@ def setup() -> None:
 
     FolderManager.clear_folder(SESSION_DIR)
 
-    printConfigs()
-
     if HEAL:
         setupHeal()
     if DESTROY:

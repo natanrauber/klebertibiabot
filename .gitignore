@@ -156,3 +156,4 @@ build/
 dist/
 !compiler.spec
 lib/uid.py
+uid.txt
