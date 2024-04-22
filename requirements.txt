@@ -1,4 +1,5 @@
 # python -m pip install -r C:\dev\kleber\requirements.txt
+pyinstaller
 keyboard
 pynput
 pyautogui
