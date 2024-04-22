@@ -126,10 +126,10 @@ def dropBlackList():
                     _found = type(_box) == Box
                     if _found and not _isLocked():
                         _lockDrop(True)
-                        if canEat() and isFood(_image):
+                        if getEat() and canEat() and isFood(_image):
                             Console.log(f"Eating {_getItemName(_image)}")
                             eat(_box)
-                        else:
+                        elif getDrop():
                             Console.log(f"Dropping {_getItemName(_image)}")
                             _drop(_box)
                         time.sleep(0.5)
