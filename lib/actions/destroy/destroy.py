@@ -81,7 +81,10 @@ def _move(box: Box):
     time.sleep(0.5)
     Mouse.lock(True)
     _initPos = Mouse.get_pos()
-    Mouse.press_left((box.left - 900 + 10, box.top + 10))
+    if getProjector():
+        Mouse.press_left((box.left + 10, box.top + 10 + 350))
+    else:
+        Mouse.press_left((box.left + 10, box.top + 10))
     Mouse.release_left((SCREEN_CENTER_X, SCREEN_CENTER_Y))
     Mouse.set_pos(_initPos)
     Mouse.lock(False)

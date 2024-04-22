@@ -33,7 +33,6 @@ def toggleAttack():
 def toggleHeal():
     if cfg.HEAL == True:
         cfg.setHeal(False)
-        FolderManager.delete_file(f"{cfg.SESSION_DIR}/health.png")
     else:
         cfg.setHeal(True)
         setupHeal()
@@ -43,7 +42,6 @@ def toggleHeal():
 def toggleWalk():
     if cfg.WALK == True:
         cfg.setWalk(False)
-        FolderManager.delete_file(f"{cfg.SESSION_DIR}/map.png")
     else:
         cfg.setWalk(True)
         setupWalk()
@@ -53,31 +51,29 @@ def toggleWalk():
 def toggleEat():
     if cfg.EAT:
         cfg.setEat(False)
-        if cfg.DROP == False:
-            folder_path = cfg.SESSION_DIR
-            for file_name in os.listdir(folder_path):
-                if "container" in file_name:
-                    os.remove(os.path.join(folder_path, file_name))
     else:
         cfg.setEat(True)
         if cfg.DROP == False:
             setupDrop()
-    Console.log(f"Eat: {cfg.DROP}")
+    Console.log(f"Eat: {cfg.EAT}")
 
 
 def toggleDrop():
     if cfg.DROP:
         cfg.setDrop(False)
-        if cfg.EAT == False:
-            folder_path = cfg.SESSION_DIR
-            for file_name in os.listdir(folder_path):
-                if "container" in file_name:
-                    os.remove(os.path.join(folder_path, file_name))
     else:
         cfg.setDrop(True)
         if cfg.EAT == False:
             setupDrop()
     Console.log(f"Drop: {cfg.DROP}")
+
+
+def toggleProjector():
+    if cfg.PROJECTOR:
+        cfg.setProjector(False)
+    else:
+        cfg.setProjector(True)
+    Console.log(f"Projector: {cfg.PROJECTOR}")
 
 
 def selectHunt(value):
@@ -93,9 +89,9 @@ class GUIManager:
         rootWindow (Tk): The root window of the GUI.
         frame (ttk.Frame): The frame of the GUI.
         buttons_frame (ttk.Frame): The frame containing the pause and resume buttons.
-        pause_button (ttk.Button): The button to pause the main loop.
+        button_pause (ttk.Button): The button to pause the main loop.
         buttons_separator (ttk.Separator): The separator between the pause and resume buttons.
-        resume_button (ttk.Button): The button to resume the main loop.
+        button_resume (ttk.Button): The button to resume the main loop.
         console (Console): The console widget for displaying logs.
         option_vars (list): List to hold the variables for the checkboxes.
 
@@ -122,80 +118,101 @@ class GUIManager:
         self.rootWindow = tk.Tk()
         self.frame = ttk.Frame(self.rootWindow, style="Custom.TFrame")
         self.buttons_frame = ttk.Frame(self.frame, style="Custom.TFrame")
-        self.pause_button = ttk.Button(
-            self.buttons_frame,
-            text="Paused",
-            command=self.pause,
-            state=tk.DISABLED,
-            style="Pause.TButton",
-        )
-        self.buttons_separator = ttk.Frame(
-            self.buttons_frame, height=8, width=8, style="Custom.TFrame"
-        )
-        self.resume_button = ttk.Button(
+        self.button_resume = ttk.Button(
             self.buttons_frame,
             text="Resume",
             command=self.resume,
             state=tk.NORMAL,
             style="Resume.TButton",
         )
-        self.checkbox_separator = ttk.Frame(
-            self.frame, height=10, width=10, style="Custom.TFrame"
+        self.button_separator1 = ttk.Frame(
+            self.buttons_frame, height=8, width=13, style="Custom.TFrame"
+        )
+        self.button_pause = ttk.Button(
+            self.buttons_frame,
+            text="Paused",
+            command=self.pause,
+            state=tk.DISABLED,
+            style="Pause.TButton",
+        )
+        self.button_separator2 = ttk.Frame(
+            self.buttons_frame, height=8, width=13, style="Custom.TFrame"
+        )
+        self.button_refresh = ttk.Button(
+            self.buttons_frame,
+            text="Refresh",
+            command=self.refresh,
+            state=tk.NORMAL,
+            style="Refresh.TButton",
         )
         self.option_vars = []
-        for i in range(6):
+        for i in range(7):
             option_var = tk.BooleanVar()
             option_var.set(False)
             self.option_vars.append(option_var)
-        self.checkbox_frame = ttk.Frame(self.frame, style="Custom.TFrame")
+        self.checkbox_separator1 = ttk.Frame(
+            self.frame, height=10, width=10, style="Custom.TFrame"
+        )
+        self.checkbox_frame1 = ttk.Frame(self.frame, style="Custom.TFrame")
         self.checkbox_attack = ttk.Checkbutton(
-            self.checkbox_frame,
+            self.checkbox_frame1,
             text=f"Attack",
             variable=self.option_vars[0],
             style="Custom.TCheckbutton",
             command=toggleAttack,
         )
         self.checkbox_heal = ttk.Checkbutton(
-            self.checkbox_frame,
+            self.checkbox_frame1,
             text=f"Heal",
             variable=self.option_vars[1],
             style="Custom.TCheckbutton",
             command=toggleHeal,
         )
         self.checkbox_walk = ttk.Checkbutton(
-            self.checkbox_frame,
+            self.checkbox_frame1,
             text=f"Walk",
             variable=self.option_vars[2],
             style="Custom.TCheckbutton",
             command=toggleWalk,
         )
         self.checkbox_loot = ttk.Checkbutton(
-            self.checkbox_frame,
+            self.checkbox_frame1,
             text=f"Loot",
             variable=self.option_vars[3],
             style="Custom.TCheckbutton",
             # command=toggleLoot,
         )
+        self.checkbox_separator2 = ttk.Frame(
+            self.frame, height=10, width=10, style="Custom.TFrame"
+        )
+        self.checkbox_frame2 = ttk.Frame(self.frame, style="Custom.TFrame")
         self.checkbox_eat = ttk.Checkbutton(
-            self.checkbox_frame,
+            self.checkbox_frame2,
             text=f"Eat",
             variable=self.option_vars[4],
             style="Custom.TCheckbutton",
             command=toggleEat,
         )
         self.checkbox_drop = ttk.Checkbutton(
-            self.checkbox_frame,
+            self.checkbox_frame2,
             text=f"Drop",
             variable=self.option_vars[5],
             style="Custom.TCheckbutton",
             command=toggleDrop,
         )
-        self.dropdown_separator = ttk.Frame(
-            self.frame, height=10, width=10, style="Custom.TFrame"
+        self.checkbox_projector = ttk.Checkbutton(
+            self.checkbox_frame2,
+            text=f"Projector",
+            variable=self.option_vars[6],
+            style="Custom.TCheckbutton",
+            command=toggleProjector,
         )
         selected_hunt = tk.StringVar(self.frame)
         selected_hunt.set(HUNT_LIST[0])
-        self.dropdown = tk.OptionMenu(
+        self.dropdown_separator = ttk.Frame(
+            self.frame, height=10, width=10, style="Custom.TFrame"
+        )
+        self.dropdown = ttk.OptionMenu(
             self.frame,
             selected_hunt,
             *HUNT_LIST,
@@ -215,46 +232,59 @@ class GUIManager:
         self.rootWindow.after(int(time_to_wait), self.close)
 
     def close(self):
-        """
-        Close the window and quit the application
-        """
         self.pause()
         self.rootWindow.destroy()
         self.rootWindow.quit()
 
-    def pause(self):
-        """
-        Pauses the main loop and updates the GUI accordingly.
-        """
-        self.rootWindow.focus()
-        Status.pause()  # stops the "main_loop", consequently the "loop_thread" is terminated
-        self.pause_button.config(state=tk.DISABLED, text="Paused")
-        self.resume_button.config(state=tk.NORMAL, text="Resume")
-
     def resume(self):
-        """
-        Resumes the main loop and updates the GUI accordingly.
-        """
         self.rootWindow.focus()
         Status.resume()
         self.rootWindow.focus()
-        self.pause_button.config(state=tk.NORMAL, text="Pause")
-        self.resume_button.config(state=tk.DISABLED, text="Running")
+        self.button_pause.config(state=tk.NORMAL, text="Pause")
+        self.button_resume.config(state=tk.DISABLED, text="Running")
         loop_thread = threading.Thread(
             target=main_loop
         )  # create a "loop_thread" thread to run "main_loop"
         loop_thread.start()  # start the "loop_thread"
+
+    def pause(self):
+        self.rootWindow.focus()
+        Status.pause()  # stops the "main_loop", consequently the "loop_thread" is terminated
+        self.button_pause.config(state=tk.DISABLED, text="Paused")
+        self.button_resume.config(state=tk.NORMAL, text="Resume")
+
+    def refresh(self):
+        self.rootWindow.focus()
+        if not Status.is_paused():
+            self.pause()  # stops the "main_loop", consequently the "loop_thread" is terminated
+        if getAttack():
+            setupAttack()
+        if getHeal():
+            setupHeal()
+        if getWalk():
+            setupWalk()
+        # if getLoot():
+        #     setupLoot()
+        if getEat():
+            setupDrop()
+        if getDrop() and not getEat():
+            setupWalk()
+        Console.log("Refresh complete")
+
+        self.button_pause.config(state=tk.DISABLED, text="Paused")
+        self.button_resume.config(state=tk.NORMAL, text="Resume")
 
     def configure_widgets(self):
         """
         Configures the style and layout of the widgets in the GUI.
         """
         style = ttk.Style(self.rootWindow)
+        # style.theme_use('clam')
         style.configure("Custom.TFrame", background="#f9f9f9")
         style.configure(
             "Pause.TButton",
             padding=5,
-            width=10,
+            width=13,
             borderRadius=11,
             background="#f9f9f9",
         )
@@ -262,38 +292,50 @@ class GUIManager:
         style.configure(
             "Resume.TButton",
             padding=5,
-            width=10,
+            width=13,
             borderRadius=11,
             background="#f9f9f9",
         )
         style.map("Resume.TButton", foreground=[("disabled", "green")])
         style.configure(
-            "Custom.TCheckbutton",
-            padding=10,
+            "Refresh.TButton",
+            padding=5,
+            width=13,
+            borderRadius=11,
             background="#f9f9f9",
+        )
+        style.configure(
+            "Custom.TCheckbutton",
+            background="#f9f9f9",
+            width=8,
         )
 
         self.rootWindow.title(uid)
-        self.rootWindow.geometry("500x250")
+        self.rootWindow.geometry("334x300")
         self.rootWindow.configure(bg="#f9f9f9")
         self.rootWindow.resizable(False, False)
         self.frame.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
         self.buttons_frame.pack()
-        self.pause_button.pack(side=tk.LEFT)
-        self.buttons_separator.pack(side=tk.LEFT)
-        self.resume_button.pack(side=tk.LEFT)
-        self.checkbox_separator.pack()
-        self.checkbox_frame.pack()
+        self.button_resume.pack(side=tk.LEFT)
+        self.button_separator1.pack(side=tk.LEFT)
+        self.button_pause.pack(side=tk.LEFT)
+        self.button_separator2.pack(side=tk.LEFT)
+        self.button_refresh.pack(side=tk.LEFT)
+        self.checkbox_separator1.pack()
+        self.checkbox_frame1.pack(fill=tk.BOTH, expand=True)
         self.checkbox_attack.pack(side=tk.LEFT, padx=(0, 10))
         self.checkbox_heal.pack(side=tk.LEFT, padx=(0, 10))
         self.checkbox_walk.pack(side=tk.LEFT, padx=(0, 10))
-        self.checkbox_loot.pack(side=tk.LEFT, padx=(0, 10))
+        self.checkbox_loot.pack(side=tk.LEFT, padx=(0, 0))
+        self.checkbox_separator2.pack()
+        self.checkbox_frame2.pack(fill=tk.BOTH, expand=True)
         self.checkbox_eat.pack(side=tk.LEFT, padx=(0, 10))
         self.checkbox_drop.pack(side=tk.LEFT, padx=(0, 10))
+        self.checkbox_projector.pack(side=tk.LEFT, padx=(0, 0))
         self.dropdown_separator.pack()
         self.dropdown.pack()
         self.console_separator.pack()
-        self.console.pack(fill="both")
+        self.console.pack(fill=tk.BOTH)
 
         HWND = windll.user32.GetParent(self.rootWindow.winfo_id())
         windll.dwmapi.DwmSetWindowAttribute(

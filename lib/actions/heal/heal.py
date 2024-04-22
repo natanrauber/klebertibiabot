@@ -32,9 +32,9 @@ def _locateHealthBar():
         for i in _all_health_bars:
             _box = ImageLocator.get_pos(i)
             if type(_box) == Box:
-                _health_bar_box = _box
+                _health_bar_box = Box(_box.left, _box.top, 50, 20)
                 screenshot_path = f"{SESSION_DIR}/health.png"
-                pyautogui.screenshot(screenshot_path, region=_box)
+                pyautogui.screenshot(screenshot_path, region=_health_bar_box)
                 break
         if _health_bar_box == None:
             Status.exit()

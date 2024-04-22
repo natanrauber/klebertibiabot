@@ -1,5 +1,3 @@
-import pyautogui
-
 from lib.actions.attack.attack import setupAttack
 from lib.actions.clean.clean import setupDrop
 from lib.actions.destroy.destroy import setup_destroy
@@ -20,7 +18,10 @@ def setup() -> None:
         None
     """
     Console.clear()
-    WindowManager.activate_projector_window()
+    if getProjector():
+        WindowManager.activate("Projector")
+    else:
+        WindowManager.activate("Tibia -")
 
     if not os.path.exists(SESSION_DIR):
         os.makedirs(SESSION_DIR)
@@ -41,5 +42,8 @@ def setup() -> None:
     if WALK:
         setupWalk()
 
-    WindowManager.activate_all_windows()
     FolderManager.open_folder(SESSION_DIR)
+    WindowManager.activate("Tibia -")
+    WindowManager.activate("session")
+    if getProjector():
+        WindowManager.activate("Projector")

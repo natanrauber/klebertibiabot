@@ -84,6 +84,8 @@ def _getWaypointName(image):
 
 
 def _walk(box: Box):
+    if Status.is_paused():
+        return
     if Mouse.is_locked():
         time.sleep(0.1)
         return _walk(box)
@@ -91,7 +93,10 @@ def _walk(box: Box):
     time.sleep(0.5)
     Mouse.lock(True)
     _initPos = Mouse.get_pos()
-    Mouse.click_left((box.left + 3, box.top + 350 + 3))
+    if getProjector():
+        Mouse.click_left((box.left + 3, box.top + 3 + 350))
+    else:
+        Mouse.click_left((box.left + 3, box.top + 3))
     Mouse.set_pos(_initPos)
     Mouse.lock(False)
     global _lastWalkTime

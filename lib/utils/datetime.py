@@ -11,4 +11,4 @@ def dateTime() -> str:
     Note:
         Documented using Google style docstrings by ChatGPT, an OpenAI language model.
     """
-    return str(datetime.now())[0:19]
+    return str(datetime.now())[11:19]

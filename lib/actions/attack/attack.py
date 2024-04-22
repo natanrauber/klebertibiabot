@@ -94,6 +94,8 @@ def isAttacking():
 
 
 def attack():
+    if Status.is_paused():
+        return
     Keyboard.press(STOP_ALL_ACTIONS_KEY)
     time.sleep(0.5)
     global _attack_start_time

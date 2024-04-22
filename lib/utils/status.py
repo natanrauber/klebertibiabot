@@ -3,9 +3,10 @@ import time
 
 import pyautogui
 
-from lib.config import SESSION_DIR
+from lib.config import SESSION_DIR, STOP_ALL_ACTIONS_KEY
 from lib.uid import uid
 from lib.utils.console import Colors, Console
+from lib.utils.keyboard import Keyboard
 
 
 class Status:
@@ -45,6 +46,7 @@ class Status:
         Pauses the operation.
         """
         Status._is_paused = True
+        Keyboard.press(STOP_ALL_ACTIONS_KEY)
         Console.log(Status.get_status(), color=Colors.yellow)
 
     @staticmethod

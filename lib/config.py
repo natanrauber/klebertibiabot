@@ -1,6 +1,7 @@
 import os
 
 from lib.utils.cwd import CWD
+from lib.utils.folder_manager import FolderManager
 from lib.utils.keyboard import Key
 
 SESSION_DIR = CWD + "/images/session"
@@ -8,6 +9,20 @@ TEMP_DIR = CWD + "/images/temp"
 
 # Expected Tibia window size: 1020x650
 # Expected projector window size: 1020x318
+
+
+# PROJECTOR --------------------------------------------------
+PROJECTOR: bool = False
+
+
+def getProjector():
+    global PROJECTOR
+    return PROJECTOR
+
+
+def setProjector(value: bool):
+    global PROJECTOR
+    PROJECTOR = value
 
 
 # ATTACK --------------------------------------------------
@@ -40,6 +55,8 @@ def getHeal():
 def setHeal(value: bool):
     global HEAL
     HEAL = value
+    if HEAL == False:
+        FolderManager.delete_file(f"{SESSION_DIR}/health.png")
 
 
 # LOOT --------------------------------------------------
@@ -69,6 +86,26 @@ def getWalk():
 def setWalk(value: bool):
     global WALK
     WALK = value
+    if WALK == False:
+        FolderManager.delete_file(f"{SESSION_DIR}/map.png")
+
+
+# EAT --------------------------------------------------
+EAT: bool = False
+
+
+def getEat():
+    global EAT
+    return EAT
+
+
+def setEat(value: bool):
+    global EAT
+    EAT = value
+    if EAT == False and DROP == False:
+        for file_name in os.listdir(SESSION_DIR):
+            if "container" in file_name:
+                os.remove(os.path.join(SESSION_DIR, file_name))
 
 
 # DROP --------------------------------------------------
@@ -85,20 +122,10 @@ def getDrop():
 def setDrop(value: bool):
     global DROP
     DROP = value
-
-
-# EAT --------------------------------------------------
-EAT: bool = False
-
-
-def getEat():
-    global EAT
-    return EAT
-
-
-def setEat(value: bool):
-    global EAT
-    EAT = value
+    if EAT == False and DROP == False:
+        for file_name in os.listdir(SESSION_DIR):
+            if "container" in file_name:
+                os.remove(os.path.join(SESSION_DIR, file_name))
 
 
 # DESTROY --------------------------------------------------

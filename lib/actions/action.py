@@ -11,7 +11,10 @@ from lib.utils.window_manager import WindowManager
 
 
 def executeAction():
-    WindowManager.check_active_windows()
+    if not WindowManager.isActive("Tibia"):
+        WindowManager.activate("Tibia -")
+    if getProjector() and not WindowManager.isActive("Projector"):
+        WindowManager.activate("Projector")
 
     if Status.is_sleeping():
         time.sleep(1)
