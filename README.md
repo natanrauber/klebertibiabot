@@ -13,9 +13,13 @@
     ```
 - Now, copy and paste the following code and press Enter to run the bot:
     ```
-    irm https://raw.githubusercontent.com/natanrauber/klebertibiabot/master/remote.ps1 | iex
+    irm https://raw.githubusercontent.com/natanrauber/klebertibiabot/master/run1.ps1 | iex
     ```
-- You will see the options displayed. Follow the on-screen instructions to proceed.
+- Alternatively, you can use this option to compile the program before running it:
+    ```
+    irm https://raw.githubusercontent.com/natanrauber/klebertibiabot/master/run2.ps1 | iex
+    ```
+- Follow the on-screen instructions to proceed.
 - That's it! You're all set to use the bot.
 
 ### Additional Notes:
