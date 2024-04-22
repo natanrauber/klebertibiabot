@@ -19,6 +19,9 @@ git clone --single-branch --branch $BranchOrTag $GitHubRepoURL $TempFolder
 # Change directory to the temporary folder
 Set-Location $TempFolder
 
+# Run update pip
+python -m pip install --upgrade pip
+
 # Run install dependencies
 python -m pip install -r .\requirements.txt
 
