@@ -1,10 +1,7 @@
-# python -m pip install -r C:\dev\kleber\requirements.txt
-pyinstaller
-keyboard
-pynput
-pyautogui
-pypiwin32
-Pillow
-opencv-python
-screeninfo
-numpy
+numpy==1.23.4
+opencv_python==4.6.0.66
+PyAutoGUI==0.9.53
+pynput==1.7.6
+PyScreeze==0.1.28
+pywin32==304
+screeninfo==0.8.1
