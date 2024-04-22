@@ -7,3 +7,4 @@ pypiwin32
 Pillow
 opencv-python
 screeninfo
+numpy
