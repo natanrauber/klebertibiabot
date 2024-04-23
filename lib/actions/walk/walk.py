@@ -24,11 +24,15 @@ _walk_cooldown = 1
 
 _try = 0
 
-HUNT_LIST = [
-    d
-    for d in os.listdir(WAYPOINTS_DIR)
-    if os.path.isdir(os.path.join(WAYPOINTS_DIR, d))
-]
+
+def getHuntList() -> list:
+    list = [
+        d
+        for d in os.listdir(WAYPOINTS_DIR)
+        if os.path.isdir(os.path.join(WAYPOINTS_DIR, d))
+    ]
+    list.insert(0, "")
+    return list
 
 
 SELECTED_HUNT: str = ""
@@ -427,6 +431,9 @@ def _rope_all():
 
 
 def walk():
+    if len(_waypoints) == 0:
+        Console.log(f"No hunt selected")
+        return
     if not _lastWalkTime == None:
         if _reachedLastWaypoint():
             _checkLastWaypointSpecial()

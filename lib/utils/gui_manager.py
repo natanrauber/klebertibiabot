@@ -9,7 +9,7 @@ from lib.actions.attack.attack import *
 from lib.actions.clean.clean import locateDropContainer
 from lib.actions.heal.heal import setupHeal
 from lib.actions.loot.loot import locateScreenCenter
-from lib.actions.walk.walk import HUNT_LIST, setHunt, setupWalk
+from lib.actions.walk.walk import getHuntList, setHunt, setupWalk
 from lib.main_loop import main_loop
 from lib.uid import uid
 from lib.utils.console import Console
@@ -219,14 +219,15 @@ class GUIManager:
             command=toggleProjector,
         )
         selected_hunt = tk.StringVar(self.frame)
-        selected_hunt.set(HUNT_LIST[0])
+        selected_hunt.set(getHuntList()[1])
+        selectHunt(getHuntList()[1])
         self.dropdown_separator = ttk.Frame(
             self.frame, height=10, width=10, style="Custom.TFrame"
         )
         self.dropdown = ttk.OptionMenu(
             self.frame,
             selected_hunt,
-            *HUNT_LIST,
+            *getHuntList(),
             command=selectHunt,
         )
         self.console_separator = ttk.Frame(

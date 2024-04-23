@@ -45,5 +45,9 @@ def executeAction():
         if ATTACK_TIMEOUT == 0 and not isAttacking() and not hasLoot():
             return attack()
 
-    if getWalk() and not walkOnCooldown() and not hasTarget() and not hasLoot():
+    if getWalk() and not walkOnCooldown():
+        if getAttack() and hasTarget():
+            return
+        if getLoot() and hasLoot():
+            return
         return walk()
