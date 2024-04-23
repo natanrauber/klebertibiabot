@@ -25,7 +25,7 @@ python -m pip install --upgrade pip
 # Run install dependencies
 python -m pip install -r .\requirements.txt
 
-# Run compiler
+# Run program
 python .\runner.py
 
 # Get uid from uid.txt
