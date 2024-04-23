@@ -45,12 +45,12 @@ def locateScreenCenter():
 
 
 def hasLoot():
-    if not LOOT:
+    if not getLoot():
         return False
     return _hasLoot
 
 
-def setLoot(value):
+def setHasLoot(value):
     global _hasLoot
     _hasLoot = value
 
@@ -84,4 +84,4 @@ def loot():
     Keyboard.release(Key.alt)
     Mouse.set_pos(_initPos)
     Mouse.lock(False)
-    setLoot(False)
+    setHasLoot(False)

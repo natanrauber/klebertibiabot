@@ -60,21 +60,21 @@ def setHeal(value: bool):
 
 
 # LOOT --------------------------------------------------
-LOOT: bool = False
+_loot: bool = False
 _screenCenterX = 0
 _screenCenterY = 0
 _sqmSize = 0
 
 
 def getLoot():
-    global LOOT
-    return LOOT
+    global _loot
+    return _loot
 
 
 def setLoot(value: bool):
-    global LOOT
-    LOOT = value
-    if LOOT == False and DROP == False:
+    global _loot
+    _loot = value
+    if _loot == False and DROP == False:
         FolderManager.delete_file(f"{SESSION_DIR}/screen_center.png")
 
 
@@ -160,7 +160,7 @@ def setDrop(value: bool):
         for file_name in os.listdir(SESSION_DIR):
             if "container" in file_name:
                 os.remove(os.path.join(SESSION_DIR, file_name))
-    if DROP == False and LOOT == False:
+    if DROP == False and not getLoot():
         FolderManager.delete_file(f"{SESSION_DIR}/screen_center.png")
 
 

@@ -38,7 +38,7 @@ def executeAction():
             cleaner.daemon = True
             cleaner.start()
 
-    if LOOT and hasLoot() and not isAttacking():
+    if getLoot() and hasLoot() and not isAttacking():
         return loot()
 
     if getAttack() and isAttackEnabled() and hasTarget():

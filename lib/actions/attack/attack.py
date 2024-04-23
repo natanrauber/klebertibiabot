@@ -5,7 +5,7 @@ from typing import Optional
 import pyautogui
 from pyscreeze import Box
 
-from lib.actions.loot.loot import setLoot
+from lib.actions.loot.loot import setHasLoot
 from lib.config import *
 from lib.utils.console import Colors, Console
 from lib.utils.image_locator import ImageLocator
@@ -102,5 +102,5 @@ def attack():
     _attack_start_time = datetime.now()
     Console.log("attacking...")
     Keyboard.press(ATTACK_KEY)
-    setLoot(True)
+    setHasLoot(True)
     time.sleep(0.1)

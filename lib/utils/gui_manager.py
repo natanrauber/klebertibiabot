@@ -48,13 +48,13 @@ def toggleWalk():
 
 
 def toggleLoot():
-    if cfg.LOOT == True:
+    if cfg.getLoot() == True:
         cfg.setLoot(False)
     else:
         cfg.setLoot(True)
         if cfg.DROP == False:
             locateScreenCenter()
-    Console.log(f"Walk: {cfg.WALK}")
+    Console.log(f"Loot: {cfg.getLoot()}")
 
 
 def toggleEat():
@@ -74,7 +74,7 @@ def toggleDrop():
         cfg.setDrop(True)
         if cfg.EAT == False:
             locateDropContainer()
-        if cfg.LOOT == False:
+        if cfg.getLoot() == False:
             locateScreenCenter()
     Console.log(f"Drop: {cfg.DROP}")
 
