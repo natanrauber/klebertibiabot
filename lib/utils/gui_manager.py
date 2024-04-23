@@ -149,12 +149,12 @@ class GUIManager:
         self.button_separator2 = ttk.Frame(
             self.buttons_frame, height=8, width=13, style="Custom.TFrame"
         )
-        self.button_refresh = ttk.Button(
+        self.button_reload = ttk.Button(
             self.buttons_frame,
-            text="Refresh",
-            command=self.refresh,
+            text="Reload",
+            command=self.reload,
             state=tk.NORMAL,
-            style="Refresh.TButton",
+            style="Reload.TButton",
         )
         self.option_vars = []
         for i in range(7):
@@ -265,10 +265,10 @@ class GUIManager:
         self.button_pause.config(state=tk.DISABLED, text="Paused")
         self.button_resume.config(state=tk.NORMAL, text="Resume")
 
-    def refresh(self):
+    def reload(self):
         self.rootWindow.focus()
-        if not Status.is_paused():
-            self.pause()  # stops the "main_loop", consequently the "loop_thread" is terminated
+        self.pause()
+        Console.log("Reloading...")
         if getAttack():
             setupAttack()
         if getHeal():
@@ -279,10 +279,7 @@ class GUIManager:
             locateScreenCenter()
         if getEat() or getDrop():
             locateDropContainer()
-        Console.log("Refresh complete")
-
-        self.button_pause.config(state=tk.DISABLED, text="Paused")
-        self.button_resume.config(state=tk.NORMAL, text="Resume")
+        Console.log("Reload complete")
 
     def configure_widgets(self):
         """
@@ -308,7 +305,7 @@ class GUIManager:
         )
         style.map("Resume.TButton", foreground=[("disabled", "green")])
         style.configure(
-            "Refresh.TButton",
+            "Reload.TButton",
             padding=5,
             width=13,
             borderRadius=11,
@@ -330,7 +327,7 @@ class GUIManager:
         self.button_separator1.pack(side=tk.LEFT)
         self.button_pause.pack(side=tk.LEFT)
         self.button_separator2.pack(side=tk.LEFT)
-        self.button_refresh.pack(side=tk.LEFT)
+        self.button_reload.pack(side=tk.LEFT)
         self.checkbox_separator1.pack()
         self.checkbox_frame1.pack(fill=tk.BOTH, expand=True)
         self.checkbox_attack.pack(side=tk.LEFT, padx=(0, 10))
