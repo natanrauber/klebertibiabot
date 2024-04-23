@@ -4,6 +4,7 @@ from os.path import isfile, join
 
 from pyscreeze import Box
 
+from lib.config import getProjector
 from lib.utils.cwd import CWD
 from lib.utils.mouse import Mouse
 
@@ -24,7 +25,10 @@ def isFood(image) -> bool:
 def eat(box: Box):
     Mouse.lock(True)
     _initPos = Mouse.get_pos()
-    Mouse.click_left((box.left + 16, box.top + 350 + 16))
+    if getProjector():
+        Mouse.click_left((box.left + 16, box.top + 16 + 350))
+    else:
+        Mouse.click_left((box.left + 16, box.top + 16))
     Mouse.set_pos(_initPos)
     Mouse.lock(False)
     global _lastEat
