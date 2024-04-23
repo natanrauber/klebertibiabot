@@ -1,5 +1,5 @@
 from lib.actions.attack.attack import setupAttack
-from lib.actions.clean.clean import setupDrop
+from lib.actions.clean.clean import locateDropContainer
 from lib.actions.destroy.destroy import setup_destroy
 from lib.actions.heal.heal import setupHeal
 from lib.actions.walk.walk import setupWalk
@@ -38,7 +38,7 @@ def setup() -> None:
     if ATTACK:
         setupAttack()
     if DROP:
-        setupDrop()
+        locateDropContainer()
     if WALK:
         setupWalk()
 

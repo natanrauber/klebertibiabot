@@ -61,14 +61,48 @@ def setHeal(value: bool):
 
 # LOOT --------------------------------------------------
 LOOT: bool = False
-SCREEN_CENTER_X = 585
-SCREEN_CENTER_Y = 635
-SQM_SIZE = 40
+_screenCenterX = 0
+_screenCenterY = 0
+_sqmSize = 0
+
+
+def getLoot():
+    global LOOT
+    return LOOT
 
 
 def setLoot(value: bool):
     global LOOT
     LOOT = value
+    if LOOT == False and DROP == False:
+        FolderManager.delete_file(f"{SESSION_DIR}/screen_center.png")
+
+
+def getScreenCenterX():
+    global _screenCenterX
+    return _screenCenterX
+
+
+def getScreenCenterY():
+    global _screenCenterY
+    return _screenCenterY
+
+
+def setScreenCenter(x: int, y: int):
+    global _screenCenterX
+    global _screenCenterY
+    _screenCenterX = x
+    _screenCenterY = y
+
+
+def getSqmSize():
+    global _sqmSize
+    return _sqmSize
+
+
+def setSqmSize(value: int):
+    global _sqmSize
+    _sqmSize = value
 
 
 # WALK --------------------------------------------------
@@ -126,6 +160,8 @@ def setDrop(value: bool):
         for file_name in os.listdir(SESSION_DIR):
             if "container" in file_name:
                 os.remove(os.path.join(SESSION_DIR, file_name))
+    if DROP == False and LOOT == False:
+        FolderManager.delete_file(f"{SESSION_DIR}/screen_center.png")
 
 
 # DESTROY --------------------------------------------------

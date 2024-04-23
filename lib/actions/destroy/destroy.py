@@ -85,7 +85,7 @@ def _move(box: Box):
         Mouse.press_left((box.left + 10, box.top + 10 + 350))
     else:
         Mouse.press_left((box.left + 10, box.top + 10))
-    Mouse.release_left((SCREEN_CENTER_X, SCREEN_CENTER_Y))
+    Mouse.release_left((getScreenCenterX(), getScreenCenterY()))
     Mouse.set_pos(_initPos)
     Mouse.lock(False)
 

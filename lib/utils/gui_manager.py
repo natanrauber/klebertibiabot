@@ -2,14 +2,13 @@ import datetime as dt
 import threading
 import tkinter as tk
 from ctypes import byref, c_int, sizeof, windll
-from os import listdir
-from os.path import isfile, join
 from tkinter import ttk
 
 import lib.config as cfg
 from lib.actions.attack.attack import *
-from lib.actions.clean.clean import setupDrop
+from lib.actions.clean.clean import locateDropContainer
 from lib.actions.heal.heal import setupHeal
+from lib.actions.loot.loot import locateScreenCenter
 from lib.actions.walk.walk import HUNT_LIST, setHunt, setupWalk
 from lib.main_loop import main_loop
 from lib.uid import uid
@@ -48,13 +47,23 @@ def toggleWalk():
     Console.log(f"Walk: {cfg.WALK}")
 
 
+def toggleLoot():
+    if cfg.LOOT == True:
+        cfg.setLoot(False)
+    else:
+        cfg.setLoot(True)
+        if cfg.DROP == False:
+            locateScreenCenter()
+    Console.log(f"Walk: {cfg.WALK}")
+
+
 def toggleEat():
     if cfg.EAT:
         cfg.setEat(False)
     else:
         cfg.setEat(True)
         if cfg.DROP == False:
-            setupDrop()
+            locateDropContainer()
     Console.log(f"Eat: {cfg.EAT}")
 
 
@@ -64,7 +73,9 @@ def toggleDrop():
     else:
         cfg.setDrop(True)
         if cfg.EAT == False:
-            setupDrop()
+            locateDropContainer()
+        if cfg.LOOT == False:
+            locateScreenCenter()
     Console.log(f"Drop: {cfg.DROP}")
 
 
@@ -180,7 +191,7 @@ class GUIManager:
             text=f"Loot",
             variable=self.option_vars[3],
             style="Custom.TCheckbutton",
-            # command=toggleLoot,
+            command=toggleLoot,
         )
         self.checkbox_separator2 = ttk.Frame(
             self.frame, height=10, width=10, style="Custom.TFrame"
@@ -263,12 +274,10 @@ class GUIManager:
             setupHeal()
         if getWalk():
             setupWalk()
-        # if getLoot():
-        #     setupLoot()
-        if getEat():
-            setupDrop()
-        if getDrop() and not getEat():
-            setupWalk()
+        if getLoot() or getDrop():
+            locateScreenCenter()
+        if getEat() or getDrop():
+            locateDropContainer()
         Console.log("Refresh complete")
 
         self.button_pause.config(state=tk.DISABLED, text="Paused")

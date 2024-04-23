@@ -31,11 +31,7 @@ def getContainerImage(name):
     return f"{_containers_dir}/{name}.png"
 
 
-def setupDrop():
-    _locateDropContainer()
-
-
-def _locateDropContainer():
+def locateDropContainer():
     global _loot_windows
     _loot_windows = ImageLocator.locate_all_windows(
         getContainerImage(DROP_CONTAINER), _container_window_footer, save_as="container"
@@ -65,7 +61,7 @@ def _drop(box: Box):
         Mouse.press_left((box.left + 16, box.top + 16 + 350))
     else:
         Mouse.press_left((box.left + 16, box.top + 16))
-    Mouse.release_left((SCREEN_CENTER_X, SCREEN_CENTER_Y))
+    Mouse.release_left((getScreenCenterX(), getScreenCenterY()))
     Mouse.set_pos(_initPos)
     Mouse.lock(False)
 
