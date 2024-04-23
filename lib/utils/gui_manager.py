@@ -18,7 +18,7 @@ from lib.utils.status import Status
 
 
 def toggleAttack():
-    if cfg.ATTACK == True:
+    if cfg.getAttack() == True:
         cfg.setAttack(False)
         disable_attack()
         FolderManager.delete_file(f"{cfg.SESSION_DIR}/battle.png")
@@ -26,25 +26,25 @@ def toggleAttack():
         cfg.setAttack(True)
         enable_attack()
         setupAttack()
-    Console.log(f"Attack: {cfg.ATTACK}")
+    Console.log(f"Attack: {cfg.getAttack()}")
 
 
 def toggleHeal():
-    if cfg.HEAL == True:
+    if cfg.getHeal() == True:
         cfg.setHeal(False)
     else:
         cfg.setHeal(True)
         setupHeal()
-    Console.log(f"Heal: {cfg.HEAL}")
+    Console.log(f"Heal: {cfg.getHeal()}")
 
 
 def toggleWalk():
-    if cfg.WALK == True:
+    if cfg.getWalk() == True:
         cfg.setWalk(False)
     else:
         cfg.setWalk(True)
         setupWalk()
-    Console.log(f"Walk: {cfg.WALK}")
+    Console.log(f"Walk: {cfg.getWalk()}")
 
 
 def toggleLoot():
@@ -52,39 +52,39 @@ def toggleLoot():
         cfg.setLoot(False)
     else:
         cfg.setLoot(True)
-        if cfg.DROP == False:
+        if cfg.getDrop() == False:
             locateScreenCenter()
     Console.log(f"Loot: {cfg.getLoot()}")
 
 
 def toggleEat():
-    if cfg.EAT:
+    if cfg.getEat():
         cfg.setEat(False)
     else:
         cfg.setEat(True)
-        if cfg.DROP == False:
+        if cfg.getDrop() == False:
             locateDropContainer()
-    Console.log(f"Eat: {cfg.EAT}")
+    Console.log(f"Eat: {cfg.getEat()}")
 
 
 def toggleDrop():
-    if cfg.DROP:
+    if cfg.getDrop():
         cfg.setDrop(False)
     else:
         cfg.setDrop(True)
-        if cfg.EAT == False:
+        if cfg.getEat() == False:
             locateDropContainer()
         if cfg.getLoot() == False:
             locateScreenCenter()
-    Console.log(f"Drop: {cfg.DROP}")
+    Console.log(f"Drop: {cfg.getDrop()}")
 
 
 def toggleProjector():
-    if cfg.PROJECTOR:
+    if cfg.getProjector():
         cfg.setProjector(False)
     else:
         cfg.setProjector(True)
-    Console.log(f"Projector: {cfg.PROJECTOR}")
+    Console.log(f"Projector: {cfg.getProjector()}")
 
 
 def selectHunt(value):

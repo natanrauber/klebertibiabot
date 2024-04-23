@@ -12,50 +12,50 @@ TEMP_DIR = CWD + "/images/temp"
 
 
 # PROJECTOR --------------------------------------------------
-PROJECTOR: bool = False
+_projector: bool = False
 
 
 def getProjector():
-    global PROJECTOR
-    return PROJECTOR
+    global _projector
+    return _projector
 
 
 def setProjector(value: bool):
-    global PROJECTOR
-    PROJECTOR = value
+    global _projector
+    _projector = value
 
 
 # ATTACK --------------------------------------------------
-ATTACK: bool = False
+_attack: bool = False
 ATTACK_KEY = Key.space
 ATTACK_TIMEOUT = 0  # 0 to disable
 
 
 def getAttack():
-    global ATTACK
-    return ATTACK
+    global _attack
+    return _attack
 
 
 def setAttack(value: bool):
-    global ATTACK
-    ATTACK = value
+    global _attack
+    _attack = value
 
 
 # HEAL --------------------------------------------------
-HEAL: bool = False
+_heal: bool = False
 HEAL_KEY = Key.f9
 HEAL_ON_YELLOW = True  # if False will heal on red
 
 
 def getHeal():
-    global HEAL
-    return HEAL
+    global _heal
+    return _heal
 
 
 def setHeal(value: bool):
-    global HEAL
-    HEAL = value
-    if HEAL == False:
+    global _heal
+    _heal = value
+    if _heal == False:
         FolderManager.delete_file(f"{SESSION_DIR}/health.png")
 
 
@@ -74,7 +74,7 @@ def getLoot():
 def setLoot(value: bool):
     global _loot
     _loot = value
-    if _loot == False and DROP == False:
+    if _loot == False and getDrop() == False:
         FolderManager.delete_file(f"{SESSION_DIR}/screen_center.png")
 
 
@@ -106,61 +106,61 @@ def setSqmSize(value: int):
 
 
 # WALK --------------------------------------------------
-WALK: bool = False
+_walk: bool = False
 WAYPOINTS_DIR = f"{CWD}/images/waypoints"
 ROPE_KEY = Key.f5
 STOP_ALL_ACTIONS_KEY = Key.pause
 
 
 def getWalk():
-    global WALK
-    return WALK
+    global _walk
+    return _walk
 
 
 def setWalk(value: bool):
-    global WALK
-    WALK = value
-    if WALK == False:
+    global _walk
+    _walk = value
+    if _walk == False:
         FolderManager.delete_file(f"{SESSION_DIR}/map.png")
 
 
 # EAT --------------------------------------------------
-EAT: bool = False
+_eat: bool = False
 
 
 def getEat():
-    global EAT
-    return EAT
+    global _eat
+    return _eat
 
 
 def setEat(value: bool):
-    global EAT
-    EAT = value
-    if EAT == False and DROP == False:
+    global _eat
+    _eat = value
+    if _eat == False and getDrop() == False:
         for file_name in os.listdir(SESSION_DIR):
             if "container" in file_name:
                 os.remove(os.path.join(SESSION_DIR, file_name))
 
 
 # DROP --------------------------------------------------
-DROP: bool = False
+_drop: bool = False
 DROP_CONTAINER = "shopping_bag"
-MAX_CLEANER_AMOUNT = 4  # each cleaner runs in a CPU thread
+MAX_CLEANER_AMOUNT = 2  # each cleaner runs in a CPU thread
 
 
 def getDrop():
-    global DROP
-    return DROP
+    global _drop
+    return _drop
 
 
 def setDrop(value: bool):
-    global DROP
-    DROP = value
-    if EAT == False and DROP == False:
+    global _drop
+    _drop = value
+    if getEat() == False and _drop == False:
         for file_name in os.listdir(SESSION_DIR):
             if "container" in file_name:
                 os.remove(os.path.join(SESSION_DIR, file_name))
-    if DROP == False and not getLoot():
+    if _drop == False and not getLoot():
         FolderManager.delete_file(f"{SESSION_DIR}/screen_center.png")
 
 
