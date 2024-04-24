@@ -15,6 +15,7 @@ from lib.utils.status import Status
 _hasLoot = False
 _localChat = CWD + "/images/interface/local_chat.png"
 _storeButton = CWD + "/images/interface/store_button.png"
+_storeButtonAlt = CWD + "/images/interface/store_button_alt.png"
 
 
 def locateScreenCenter():
@@ -22,6 +23,8 @@ def locateScreenCenter():
     try:
         _box1 = ImageLocator.get_pos(_localChat)
         _box2 = ImageLocator.get_pos(_storeButton)
+        if not type(_box2) == Box:
+            _box2 = ImageLocator.get_pos(_storeButtonAlt)
         if type(_box1) == Box and type(_box2) == Box:
             _box1 = Box(_box1.left + 23, _box1.top - 11, 50, 50)
             _box2 = Box(_box2.left - 12, _box2.top + 22, 50, 50)
@@ -37,10 +40,11 @@ def locateScreenCenter():
             )
             screenshot_path = f"{SESSION_DIR}/screen_center.png"
             pyautogui.screenshot(screenshot_path, region=_screen_center)
-        if _screen_center == None:
+        else:
+            Console.log("Cannot find screen center", color=Colors.red)
             Status.exit()
     except:
-        Console.log("Cannot find health bar", color=Colors.red)
+        Console.log("Cannot find screen center", color=Colors.red)
         Status.exit()
 
 
