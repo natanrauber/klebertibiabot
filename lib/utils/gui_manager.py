@@ -127,6 +127,9 @@ class GUIManager:
         Initializes a new instance of the GUIManager class.
         """
         self.rootWindow = tk.Tk()
+        self.rootWindow.attributes(
+            "-topmost", not self.rootWindow.attributes("-topmost")
+        )
         self.frame = ttk.Frame(self.rootWindow, style="Custom.TFrame")
         self.buttons_frame = ttk.Frame(self.frame, style="Custom.TFrame")
         self.button_resume = ttk.Button(
