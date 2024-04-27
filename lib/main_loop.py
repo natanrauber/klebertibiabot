@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from lib.actions.action import executeAction
+from lib.action import executeAction
 from lib.utils.status import Status
 
 

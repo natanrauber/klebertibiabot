@@ -13,45 +13,6 @@ from lib.utils.mouse import Mouse
 from lib.utils.status import Status
 
 _hasLoot = False
-_localChat = CWD + "/images/interface/local_chat.png"
-_storeButton = CWD + "/images/interface/store_button.png"
-_storeButtonAlt = CWD + "/images/interface/store_button_alt.png"
-
-
-def locateScreenCenter():
-    _screen_center = None
-    try:
-        _box1 = ImageLocator.get_pos(_localChat)
-        _box2 = ImageLocator.get_pos(_storeButton)
-        if not type(_box2) == Box:
-            _box2 = ImageLocator.get_pos(_storeButtonAlt)
-        if type(_box1) == Box and type(_box2) == Box:
-            _box1 = Box(_box1.left - 13, _box1.top - 84, 50, 50)
-            _box2 = Box(_box2.left - 13, _box2.top + 23, 50, 50)
-            width = _box2.left - _box1.left
-            height = _box1.top - _box2.top
-            setScreenCenter(_box1.left + (width // 2), _box2.top + (height // 2))
-            setSqmSize(width // 15)
-            _screen_center = Box(
-                getScreenCenterX() - (getSqmSize() // 2),
-                getScreenCenterY() - (getSqmSize() // 2),
-                getSqmSize(),
-                getSqmSize(),
-            )
-            screenshot_path = f"{SESSION_DIR}/screen_center.png"
-            pyautogui.screenshot(screenshot_path, region=_screen_center)
-
-            # For tests only
-            # _gameScreen = Box(_box1.left, _box2.top, width, height)
-            # _gameScreenPath = f"{SESSION_DIR}/game_screen.png"
-            # pyautogui.screenshot(_gameScreenPath, region=_gameScreen)
-
-        else:
-            Console.log("Cannot find screen center", color=Colors.red)
-            Status.exit()
-    except:
-        Console.log("Cannot find screen center", color=Colors.red)
-        Status.exit()
 
 
 def hasLoot():

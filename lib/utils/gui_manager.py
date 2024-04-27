@@ -6,14 +6,15 @@ from tkinter import ttk
 
 import lib.config as cfg
 from lib.actions.attack.attack import *
-from lib.actions.clean.clean import getContainerList, locateDropContainer, setContainer
 from lib.actions.heal.heal import setupHeal
-from lib.actions.loot.loot import locateScreenCenter
 from lib.actions.walk.walk import getHuntList, setHunt, setupWalk
 from lib.main_loop import main_loop
 from lib.uid import uid
 from lib.utils.console import Console
 from lib.utils.folder_manager import FolderManager
+from lib.utils.interface import (getContainerList, locateDropContainer,
+                                 locateGameWindow, locateStatsWindow,
+                                 setContainer)
 from lib.utils.status import Status
 
 
@@ -53,7 +54,7 @@ def toggleLoot():
     else:
         cfg.setLoot(True)
         if cfg.getDrop() == False:
-            locateScreenCenter()
+            locateGameWindow()
     Console.log(f"Loot: {cfg.getLoot()}")
 
 
@@ -64,6 +65,7 @@ def toggleEat():
         cfg.setEat(True)
         if cfg.getDrop() == False:
             locateDropContainer()
+            locateStatsWindow()
     Console.log(f"Eat: {cfg.getEat()}")
 
 
@@ -75,7 +77,7 @@ def toggleDrop():
         if cfg.getEat() == False:
             locateDropContainer()
         if cfg.getLoot() == False:
-            locateScreenCenter()
+            locateGameWindow()
     Console.log(f"Drop: {cfg.getDrop()}")
 
 
@@ -306,7 +308,7 @@ class GUIManager:
         if getWalk():
             setupWalk()
         if getLoot() or getDrop():
-            locateScreenCenter()
+            locateGameWindow()
         if getEat() or getDrop():
             locateDropContainer()
         Console.log("Reload complete")

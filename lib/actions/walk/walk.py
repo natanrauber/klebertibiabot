@@ -7,17 +7,15 @@ from typing import Optional
 import pyautogui
 from pyscreeze import Box
 
-from lib.actions.attack.attack import attack, disable_attack, enable_attack, hasTarget
+from lib.actions.attack.attack import (attack, disable_attack, enable_attack,
+                                       hasTarget)
 from lib.config import *
 from lib.utils.console import Colors, Console
 from lib.utils.image_locator import ImageLocator
+from lib.utils.interface import getMap, locateMap
 from lib.utils.keyboard import Keyboard
 from lib.utils.mouse import Mouse
 from lib.utils.status import Status
-
-_map_controls = CWD + "/images/interface/map_controls.png"
-_map: Optional[Box] = None
-
 
 _lastWalkTime = None
 _walk_cooldown = 1
@@ -51,29 +49,17 @@ def setHunt(value: str):
 
 
 def setupWalk():
-    _locateMap()
-
-
-def _locateMap():
-    _box: Optional[Box] = ImageLocator.get_pos(_map_controls)
-    if _box == None:
-        Console.log("cannot find map", color=Colors.red)
-        Status.exit()
-    else:
-        global _map
-        _map = Box(_box.left - 117, _box.top - 50, 106, 109)
-        pyautogui.screenshot(f"{SESSION_DIR}/map.png", region=_map)
-        pyautogui.screenshot(f"{TEMP_DIR}/last_map_view.png", region=_map)
+    locateMap()
 
 
 def _locateOnMap(image):
-    return ImageLocator.get_pos_on_region(image, _map, grayscale=True)
+    return ImageLocator.get_pos_on_region(image, getMap(), grayscale=True)
 
 
 def _locateOnMapCenter(image, size=28) -> Optional[Box]:
-    if type(_map) == Box:
-        _centerx = int(_map.left + (_map.width / 2))
-        _centery = int(_map.top + (_map.height / 2))
+    if type(getMap()) == Box:
+        _centerx = int(getMap().left + (getMap().width / 2))
+        _centery = int(getMap().top + (getMap().height / 2))
         _region = Box(
             int(_centerx - (size / 2)), int(_centery - (size / 2)), size, size
         )
@@ -122,7 +108,7 @@ def _repeatLastWaypoint():
 
     global _maybe_stuck
     _maybe_stuck = True
-    pyautogui.screenshot(f"{TEMP_DIR}/last_map_view.png", region=_map)
+    pyautogui.screenshot(f"{TEMP_DIR}/lastgetMap()_view.png", region=getMap())
 
 
 def _reachedLastWaypoint():
@@ -153,7 +139,7 @@ def _reachedLastWaypoint():
 
 def _isLastWaypointVisible():
     _waypoint = _waypoints[len(_waypoints) - 1]
-    _box = ImageLocator.get_pos_on_region(_waypoint, _map, grayscale=True)
+    _box = ImageLocator.get_pos_on_region(_waypoint, getMap(), grayscale=True)
     if type(_box) == Box:
         return True
     return False
@@ -169,7 +155,7 @@ def _maybeStuck():
 
 def _isStuck():
     if _maybeStuck():
-        _last_map_view = f"{TEMP_DIR}/last_map_view.png"
+        _last_map_view = f"{TEMP_DIR}/lastgetMap()_view.png"
         _box = ImageLocator.get_pos(_last_map_view)
         if type(_box) == Box:
             return True

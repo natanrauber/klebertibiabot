@@ -6,16 +6,14 @@ from pyscreeze import Box
 
 from lib.config import getProjector
 from lib.utils.cwd import CWD
+from lib.utils.image_locator import ImageLocator
+from lib.utils.interface import getStatsWindow
 from lib.utils.mouse import Mouse
 
-foodDir = CWD + "/images/food/"
-foodList = [foodDir + f for f in listdir(foodDir) if isfile(join(foodDir, f))]
+_stat_hungry = CWD + "/images/interface/stat_hungry.png"
+_food_dir = CWD + "/images/food/"
 
-_lastEat = datetime.now()
-
-
-def canEat() -> bool:
-    return (datetime.now() - _lastEat).seconds > 60
+foodList = [_food_dir + f for f in listdir(_food_dir) if isfile(join(_food_dir, f))]
 
 
 def isFood(image) -> bool:
@@ -33,3 +31,15 @@ def eat(box: Box):
     Mouse.lock(False)
     global _lastEat
     _lastEat = datetime.now()
+
+
+def isHungry() -> bool:
+    _box = ImageLocator.get_pos_on_region(
+        _stat_hungry,
+        getStatsWindow(),
+        grayscale=True,
+    )
+    _found = type(_box) == Box
+    if _found:
+        return True
+    return False

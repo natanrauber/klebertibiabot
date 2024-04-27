@@ -1,5 +1,4 @@
-from lib.actions.attack.attack import attack, hasTarget, isAttacking
-from lib.actions.attack_timeout import *
+from lib.actions.attack.attack import attack, hasTarget, isAttackEnabled, isAttacking
 from lib.actions.clean.clean import Cleaner, cleanerAmount
 from lib.actions.destroy.destroy import Destroyer, destroying
 from lib.actions.heal.heal import Healer, healing

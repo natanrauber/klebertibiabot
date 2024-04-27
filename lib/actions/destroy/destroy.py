@@ -9,6 +9,7 @@ from pyscreeze import Box
 from lib.config import *
 from lib.utils.console import Colors, Console
 from lib.utils.image_locator import ImageLocator
+from lib.utils.interface import locateGameWindow
 from lib.utils.keyboard import Keyboard
 from lib.utils.mouse import Mouse
 from lib.utils.status import Status
@@ -16,30 +17,10 @@ from lib.utils.window_manager import *
 
 _dir: str = CWD + "/images/destroy/"
 _barriers = [_dir + f for f in listdir(_dir) if isfile(join(_dir, f))]
-_game_window = None
-
-_interface_dir: str = CWD + "/images/interface"
-_window_header: str = f"{_interface_dir}/header.png"
-_window_footer: str = f"{_interface_dir}/footer.png"
 
 
 def setup_destroy():
-    _locate_game_window()
-
-
-def _locate_game_window():
-    global _game_window
-    try:
-        _box = ImageLocator.locate_window(
-            _window_header, _window_footer, save_as="game_window"
-        )
-        if type(_box) == Box:
-            _game_window = _box
-        if _game_window == None:
-            Status.exit()
-    except:
-        Console.log("cannot find game window", color=Colors.red)
-        Status.exit()
+    locateGameWindow()
 
 
 def _getImageName(image):

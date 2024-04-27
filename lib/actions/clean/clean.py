@@ -2,57 +2,26 @@ import threading
 import time
 from os import listdir
 from os.path import isfile, join
-from typing import List, Optional
 
 from pyscreeze import Box
 
-from lib.actions.eat import canEat, eat, foodList, isFood
+from lib.actions.eat import eat, foodList, isFood, isHungry
 from lib.config import *
 from lib.utils.console import Console
 from lib.utils.image_locator import ImageLocator
+from lib.utils.interface import getContainerWindows
 from lib.utils.mouse import Mouse
 from lib.utils.status import Status
 
 _active_cleaners = []
 _last_checked = []
 _lock_drop = False
-_container_window_footer = CWD + "/images/interface/window_footer.png"
-_containers_dir = CWD + "/images/containers"
 _blacklist_dir = CWD + "/images/blacklist/"
 _blackList = foodList + [
     _blacklist_dir + f
     for f in listdir(_blacklist_dir)
     if isfile(join(_blacklist_dir, f))
 ]
-_loot_windows: Optional[List[Box]] = []
-
-
-def getContainerList() -> list:
-    list = [f[:-4] for f in listdir(CONTAINERS_DIR) if isfile(join(CONTAINERS_DIR, f))]
-    list.insert(0, "")
-    return list
-
-
-_selected_container: str = ""
-
-
-def getSelectedContainer():
-    global _selected_container
-    return _selected_container
-
-
-def setContainer(value: str):
-    global _selected_container
-    _selected_container = value
-
-
-def locateDropContainer():
-    global _loot_windows
-    _loot_windows = ImageLocator.locate_all_windows(
-        f"{_containers_dir}/{_selected_container}.png",
-        _container_window_footer,
-        save_as="container",
-    )
 
 
 def cleanerAmount():
@@ -130,8 +99,8 @@ def dropBlackList():
     _list = getList(_id)
     addCleaner(_id)
     while not Status.is_paused() and (getEat() or getDrop()):
-        if _loot_windows:
-            for _window in _loot_windows:
+        if getContainerWindows():
+            for _window in getContainerWindows():
                 for _image in _list:
                     _box = ImageLocator.get_pos_on_region(
                         _image, _window, grayscale=True
@@ -139,7 +108,7 @@ def dropBlackList():
                     _found = type(_box) == Box
                     if _found and not _isLocked():
                         _lockDrop(True)
-                        if getEat() and canEat() and isFood(_image):
+                        if getEat() and isFood(_image) and isHungry():
                             Console.log(f"Eating {_getItemName(_image)}")
                             eat(_box)
                         elif getDrop():
