@@ -100,28 +100,28 @@ class GUIManager:
             self.checkbox_frame1,
             text=f"Attack",
             variable=self.option_vars[0],
-            style="Custom.TCheckbutton",
+            style="Red.TCheckbutton",
             command=self.toggleAttack,
         )
         self.checkbox_heal = ttk.Checkbutton(
             self.checkbox_frame1,
             text=f"Heal",
             variable=self.option_vars[1],
-            style="Custom.TCheckbutton",
+            style="Red.TCheckbutton",
             command=self.toggleHeal,
         )
         self.checkbox_walk = ttk.Checkbutton(
             self.checkbox_frame1,
             text=f"Walk",
             variable=self.option_vars[2],
-            style="Custom.TCheckbutton",
+            style="Red.TCheckbutton",
             command=self.toggleWalk,
         )
         self.checkbox_loot = ttk.Checkbutton(
             self.checkbox_frame1,
             text=f"Loot",
             variable=self.option_vars[3],
-            style="Custom.TCheckbutton",
+            style="Red.TCheckbutton",
             command=self.toggleLoot,
         )
         self.checkbox_separator2 = ttk.Frame(
@@ -132,21 +132,21 @@ class GUIManager:
             self.checkbox_frame2,
             text=f"Eat",
             variable=self.option_vars[4],
-            style="Custom.TCheckbutton",
+            style="Red.TCheckbutton",
             command=self.toggleEat,
         )
         self.checkbox_drop = ttk.Checkbutton(
             self.checkbox_frame2,
             text=f"Drop",
             variable=self.option_vars[5],
-            style="Custom.TCheckbutton",
+            style="Red.TCheckbutton",
             command=self.toggleDrop,
         )
         self.checkbox_projector = ttk.Checkbutton(
             self.checkbox_frame2,
             text=f"Projector",
             variable=self.option_vars[6],
-            style="Custom.TCheckbutton",
+            style="Red.TCheckbutton",
             command=self.toggleProjector,
         )
 
@@ -231,7 +231,9 @@ class GUIManager:
         Console.log("Reload complete")
 
     def toggleAttack(self):
-        self.reload()
+        self.checkbox_attack.config(
+            style="Red.TCheckbutton" if cfg.getAttack() else "Green.TCheckbutton"
+        )
         if cfg.getAttack() == True:
             cfg.setAttack(False)
             disable_attack()
@@ -243,6 +245,9 @@ class GUIManager:
         Console.log(f"Attack: {cfg.getAttack()}")
 
     def toggleHeal(self):
+        self.checkbox_heal.config(
+            style="Red.TCheckbutton" if cfg.getHeal() else "Green.TCheckbutton"
+        )
         if cfg.getHeal() == True:
             cfg.setHeal(False)
         else:
@@ -251,6 +256,9 @@ class GUIManager:
         Console.log(f"Heal: {cfg.getHeal()}")
 
     def toggleWalk(self):
+        self.checkbox_walk.config(
+            style="Red.TCheckbutton" if cfg.getWalk() else "Green.TCheckbutton"
+        )
         if cfg.getWalk() == True:
             cfg.setWalk(False)
         else:
@@ -259,6 +267,9 @@ class GUIManager:
         Console.log(f"Walk: {cfg.getWalk()}")
 
     def toggleLoot(self):
+        self.checkbox_loot.config(
+            style="Red.TCheckbutton" if cfg.getLoot() else "Green.TCheckbutton"
+        )
         if cfg.getLoot() == True:
             cfg.setLoot(False)
         else:
@@ -268,6 +279,9 @@ class GUIManager:
         Console.log(f"Loot: {cfg.getLoot()}")
 
     def toggleEat(self):
+        self.checkbox_eat.config(
+            style="Red.TCheckbutton" if cfg.getEat() else "Green.TCheckbutton"
+        )
         if cfg.getEat():
             cfg.setEat(False)
         else:
@@ -278,6 +292,9 @@ class GUIManager:
         Console.log(f"Eat: {cfg.getEat()}")
 
     def toggleDrop(self):
+        self.checkbox_drop.config(
+            style="Red.TCheckbutton" if cfg.getDrop() else "Green.TCheckbutton"
+        )
         if cfg.getDrop():
             cfg.setDrop(False)
         else:
@@ -289,6 +306,9 @@ class GUIManager:
         Console.log(f"Drop: {cfg.getDrop()}")
 
     def toggleProjector(self):
+        self.checkbox_projector.config(
+            style="Red.TCheckbutton" if cfg.getProjector() else "Green.TCheckbutton"
+        )
         if cfg.getProjector():
             cfg.setProjector(False)
         else:
@@ -336,8 +356,15 @@ class GUIManager:
             background="#f9f9f9",
         )
         style.configure(
-            "Custom.TCheckbutton",
+            "Red.TCheckbutton",
             background="#f9f9f9",
+            foreground="red",
+            width=8,
+        )
+        style.configure(
+            "Green.TCheckbutton",
+            background="#f9f9f9",
+            foreground="green",
             width=8,
         )
 
