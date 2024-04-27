@@ -108,7 +108,7 @@ def locateGameWindow():
             )
             pyautogui.screenshot(f"{SESSION_DIR}/game_window.png", region=_game_window)
             pyautogui.screenshot(
-                f"{SESSION_DIR}/_game_window_center.png", region=_game_window_center
+                f"{SESSION_DIR}/game_window_center.png", region=_game_window_center
             )
         else:
             Console.log("Cannot find screen center", color=Colors.red)
