@@ -5,10 +5,10 @@ from ctypes import byref, c_int, sizeof, windll
 from tkinter import ttk
 
 import lib.config as cfg
-from lib.actions.attack.attack import *
-from lib.actions.heal.heal import setupHeal
-from lib.actions.walk.walk import getHuntList, setHunt, setupWalk
 from lib.main_loop import main_loop
+from lib.modules.attack import *
+from lib.modules.heal import setupHeal
+from lib.modules.walk import getHuntList, setHunt, setupWalk
 from lib.uid import uid
 from lib.utils.console import Console
 from lib.utils.folder_manager import FolderManager

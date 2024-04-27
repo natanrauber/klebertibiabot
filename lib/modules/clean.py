@@ -5,8 +5,8 @@ from os.path import isfile, join
 
 from pyscreeze import Box
 
-from lib.actions.eat import eat, foodList, isFood, isHungry
 from lib.config import *
+from lib.modules.eat import eat, foodList, isFood, isHungry
 from lib.utils.console import Console
 from lib.utils.image_locator import ImageLocator
 from lib.utils.interface import getContainerWindows

@@ -1,10 +1,10 @@
-from lib.actions.attack.attack import attack, hasTarget, isAttackEnabled, isAttacking
-from lib.actions.clean.clean import Cleaner, cleanerAmount
-from lib.actions.destroy.destroy import Destroyer, destroying
-from lib.actions.heal.heal import Healer, healing
-from lib.actions.loot.loot import hasLoot, loot
-from lib.actions.walk.walk import walk, walkOnCooldown
 from lib.config import *
+from lib.modules.attack import attack, hasTarget, isAttackEnabled, isAttacking
+from lib.modules.clean import Cleaner, cleanerAmount
+from lib.modules.destroy import Destroyer, destroying
+from lib.modules.heal import Healer, healing
+from lib.modules.loot import hasLoot, loot
+from lib.modules.walk import walk, walkOnCooldown
 from lib.utils.status import *
 from lib.utils.window_manager import WindowManager
 

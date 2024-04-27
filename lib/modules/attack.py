@@ -4,8 +4,8 @@ from datetime import datetime
 import pyautogui
 from pyscreeze import Box
 
-from lib.actions.loot.loot import setHasLoot
 from lib.config import *
+from lib.modules.loot import setHasLoot
 from lib.utils.console import Colors, Console
 from lib.utils.interface import getBattleWindow, locateBattleWindow
 from lib.utils.keyboard import Keyboard

@@ -7,9 +7,8 @@ from typing import Optional
 import pyautogui
 from pyscreeze import Box
 
-from lib.actions.attack.attack import (attack, disable_attack, enable_attack,
-                                       hasTarget)
 from lib.config import *
+from lib.modules.attack import attack, disable_attack, enable_attack, hasTarget
 from lib.utils.console import Colors, Console
 from lib.utils.image_locator import ImageLocator
 from lib.utils.interface import getMap, locateMap
