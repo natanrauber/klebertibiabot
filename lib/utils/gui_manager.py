@@ -12,91 +12,8 @@ from lib.modules.walk import getHuntList, setHunt, setupWalk
 from lib.uid import uid
 from lib.utils.console import Console
 from lib.utils.folder_manager import FolderManager
-from lib.utils.interface import (getContainerList, locateDropContainer,
-                                 locateGameWindow, locateStatsWindow,
-                                 setContainer)
+from lib.utils.interface import *
 from lib.utils.status import Status
-
-
-def toggleAttack():
-    if cfg.getAttack() == True:
-        cfg.setAttack(False)
-        disable_attack()
-        FolderManager.delete_file(f"{cfg.SESSION_DIR}/battle.png")
-    else:
-        cfg.setAttack(True)
-        enable_attack()
-        setupAttack()
-    Console.log(f"Attack: {cfg.getAttack()}")
-
-
-def toggleHeal():
-    if cfg.getHeal() == True:
-        cfg.setHeal(False)
-    else:
-        cfg.setHeal(True)
-        setupHeal()
-    Console.log(f"Heal: {cfg.getHeal()}")
-
-
-def toggleWalk():
-    if cfg.getWalk() == True:
-        cfg.setWalk(False)
-    else:
-        cfg.setWalk(True)
-        setupWalk()
-    Console.log(f"Walk: {cfg.getWalk()}")
-
-
-def toggleLoot():
-    if cfg.getLoot() == True:
-        cfg.setLoot(False)
-    else:
-        cfg.setLoot(True)
-        if cfg.getDrop() == False:
-            locateGameWindow()
-    Console.log(f"Loot: {cfg.getLoot()}")
-
-
-def toggleEat():
-    if cfg.getEat():
-        cfg.setEat(False)
-    else:
-        cfg.setEat(True)
-        if cfg.getDrop() == False:
-            locateDropContainer()
-            locateStatsWindow()
-    Console.log(f"Eat: {cfg.getEat()}")
-
-
-def toggleDrop():
-    if cfg.getDrop():
-        cfg.setDrop(False)
-    else:
-        cfg.setDrop(True)
-        if cfg.getEat() == False:
-            locateDropContainer()
-        if cfg.getLoot() == False:
-            locateGameWindow()
-    Console.log(f"Drop: {cfg.getDrop()}")
-
-
-def toggleProjector():
-    if cfg.getProjector():
-        cfg.setProjector(False)
-    else:
-        cfg.setProjector(True)
-    Console.log(f"Projector: {cfg.getProjector()}")
-
-
-def selectHunt(value):
-    setHunt(value)
-    Console.log(f"Selected hunt: {value}")
-
-
-def selectContainer(value):
-    setContainer(value)
-    Console.log(f"Selected hunt: {value}")
 
 
 class GUIManager:
@@ -184,28 +101,28 @@ class GUIManager:
             text=f"Attack",
             variable=self.option_vars[0],
             style="Custom.TCheckbutton",
-            command=toggleAttack,
+            command=self.toggleAttack,
         )
         self.checkbox_heal = ttk.Checkbutton(
             self.checkbox_frame1,
             text=f"Heal",
             variable=self.option_vars[1],
             style="Custom.TCheckbutton",
-            command=toggleHeal,
+            command=self.toggleHeal,
         )
         self.checkbox_walk = ttk.Checkbutton(
             self.checkbox_frame1,
             text=f"Walk",
             variable=self.option_vars[2],
             style="Custom.TCheckbutton",
-            command=toggleWalk,
+            command=self.toggleWalk,
         )
         self.checkbox_loot = ttk.Checkbutton(
             self.checkbox_frame1,
             text=f"Loot",
             variable=self.option_vars[3],
             style="Custom.TCheckbutton",
-            command=toggleLoot,
+            command=self.toggleLoot,
         )
         self.checkbox_separator2 = ttk.Frame(
             self.frame, height=10, width=10, style="Custom.TFrame"
@@ -216,27 +133,27 @@ class GUIManager:
             text=f"Eat",
             variable=self.option_vars[4],
             style="Custom.TCheckbutton",
-            command=toggleEat,
+            command=self.toggleEat,
         )
         self.checkbox_drop = ttk.Checkbutton(
             self.checkbox_frame2,
             text=f"Drop",
             variable=self.option_vars[5],
             style="Custom.TCheckbutton",
-            command=toggleDrop,
+            command=self.toggleDrop,
         )
         self.checkbox_projector = ttk.Checkbutton(
             self.checkbox_frame2,
             text=f"Projector",
             variable=self.option_vars[6],
             style="Custom.TCheckbutton",
-            command=toggleProjector,
+            command=self.toggleProjector,
         )
 
         # dropdowns
         selected_hunt = tk.StringVar(self.frame)
         selected_hunt.set(getHuntList()[1])
-        selectHunt(getHuntList()[1])
+        self.selectHunt(getHuntList()[1])
         self.dropdown_separator1 = ttk.Frame(
             self.frame, height=10, width=10, style="Custom.TFrame"
         )
@@ -245,7 +162,7 @@ class GUIManager:
             self.dropdown_frame,
             selected_hunt,
             *getHuntList(),
-            command=selectHunt,
+            command=self.selectHunt,
         )
         selected_container = tk.StringVar(self.frame)
         selected_container.set(getContainerList()[1])
@@ -257,7 +174,7 @@ class GUIManager:
             self.dropdown_frame,
             selected_container,
             *getContainerList(),
-            command=selectContainer,
+            command=self.selectContainer,
         )
 
         # console
@@ -312,6 +229,81 @@ class GUIManager:
         if getEat() or getDrop():
             locateDropContainer()
         Console.log("Reload complete")
+
+    def toggleAttack(self):
+        self.reload()
+        if cfg.getAttack() == True:
+            cfg.setAttack(False)
+            disable_attack()
+            FolderManager.delete_file(f"{cfg.SESSION_DIR}/battle.png")
+        else:
+            cfg.setAttack(True)
+            enable_attack()
+            setupAttack()
+        Console.log(f"Attack: {cfg.getAttack()}")
+
+    def toggleHeal(self):
+        if cfg.getHeal() == True:
+            cfg.setHeal(False)
+        else:
+            cfg.setHeal(True)
+            setupHeal()
+        Console.log(f"Heal: {cfg.getHeal()}")
+
+    def toggleWalk(self):
+        if cfg.getWalk() == True:
+            cfg.setWalk(False)
+        else:
+            cfg.setWalk(True)
+            setupWalk()
+        Console.log(f"Walk: {cfg.getWalk()}")
+
+    def toggleLoot(self):
+        if cfg.getLoot() == True:
+            cfg.setLoot(False)
+        else:
+            cfg.setLoot(True)
+            if cfg.getDrop() == False:
+                locateGameWindow()
+        Console.log(f"Loot: {cfg.getLoot()}")
+
+    def toggleEat(self):
+        if cfg.getEat():
+            cfg.setEat(False)
+        else:
+            cfg.setEat(True)
+            if cfg.getDrop() == False:
+                locateDropContainer()
+                locateStatsWindow()
+        Console.log(f"Eat: {cfg.getEat()}")
+
+    def toggleDrop(self):
+        if cfg.getDrop():
+            cfg.setDrop(False)
+        else:
+            cfg.setDrop(True)
+            if cfg.getEat() == False:
+                locateDropContainer()
+            if cfg.getLoot() == False:
+                locateGameWindow()
+        Console.log(f"Drop: {cfg.getDrop()}")
+
+    def toggleProjector(self):
+        if cfg.getProjector():
+            cfg.setProjector(False)
+        else:
+            cfg.setProjector(True)
+        Console.log(f"Projector: {cfg.getProjector()}")
+
+    def selectHunt(self, value):
+        setHunt(value)
+        self.reload()
+        Console.log(f"Selected hunt: {value}")
+
+    def selectContainer(self, value):
+        setContainer(value)
+        self.reload()
+        Console.log(f"Selected hunt: {value}")
 
     def configure_widgets(self):
         """
