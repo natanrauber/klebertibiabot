@@ -144,7 +144,7 @@ def setEat(value: bool):
 
 # DROP --------------------------------------------------
 _drop: bool = False
-DROP_CONTAINER = "shopping_bag"
+CONTAINERS_DIR = f"{CWD}/images/containers"
 MAX_CLEANER_AMOUNT = 2  # each cleaner runs in a CPU thread
 
 

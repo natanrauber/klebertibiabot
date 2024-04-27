@@ -6,7 +6,7 @@ from tkinter import ttk
 
 import lib.config as cfg
 from lib.actions.attack.attack import *
-from lib.actions.clean.clean import locateDropContainer
+from lib.actions.clean.clean import getContainerList, locateDropContainer, setContainer
 from lib.actions.heal.heal import setupHeal
 from lib.actions.loot.loot import locateScreenCenter
 from lib.actions.walk.walk import getHuntList, setHunt, setupWalk
@@ -92,6 +92,11 @@ def selectHunt(value):
     Console.log(f"Selected hunt: {value}")
 
 
+def selectContainer(value):
+    setContainer(value)
+    Console.log(f"Selected hunt: {value}")
+
+
 class GUIManager:
     """
     A class for managing the GUI of the Kleber application.
@@ -139,6 +144,8 @@ class GUIManager:
             state=tk.NORMAL,
             style="Resume.TButton",
         )
+
+        # buttons
         self.button_separator1 = ttk.Frame(
             self.buttons_frame, height=8, width=13, style="Custom.TFrame"
         )
@@ -159,6 +166,8 @@ class GUIManager:
             state=tk.NORMAL,
             style="Reload.TButton",
         )
+
+        # checkboxes
         self.option_vars = []
         for i in range(7):
             option_var = tk.BooleanVar()
@@ -221,18 +230,35 @@ class GUIManager:
             style="Custom.TCheckbutton",
             command=toggleProjector,
         )
+
+        # dropdowns
         selected_hunt = tk.StringVar(self.frame)
         selected_hunt.set(getHuntList()[1])
         selectHunt(getHuntList()[1])
-        self.dropdown_separator = ttk.Frame(
+        self.dropdown_separator1 = ttk.Frame(
             self.frame, height=10, width=10, style="Custom.TFrame"
         )
-        self.dropdown = ttk.OptionMenu(
-            self.frame,
+        self.dropdown_frame = ttk.Frame(self.frame, style="Custom.TFrame")
+        self.dropdown_hunt = ttk.OptionMenu(
+            self.dropdown_frame,
             selected_hunt,
             *getHuntList(),
             command=selectHunt,
         )
+        selected_container = tk.StringVar(self.frame)
+        selected_container.set(getContainerList()[1])
+        setContainer(getContainerList()[1])
+        self.dropdown_separator2 = ttk.Frame(
+            self.dropdown_frame, height=10, width=8, style="Custom.TFrame"
+        )
+        self.dropdown_container = ttk.OptionMenu(
+            self.dropdown_frame,
+            selected_container,
+            *getContainerList(),
+            command=selectContainer,
+        )
+
+        # console
         self.console_separator = ttk.Frame(
             self.frame, height=10, width=10, style="Custom.TFrame"
         )
@@ -272,6 +298,7 @@ class GUIManager:
         self.rootWindow.focus()
         self.pause()
         Console.log("Reloading...")
+        FolderManager.clear_folder(SESSION_DIR)
         if getAttack():
             setupAttack()
         if getHeal():
@@ -325,12 +352,16 @@ class GUIManager:
         self.rootWindow.configure(bg="#f9f9f9")
         self.rootWindow.resizable(False, False)
         self.frame.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
+
+        # buttons
         self.buttons_frame.pack()
         self.button_resume.pack(side=tk.LEFT)
         self.button_separator1.pack(side=tk.LEFT)
         self.button_pause.pack(side=tk.LEFT)
         self.button_separator2.pack(side=tk.LEFT)
         self.button_reload.pack(side=tk.LEFT)
+
+        # checkboxes
         self.checkbox_separator1.pack()
         self.checkbox_frame1.pack(fill=tk.BOTH, expand=True)
         self.checkbox_attack.pack(side=tk.LEFT, padx=(0, 10))
@@ -342,8 +373,17 @@ class GUIManager:
         self.checkbox_eat.pack(side=tk.LEFT, padx=(0, 10))
         self.checkbox_drop.pack(side=tk.LEFT, padx=(0, 10))
         self.checkbox_projector.pack(side=tk.LEFT, padx=(0, 0))
-        self.dropdown_separator.pack()
-        self.dropdown.pack()
+
+        # dropdowns
+        self.dropdown_separator1.pack()
+        self.dropdown_frame.pack()
+        self.dropdown_container.configure(width=20)
+        self.dropdown_container.pack(side=tk.LEFT)
+        self.dropdown_separator2.pack(side=tk.LEFT)
+        self.dropdown_hunt.configure(width=20)
+        self.dropdown_hunt.pack(side=tk.LEFT)
+
+        # console
         self.console_separator.pack()
         self.console.pack(fill=tk.BOTH)
 

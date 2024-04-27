@@ -27,14 +27,31 @@ _blackList = foodList + [
 _loot_windows: Optional[List[Box]] = []
 
 
-def getContainerImage(name):
-    return f"{_containers_dir}/{name}.png"
+def getContainerList() -> list:
+    list = [f[:-4] for f in listdir(CONTAINERS_DIR) if isfile(join(CONTAINERS_DIR, f))]
+    list.insert(0, "")
+    return list
+
+
+_selected_container: str = ""
+
+
+def getSelectedContainer():
+    global _selected_container
+    return _selected_container
+
+
+def setContainer(value: str):
+    global _selected_container
+    _selected_container = value
 
 
 def locateDropContainer():
     global _loot_windows
     _loot_windows = ImageLocator.locate_all_windows(
-        getContainerImage(DROP_CONTAINER), _container_window_footer, save_as="container"
+        f"{_containers_dir}/{_selected_container}.png",
+        _container_window_footer,
+        save_as="container",
     )
 
 
