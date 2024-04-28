@@ -23,11 +23,8 @@ def isFood(image) -> bool:
 def eat(box: Box):
     Mouse.lock(True)
     _initPos = Mouse.get_pos()
-    if getOTServer():
-        Mouse.click_left((box.left + 16, box.top + 16))
-    else:
-        Mouse.click_left((box.left + 16, box.top + 16 + 350))
-    Mouse.set_pos(_initPos)
+    Mouse.click_left((box.left + 16, box.top + 16))
+    Mouse.set_pos(_initPos, useOffSet=False)
     Mouse.lock(False)
     global _lastEat
     _lastEat = datetime.now()

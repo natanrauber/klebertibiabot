@@ -1,6 +1,7 @@
 import random
 import time
 from ctypes import windll
+from typing import Optional
 
 import win32api
 import win32con
@@ -52,12 +53,19 @@ class Mouse:
         return win32api.GetCursorPos()
 
     @staticmethod
-    def set_pos(end_pos: tuple) -> None:
+    def set_pos(
+        end_pos: tuple,
+        duration: float = 0.1,
+        useOffSet: Optional[bool] = None,
+    ) -> None:
+        if useOffSet == None:
+            useOffSet = not getOTServer()
         if getOTServer():
             win32api.SetCursorPos(end_pos)
         else:
+            if useOffSet:
+                end_pos = (end_pos[0], end_pos[1] + 350)
             start_pos = Mouse.get_pos()
-            duration = 0.1
             start_time = time.time()
             while time.time() - start_time < duration:
                 elapsed_time = time.time() - start_time
@@ -73,14 +81,14 @@ class Mouse:
             win32api.SetCursorPos(end_pos)
 
     @staticmethod
-    def click_left(pos: tuple) -> None:
+    def click_left(pos: tuple, duration: float = 0.1) -> None:
         """
         Simulates a left mouse click at the specified position.
 
         Args:
             pos (tuple): The x and y coordinates of the mouse position.
         """
-        Mouse.set_pos(pos)
+        Mouse.set_pos(pos, duration=duration)
         win32api.mouse_event(win32con.MOUSEEVENTF_LEFTDOWN, 0, 0)
         win32api.mouse_event(win32con.MOUSEEVENTF_LEFTUP, 0, 0)
 

@@ -43,12 +43,9 @@ def _drop(box: Box):
         return _drop(box)
     Mouse.lock(True)
     _initPos = Mouse.get_pos()
-    if getOTServer():
-        Mouse.press_left((box.left + 16, box.top + 16))
-    else:
-        Mouse.press_left((box.left + 16, box.top + 16 + 350))
+    Mouse.press_left((box.left + 16, box.top + 16))
     Mouse.release_left((getScreenCenterX(), getScreenCenterY()))
-    Mouse.set_pos(_initPos)
+    Mouse.set_pos(_initPos, useOffSet=False)
     Mouse.lock(False)
 
 

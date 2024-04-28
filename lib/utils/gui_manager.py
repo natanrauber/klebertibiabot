@@ -236,6 +236,7 @@ class GUIManager:
             cfg.setOTServer(False)
         else:
             cfg.setOTServer(True)
+        self.reload()
         Console.log(f"OTServer: {cfg.getOTServer()}")
 
     def toggleAttack(self):

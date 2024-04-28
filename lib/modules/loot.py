@@ -36,23 +36,42 @@ def loot():
     time.sleep(0.3)
     Keyboard.hold(Key.alt)
     Mouse.click_left(
-        (getScreenCenterX() + getSqmSize(), getScreenCenterY() - getSqmSize())
+        (getScreenCenterX() + getSqmSize(), getScreenCenterY() - getSqmSize()),
+        duration=0.05,
     )
-    Mouse.click_left((getScreenCenterX(), getScreenCenterY() - getSqmSize()))
     Mouse.click_left(
-        (getScreenCenterX() - getSqmSize(), getScreenCenterY() - getSqmSize())
+        (getScreenCenterX(), getScreenCenterY() - getSqmSize()),
+        duration=0.05,
     )
-    Mouse.click_left((getScreenCenterX() - getSqmSize(), getScreenCenterY()))
     Mouse.click_left(
-        (getScreenCenterX() - getSqmSize(), getScreenCenterY() + getSqmSize())
+        (getScreenCenterX() - getSqmSize(), getScreenCenterY() - getSqmSize()),
+        duration=0.05,
     )
-    Mouse.click_left((getScreenCenterX(), getScreenCenterY() + getSqmSize()))
     Mouse.click_left(
-        (getScreenCenterX() + getSqmSize(), getScreenCenterY() + getSqmSize())
+        (getScreenCenterX() - getSqmSize(), getScreenCenterY()),
+        duration=0.05,
     )
-    Mouse.click_left((getScreenCenterX() + getSqmSize(), getScreenCenterY()))
-    Mouse.click_left((getScreenCenterX(), getScreenCenterY()))
+    Mouse.click_left(
+        (getScreenCenterX() - getSqmSize(), getScreenCenterY() + getSqmSize()),
+        duration=0.05,
+    )
+    Mouse.click_left(
+        (getScreenCenterX(), getScreenCenterY() + getSqmSize()),
+        duration=0.05,
+    )
+    Mouse.click_left(
+        (getScreenCenterX() + getSqmSize(), getScreenCenterY() + getSqmSize()),
+        duration=0.05,
+    )
+    Mouse.click_left(
+        (getScreenCenterX() + getSqmSize(), getScreenCenterY()),
+        duration=0.05,
+    )
+    Mouse.click_left(
+        (getScreenCenterX(), getScreenCenterY()),
+        duration=0.05,
+    )
     Keyboard.release(Key.alt)
-    Mouse.set_pos(_initPos)
+    Mouse.set_pos(_initPos, useOffSet=False)
     Mouse.lock(False)
     setHasLoot(False)

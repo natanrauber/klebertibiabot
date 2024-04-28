@@ -62,12 +62,9 @@ def _move(box: Box):
     time.sleep(0.5)
     Mouse.lock(True)
     _initPos = Mouse.get_pos()
-    if getOTServer():
-        Mouse.press_left((box.left + 10, box.top + 10))
-    else:
-        Mouse.press_left((box.left + 10, box.top + 10 + 350))
+    Mouse.press_left((box.left + 10, box.top + 10))
     Mouse.release_left((getScreenCenterX(), getScreenCenterY()))
-    Mouse.set_pos(_initPos)
+    Mouse.set_pos(_initPos, useOffSet=False)
     Mouse.lock(False)
 
 
@@ -81,7 +78,7 @@ def _doDestroy(box: Box):
     _initPos = Mouse.get_pos()
     Keyboard.press(DESTROY_KEY)
     Mouse.click_left((box.left - 900 + 10, box.top + 10))
-    Mouse.set_pos(_initPos)
+    Mouse.set_pos(_initPos, useOffSet=False)
     Mouse.lock(False)
 
 

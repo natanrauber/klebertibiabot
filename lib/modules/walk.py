@@ -82,11 +82,8 @@ def _walk(box: Box):
     # time.sleep(0.5)
     Mouse.lock(True)
     _initPos = Mouse.get_pos()
-    if getOTServer():
-        Mouse.click_left((box.left + 3, box.top + 3))
-    else:
-        Mouse.click_left((box.left + 3, box.top + 3 + 350))
-    Mouse.set_pos(_initPos)
+    Mouse.click_left((box.left + 3, box.top + 3))
+    Mouse.set_pos(_initPos, useOffSet=False)
     Mouse.lock(False)
     global _lastWalkTime
     _lastWalkTime = datetime.now()
@@ -287,7 +284,7 @@ def _stack_items():
     time.sleep(0.01)
     Mouse.release_left((getScreenCenterX() + (getSqmSize() * 2), getScreenCenterY()))
     time.sleep(0.01)
-    Mouse.set_pos(_initPos)
+    Mouse.set_pos(_initPos, useOffSet=False)
     Mouse.lock(False)
 
 
@@ -339,7 +336,7 @@ def _destroy_items():
     time.sleep(0.3)
     Mouse.click_left((getScreenCenterX(), getScreenCenterY()))
     time.sleep(0.3)
-    Mouse.set_pos(_initPos)
+    Mouse.set_pos(_initPos, useOffSet=False)
     Mouse.lock(False)
 
 
@@ -352,7 +349,7 @@ def _useLadder():
     Mouse.lock(True)
     _initPos = Mouse.get_pos()
     Mouse.click_left((getScreenCenterX(), getScreenCenterY()))
-    Mouse.set_pos(_initPos)
+    Mouse.set_pos(_initPos, useOffSet=False)
     Mouse.lock(False)
 
 
@@ -368,7 +365,7 @@ def _useRope():
     _initPos = Mouse.get_pos()
     Keyboard.press(ROPE_KEY)
     Mouse.click_left((getScreenCenterX(), getScreenCenterY()))
-    Mouse.set_pos(_initPos)
+    Mouse.set_pos(_initPos, useOffSet=False)
     Mouse.lock(False)
 
 
@@ -411,7 +408,7 @@ def _rope_all():
     time.sleep(1)
     Keyboard.press(ROPE_KEY)
     Mouse.click_left((getScreenCenterX(), getScreenCenterY()))
-    Mouse.set_pos(_initPos)
+    Mouse.set_pos(_initPos, useOffSet=False)
     Mouse.lock(False)
 
 
