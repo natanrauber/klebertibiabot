@@ -1,7 +1,13 @@
+import random
+import time
 from ctypes import windll
 
 import win32api
 import win32con
+
+from lib.config import getProjector, getScreenCenterX, getScreenCenterY, getSqmSize
+from lib.utils.console import Console
+from lib.utils.math import Math
 
 
 class Mouse:
@@ -46,14 +52,25 @@ class Mouse:
         return win32api.GetCursorPos()
 
     @staticmethod
-    def set_pos(pos: tuple) -> None:
-        """
-        Sets the position of the mouse.
-
-        Args:
-            pos (tuple): The x and y coordinates of the mouse position.
-        """
-        win32api.SetCursorPos(pos)
+    def set_pos(end_pos: tuple) -> None:
+        if getProjector():
+            start_pos = Mouse.get_pos()
+            duration = 0.1
+            start_time = time.time()
+            while time.time() - start_time < duration:
+                elapsed_time = time.time() - start_time
+                t = min(elapsed_time / duration, 1.0)
+                # Calculate point on bezier curve
+                new_x, new_y = Math.bezier_curve(start_pos, end_pos, t)
+                # Add noise to the curve
+                noise_x = random.randint(-10, 10)  # Adjust the range of noise as needed
+                noise_y = random.randint(-10, 10)  # Adjust the range of noise as needed
+                new_x += noise_x
+                new_y += noise_y
+                win32api.SetCursorPos((new_x, new_y))
+            win32api.SetCursorPos(end_pos)
+        else:
+            win32api.SetCursorPos(end_pos)
 
     @staticmethod
     def click_left(pos: tuple) -> None:
@@ -63,8 +80,8 @@ class Mouse:
         Args:
             pos (tuple): The x and y coordinates of the mouse position.
         """
-        win32api.SetCursorPos(pos)
-        win32api.mouse_event(win32con.MOUSEEVENTF_LEFTDOWN,  0, 0)
+        Mouse.set_pos(pos)
+        win32api.mouse_event(win32con.MOUSEEVENTF_LEFTDOWN, 0, 0)
         win32api.mouse_event(win32con.MOUSEEVENTF_LEFTUP, 0, 0)
 
     @staticmethod
@@ -75,8 +92,8 @@ class Mouse:
         Args:
             pos (tuple): The x and y coordinates of the mouse position.
         """
-        win32api.SetCursorPos(pos)
-        win32api.mouse_event(win32con.MOUSEEVENTF_LEFTDOWN,  0, 0)
+        Mouse.set_pos(pos)
+        win32api.mouse_event(win32con.MOUSEEVENTF_LEFTDOWN, 0, 0)
 
     @staticmethod
     def release_left(pos: tuple) -> None:
@@ -86,5 +103,5 @@ class Mouse:
         Args:
             pos (tuple): The x and y coordinates of the mouse position.
         """
-        win32api.SetCursorPos(pos)
+        Mouse.set_pos(pos)
         win32api.mouse_event(win32con.MOUSEEVENTF_LEFTUP, 0, 0)
