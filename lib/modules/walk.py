@@ -78,8 +78,8 @@ def _walk(box: Box):
     if Mouse.is_locked():
         time.sleep(0.1)
         return _walk(box)
-    Keyboard.press(STOP_ALL_ACTIONS_KEY)
-    time.sleep(0.5)
+    # Keyboard.press(STOP_ALL_ACTIONS_KEY)
+    # time.sleep(0.5)
     Mouse.lock(True)
     _initPos = Mouse.get_pos()
     if getProjector():
