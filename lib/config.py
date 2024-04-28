@@ -11,18 +11,18 @@ TEMP_DIR = CWD + "/images/temp"
 # Expected projector window size: 1020x318
 
 
-# PROJECTOR --------------------------------------------------
-_projector: bool = False
+# OT SERVER --------------------------------------------------
+_otserver: bool = False
 
 
-def getProjector():
-    global _projector
-    return _projector
+def getOTServer():
+    global _otserver
+    return _otserver
 
 
-def setProjector(value: bool):
-    global _projector
-    _projector = value
+def setOTServer(value: bool):
+    global _otserver
+    _otserver = value
 
 
 # ATTACK --------------------------------------------------

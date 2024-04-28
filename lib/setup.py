@@ -20,7 +20,7 @@ def setup() -> None:
     FolderManager.clear_folder(SESSION_DIR)
     FolderManager.open_folder(SESSION_DIR)
     WindowManager.activate("Tibia -")
-    if getProjector():
+    if not getOTServer():
         WindowManager.activate("Projector")
     WindowManager.activate("session")
     WindowManager.activate(uid)

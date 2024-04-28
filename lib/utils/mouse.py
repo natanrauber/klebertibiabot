@@ -5,7 +5,7 @@ from ctypes import windll
 import win32api
 import win32con
 
-from lib.config import getProjector, getScreenCenterX, getScreenCenterY, getSqmSize
+from lib.config import getOTServer, getScreenCenterX, getScreenCenterY, getSqmSize
 from lib.utils.console import Console
 from lib.utils.math import Math
 
@@ -53,7 +53,9 @@ class Mouse:
 
     @staticmethod
     def set_pos(end_pos: tuple) -> None:
-        if getProjector():
+        if getOTServer():
+            win32api.SetCursorPos(end_pos)
+        else:
             start_pos = Mouse.get_pos()
             duration = 0.1
             start_time = time.time()
@@ -68,8 +70,6 @@ class Mouse:
                 new_x += noise_x
                 new_y += noise_y
                 win32api.SetCursorPos((new_x, new_y))
-            win32api.SetCursorPos(end_pos)
-        else:
             win32api.SetCursorPos(end_pos)
 
     @staticmethod

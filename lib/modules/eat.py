@@ -4,7 +4,7 @@ from os.path import isfile, join
 
 from pyscreeze import Box
 
-from lib.config import getProjector
+from lib.config import getOTServer
 from lib.utils.cwd import CWD
 from lib.utils.image_locator import ImageLocator
 from lib.utils.interface import getStatsWindow
@@ -23,10 +23,10 @@ def isFood(image) -> bool:
 def eat(box: Box):
     Mouse.lock(True)
     _initPos = Mouse.get_pos()
-    if getProjector():
-        Mouse.click_left((box.left + 16, box.top + 16 + 350))
-    else:
+    if getOTServer():
         Mouse.click_left((box.left + 16, box.top + 16))
+    else:
+        Mouse.click_left((box.left + 16, box.top + 16 + 350))
     Mouse.set_pos(_initPos)
     Mouse.lock(False)
     global _lastEat

@@ -82,10 +82,10 @@ def _walk(box: Box):
     # time.sleep(0.5)
     Mouse.lock(True)
     _initPos = Mouse.get_pos()
-    if getProjector():
-        Mouse.click_left((box.left + 3, box.top + 3 + 350))
-    else:
+    if getOTServer():
         Mouse.click_left((box.left + 3, box.top + 3))
+    else:
+        Mouse.click_left((box.left + 3, box.top + 3 + 350))
     Mouse.set_pos(_initPos)
     Mouse.lock(False)
     global _lastWalkTime

@@ -12,7 +12,7 @@ from lib.utils.window_manager import WindowManager
 def executeAction():
     if not WindowManager.isActive("Tibia"):
         WindowManager.activate("Tibia -")
-    if getProjector() and not WindowManager.isActive("Projector"):
+    if not getOTServer() and not WindowManager.isActive("Projector"):
         WindowManager.activate("Projector")
 
     if Status.is_sleeping():
