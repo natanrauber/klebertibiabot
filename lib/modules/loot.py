@@ -1,3 +1,4 @@
+import random
 import time
 
 import pyautogui
@@ -35,42 +36,21 @@ def loot():
     _initPos = Mouse.get_pos()
     time.sleep(0.3)
     Keyboard.hold(Key.alt)
-    Mouse.click_left(
+    sqm_list: list[tuple] = [
         (getScreenCenterX() + getSqmSize(), getScreenCenterY() - getSqmSize()),
-        duration=0.05,
-    )
-    Mouse.click_left(
         (getScreenCenterX(), getScreenCenterY() - getSqmSize()),
-        duration=0.05,
-    )
-    Mouse.click_left(
         (getScreenCenterX() - getSqmSize(), getScreenCenterY() - getSqmSize()),
-        duration=0.05,
-    )
-    Mouse.click_left(
         (getScreenCenterX() - getSqmSize(), getScreenCenterY()),
-        duration=0.05,
-    )
-    Mouse.click_left(
         (getScreenCenterX() - getSqmSize(), getScreenCenterY() + getSqmSize()),
-        duration=0.05,
-    )
-    Mouse.click_left(
         (getScreenCenterX(), getScreenCenterY() + getSqmSize()),
-        duration=0.05,
-    )
-    Mouse.click_left(
         (getScreenCenterX() + getSqmSize(), getScreenCenterY() + getSqmSize()),
-        duration=0.05,
-    )
-    Mouse.click_left(
         (getScreenCenterX() + getSqmSize(), getScreenCenterY()),
-        duration=0.05,
-    )
-    Mouse.click_left(
         (getScreenCenterX(), getScreenCenterY()),
-        duration=0.05,
-    )
+    ]
+    random.shuffle(sqm_list)
+    for i in range(len(sqm_list)):
+        Mouse.click_left(sqm_list[i], duration=0.05)
+
     Keyboard.release(Key.alt)
     Mouse.set_pos(_initPos, useOffSet=False)
     Mouse.lock(False)
