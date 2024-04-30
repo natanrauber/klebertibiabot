@@ -55,7 +55,7 @@ def getHeal():
 def setHeal(value: bool):
     global _heal
     _heal = value
-    if _heal == False:
+    if _heal is False:
         FolderManager.delete_file(f"{SESSION_DIR}/health.png")
 
 
@@ -74,8 +74,9 @@ def getLoot():
 def setLoot(value: bool):
     global _loot
     _loot = value
-    if _loot == False and getDrop() == False:
-        FolderManager.delete_file(f"{SESSION_DIR}/screen_center.png")
+    if _loot is False and getDrop() is False:
+        FolderManager.delete_file(f"{SESSION_DIR}/game_window.png")
+        FolderManager.delete_file(f"{SESSION_DIR}/center_sqm.png")
 
 
 def getScreenCenterX():
@@ -120,7 +121,7 @@ def getWalk():
 def setWalk(value: bool):
     global _walk
     _walk = value
-    if _walk == False:
+    if _walk is False:
         FolderManager.delete_file(f"{SESSION_DIR}/map.png")
 
 
@@ -136,10 +137,12 @@ def getEat():
 def setEat(value: bool):
     global _eat
     _eat = value
-    if _eat == False and getDrop() == False:
-        for file_name in os.listdir(SESSION_DIR):
-            if "container" in file_name:
-                os.remove(os.path.join(SESSION_DIR, file_name))
+    if _eat is False:
+        FolderManager.delete_file(f"{SESSION_DIR}/stats_window.png")
+        if getDrop() is False:
+            for file_name in os.listdir(SESSION_DIR):
+                if "container" in file_name:
+                    os.remove(os.path.join(SESSION_DIR, file_name))
 
 
 # DROP --------------------------------------------------
@@ -156,12 +159,13 @@ def getDrop():
 def setDrop(value: bool):
     global _drop
     _drop = value
-    if getEat() == False and _drop == False:
+    if getEat() is False and _drop is False:
         for file_name in os.listdir(SESSION_DIR):
             if "container" in file_name:
                 os.remove(os.path.join(SESSION_DIR, file_name))
-    if _drop == False and not getLoot():
-        FolderManager.delete_file(f"{SESSION_DIR}/screen_center.png")
+    if _drop is False and not getLoot():
+        FolderManager.delete_file(f"{SESSION_DIR}/game_window.png")
+        FolderManager.delete_file(f"{SESSION_DIR}/center_sqm.png")
 
 
 # DESTROY --------------------------------------------------
