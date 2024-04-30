@@ -17,12 +17,12 @@ def is_admin() -> bool:
     """
     try:
         return ctypes.windll.shell32.IsUserAnAdmin()
-    except:
+    except Exception:
         return False
 
 
 if is_admin():
-    FolderManager.delete_file(f"./dist/compiler.exe")
+    FolderManager.delete_file("./dist/compiler.exe")
     setup()
     gui_manager = GUIManager()
     gui_manager.start()
