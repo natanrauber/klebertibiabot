@@ -1,8 +1,17 @@
+from typing import Any
+
+
 class Math:
     @staticmethod
-    def get_perpendicular_point(start_pos: tuple, end_pos: tuple):
+    def get_perpendicular_point(
+        start_pos: tuple[Any, Any],
+        end_pos: tuple[Any, Any],
+    ) -> tuple[Any, Any]:
         # Calculate midpoint
-        mid_point = ((start_pos[0] + end_pos[0]) // 2, (start_pos[1] + end_pos[1]) // 2)
+        mid_point: tuple[Any, Any] = (
+            (start_pos[0] + end_pos[0]) // 2,
+            (start_pos[1] + end_pos[1]) // 2,
+        )
         # Calculate vector from start to end
         dx = end_pos[0] - start_pos[0]
         dy = end_pos[1] - start_pos[1]
@@ -18,11 +27,11 @@ class Math:
 
     @staticmethod
     def bezier_curve(
-        start_pos: tuple,
-        end_pos: tuple,
+        start_pos: tuple[Any, Any],
+        end_pos: tuple[Any, Any],
         t: float,
-        control_point: tuple = (0, 0),
-    ):
+        control_point: tuple[Any, Any] = (0, 0),
+    ) -> tuple[Any, Any]:
         if control_point == (0, 0):
             control_point = Math.get_perpendicular_point(start_pos, end_pos)
         x = (

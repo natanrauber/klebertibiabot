@@ -1,221 +1,230 @@
-from ntpath import join
-from os import listdir
 from typing import List, Optional
 
 import pyautogui
-from genericpath import isfile
 from pyscreeze import Box
 
-from lib.config import *
-from lib.utils.colors import Colors
+from lib.config import Config
 from lib.utils.console import Console
-from lib.utils.cwd import CWD
+from lib.utils.dir import Dir
 from lib.utils.image_locator import ImageLocator
 from lib.utils.status import Status
 
-# BATTLE
-_battle_window_header = CWD + "/images/interface/battle_window_title.png"
-_battle_window_footer = CWD + "/images/interface/window_footer.png"
-_battle_window: Box = Box(0, 0, 0, 0)
+# battle
+_battle_window_header = f"{Dir.INTERFACE}/battle_window_title.png"
+_battle_window_footer = f"{Dir.INTERFACE}/window_footer.png"
+battle_window: Box = Box(0, 0, 0, 0)
+
+# stats
+_stop_button = f"{Dir.INTERFACE}/stop_button.png"
+stats_window: Box = Box(0, 0, 0, 0)
+
+# screen center
+_local_chat = f"{Dir.INTERFACE}/local_chat.png"
+_store_button = f"{Dir.INTERFACE}/store_button.png"
+_store_button_alt = f"{Dir.INTERFACE}/store_button_alt.png"
+game_window: Box = Box(0, 0, 0, 0)
+center_sqm: Box = Box(0, 0, 0, 0)
+
+# containers
+_container_window_footer = f"{Dir.INTERFACE}/window_footer.png"
+container_window_list: List[Box] = []
+selected_container: str = ""
+
+# health bar
+_health_bar_list = Dir.getFiles(Dir.HEALTH)
+health_bar: Box = Box(0, 0, 0, 0)
+
+# map
+_map_controls = f"{Dir.INTERFACE}/map_controls.png"
+map: Box = Box(0, 0, 0, 0)
 
 
-def getBattleWindow() -> Box:
-    global _battle_window
-    return _battle_window
+class GameUI:
+    # battle
+    @staticmethod
+    def getBattleWindow() -> Box:
+        global battle_window
+        return battle_window
 
-
-def locateBattleWindow():
-    global _battle_window
-    try:
-        _box = ImageLocator.locate_window(
-            _battle_window_header, _battle_window_footer, save_as="battle"
-        )
-        if type(_box) == Box:
-            _battle_window = _box
-        else:
-            Console.log("cannot find battle window", color=Colors.red)
-            Status.exit()
-    except:
-        Console.log("cannot find battle window", color=Colors.red)
-        Status.exit()
-
-
-# STATS
-_stop_button = CWD + "/images/interface/stop_button.png"
-_stats_window: Box = Box(0, 0, 0, 0)
-
-
-def getStatsWindow() -> Box:
-    global _stats_window
-    return _stats_window
-
-
-def locateStatsWindow():
-    global _stats_window
-    try:
-        _box = ImageLocator.get_pos(_stop_button)
-        if type(_box) == Box:
-            _stats_window = Box(_box.left - 118, _box.top, 108, 13)
-            screenshot_path = f"{SESSION_DIR}/stats_window.png"
-            pyautogui.screenshot(screenshot_path, region=_stats_window)
-        else:
-            Console.log("Cannot find stats window", color=Colors.red)
-            Status.exit()
-    except:
-        Console.log("Cannot find stats window", color=Colors.red)
-        Status.exit()
-
-
-# SCREEN CENTER
-_local_chat = CWD + "/images/interface/local_chat.png"
-_store_button = CWD + "/images/interface/store_button.png"
-_store_button_alt = CWD + "/images/interface/store_button_alt.png"
-_game_window: Box = Box(0, 0, 0, 0)
-_game_window_center: Box = Box(0, 0, 0, 0)
-
-
-def getGameWindow() -> Box:
-    global _game_window
-    return _game_window
-
-
-def getGameWindowCenter() -> Box:
-    global _game_window_center
-    return _game_window_center
-
-
-def locateGameWindow():
-    global _game_window
-    global _game_window_center
-    try:
-        _box1 = ImageLocator.get_pos(_local_chat)
-        _box2 = ImageLocator.get_pos(_store_button)
-        if not type(_box2) == Box:
-            _box2 = ImageLocator.get_pos(_store_button_alt)
-        if type(_box1) == Box and type(_box2) == Box:
-            _box1 = Box(_box1.left - 13, _box1.top - 84, 50, 50)
-            _box2 = Box(_box2.left - 13, _box2.top + 23, 50, 50)
-            width = _box2.left - _box1.left
-            height = _box1.top - _box2.top
-            setScreenCenter(_box1.left + (width // 2), _box2.top + (height // 2))
-            setSqmSize(width // 15)
-            _game_window = Box(_box1.left, _box2.top, width, height)
-            _game_window_center = Box(
-                getScreenCenterX() - (getSqmSize() // 2),
-                getScreenCenterY() - (getSqmSize() // 2),
-                getSqmSize(),
-                getSqmSize(),
+    @staticmethod
+    def locateBattleWindow():
+        global battle_window
+        try:
+            _box = ImageLocator.locate_window(
+                _battle_window_header, _battle_window_footer, save_as="battle"
             )
-            pyautogui.screenshot(f"{SESSION_DIR}/game_window.png", region=_game_window)
-            pyautogui.screenshot(
-                f"{SESSION_DIR}/game_window_center.png", region=_game_window_center
-            )
-        else:
-            Console.log("Cannot find screen center", color=Colors.red)
+            if isinstance(_box, Box):
+                battle_window = _box
+            else:
+                Console.log("cannot find battle window")
+                Status.exit()
+        except Exception:
+            Console.log("cannot find battle window")
             Status.exit()
-    except:
-        Console.log("Cannot find screen center", color=Colors.red)
-        Status.exit()
 
+    # stats
+    @staticmethod
+    def getStatsWindow() -> Box:
+        global stats_window
+        return stats_window
 
-# CONTAINERS
-_containers_dir = CWD + "/images/containers"
-_container_window_footer = CWD + "/images/interface/window_footer.png"
-_container_window_list: Optional[List[Box]] = []
-_selected_container: str = ""
+    @staticmethod
+    def locateStatsWindow():
+        global stats_window
+        try:
+            _box = ImageLocator.get_pos(_stop_button)
+            if isinstance(_box, Box):
+                stats_window = Box(_box.left - 118, _box.top, 108, 13)
+                screenshot_path = f"{Dir.SESSION}/stats_window.png"
+                pyautogui.screenshot(screenshot_path, region=stats_window)
+            else:
+                Console.log("Cannot find stats window")
+                Status.exit()
+        except Exception:
+            Console.log("Cannot find stats window")
+            Status.exit()
 
+    # screen center
+    @staticmethod
+    def getGameWindow() -> Box:
+        global game_window
+        return game_window
 
-def getContainerList() -> list:
-    list = [f[:-4] for f in listdir(CONTAINERS_DIR) if isfile(join(CONTAINERS_DIR, f))]
-    list.insert(0, "")
-    return list
+    @staticmethod
+    def getGameWindowCenter() -> Box:
+        global center_sqm
+        return center_sqm
 
+    @staticmethod
+    def locateGameWindow():
+        global game_window
+        global center_sqm
+        try:
+            _box1 = ImageLocator.get_pos(_local_chat)
+            _box2 = ImageLocator.get_pos(_store_button)
+            if not isinstance(_box2, Box):
+                _box2 = ImageLocator.get_pos(_store_button_alt)
+            if isinstance(_box1, Box) and isinstance(_box2, Box):
+                _box1 = Box(_box1.left - 13, _box1.top - 84, 50, 50)
+                _box2 = Box(_box2.left - 13, _box2.top + 23, 50, 50)
+                width = _box2.left - _box1.left
+                height = _box1.top - _box2.top
+                Config.setScreenCenter(
+                    _box1.left + (width // 2),
+                    _box2.top + (height // 2),
+                )
+                Config.setSqmSize(width // 15)
+                game_window = Box(_box1.left, _box2.top, width, height)
+                center_sqm = Box(
+                    Config.getScreenCenterX() - (Config.getSqmSize() // 2),
+                    Config.getScreenCenterY() - (Config.getSqmSize() // 2),
+                    Config.getSqmSize(),
+                    Config.getSqmSize(),
+                )
+                pyautogui.screenshot(
+                    f"{Dir.SESSION}/game_window.png", region=game_window
+                )
+                pyautogui.screenshot(
+                    f"{Dir.SESSION}/center_sqm.png",
+                    region=center_sqm,
+                )
+            else:
+                Console.log("Cannot find screen center")
+                Status.exit()
+        except Exception:
+            Console.log("Cannot find screen center")
+            Status.exit()
 
-def getSelectedContainer():
-    global _selected_container
-    return _selected_container
-
-
-def setContainer(value: str):
-    global _selected_container
-    _selected_container = value
-
-
-def getContainerWindows() -> Optional[List[Box]]:
-    global _container_window_list
-    return _container_window_list
-
-
-def locateDropContainer():
-    global _container_window_list
-    try:
-        _boxes = ImageLocator.locate_all_windows(
-            f"{_containers_dir}/{getSelectedContainer()}.png",
-            _container_window_footer,
-            save_as="container",
+    # containers
+    @staticmethod
+    def getContainerList() -> list[str]:
+        container_list: list[str] = Dir.getFiles(
+            Dir.CONTAINERS,
+            fullPath=False,
+            rstrip=-4,
         )
-        _container_window_list = _boxes
-    except:
-        Console.log("Cannot find any container", color=Colors.red)
-        Status.exit()
+        container_list.insert(0, "")
+        return container_list
 
+    @staticmethod
+    def getSelectedContainer():
+        global selected_container
+        return selected_container
 
-# HEALTH BAR
-_health_bar_dir = CWD + "/images/heal/"
-_health_bar_list = [
-    _health_bar_dir + f
-    for f in listdir(_health_bar_dir)
-    if isfile(join(_health_bar_dir, f))
-]
-_health_bar: Box = Box(0, 0, 0, 0)
+    @staticmethod
+    def setContainer(value: str):
+        global selected_container
+        selected_container = value
 
+    @staticmethod
+    def getContainerWindows() -> List[Box]:
+        global container_window_list
+        return container_window_list
 
-def getHealthBar():
-    global _health_bar
-    return _health_bar
-
-
-def locateHealthBar():
-    global _health_bar
-    try:
-        _box: Optional[Box] = None
-        for i in _health_bar_list:
-            _box = ImageLocator.get_pos(i)
-            if type(_box) == Box:
-                break
-        if type(_box) == Box:
-            _health_bar = Box(_box.left, _box.top, 269, 16)
-            screenshot_path = f"{SESSION_DIR}/health.png"
-            pyautogui.screenshot(screenshot_path, region=_health_bar)
-        else:
-            Console.log("Cannot find health bar", color=Colors.red)
+    @staticmethod
+    def locateDropContainer():
+        global container_window_list
+        try:
+            _boxes = ImageLocator.locate_all_windows(
+                f"{Dir.CONTAINERS}/{GameUI.getSelectedContainer()}.png",
+                _container_window_footer,
+                save_as="container",
+            )
+            if _boxes is None:
+                Console.log("Cannot find any container")
+            else:
+                container_window_list = _boxes
+        except Exception:
+            Console.log("Cannot find any container")
             Status.exit()
-    except:
-        Console.log("Cannot find health bar", color=Colors.red)
-        Status.exit()
 
+    # health bar
+    @staticmethod
+    def getHealthBar():
+        global health_bar
+        return health_bar
 
-# MAP
-_map_controls = CWD + "/images/interface/map_controls.png"
-_map: Box = Box(0, 0, 0, 0)
-
-
-def getMap():
-    global _map
-    return _map
-
-
-def locateMap():
-    global _map
-    try:
-        _box = ImageLocator.get_pos(_map_controls)
-        if type(_box) == Box:
-            _map = Box(_box.left - 117, _box.top - 50, 106, 109)
-            pyautogui.screenshot(f"{SESSION_DIR}/map.png", region=_map)
-            pyautogui.screenshot(f"{TEMP_DIR}/last_map_view.png", region=_map)
-        else:
-            Console.log("Cannot find map", color=Colors.red)
+    @staticmethod
+    def locateHealthBar():
+        global health_bar
+        try:
+            _box: Optional[Box] = None
+            for i in _health_bar_list:
+                _box = ImageLocator.get_pos(i)
+                if isinstance(_box, Box):
+                    break
+            if isinstance(_box, Box):
+                health_bar = Box(_box.left, _box.top, 269, 16)
+                screenshot_path = f"{Dir.SESSION}/health.png"
+                pyautogui.screenshot(screenshot_path, region=health_bar)
+            else:
+                Console.log("Cannot find health bar")
+                Status.exit()
+        except Exception:
+            Console.log("Cannot find health bar")
             Status.exit()
-    except:
-        Console.log("Cannot find map", color=Colors.red)
-        Status.exit()
+
+    # map
+    @staticmethod
+    def getMap():
+        global map
+        return map
+
+    @staticmethod
+    def locateMap():
+        global map
+        try:
+            _box = ImageLocator.get_pos(_map_controls)
+            if isinstance(_box, Box):
+                map = Box(_box.left - 117, _box.top - 50, 106, 109)
+                pyautogui.screenshot(f"{Dir.SESSION}/map.png", region=map)
+                pyautogui.screenshot(
+                    f"{Dir.TEMP}/last_map_view.png",
+                    region=map,
+                )
+            else:
+                Console.log("Cannot find map")
+                Status.exit()
+        except Exception:
+            Console.log("Cannot find map")
+            Status.exit()

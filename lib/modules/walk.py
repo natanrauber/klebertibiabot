@@ -1,17 +1,16 @@
 import time
 from datetime import datetime
-from os import listdir
-from os.path import isfile, join
-from typing import Optional
 
 import pyautogui
 from pyscreeze import Box
 
-from lib.config import *
+from lib.config import ROPE_KEY, STOP_ALL_ACTIONS_KEY, Config
 from lib.modules.attack import attack, disable_attack, enable_attack, hasTarget
-from lib.utils.console import Colors, Console
+from lib.modules.unstuck import destroy_items, rope_all, stack_items
+from lib.utils.console import Console
+from lib.utils.dir import Dir
 from lib.utils.image_locator import ImageLocator
-from lib.utils.interface import getMap, locateMap
+from lib.utils.interface import GameUI
 from lib.utils.keyboard import Keyboard
 from lib.utils.mouse import Mouse
 from lib.utils.status import Status
@@ -22,57 +21,56 @@ _walk_cooldown = 1
 _try = 0
 
 
-def getHuntList() -> list:
-    list = [
-        d
-        for d in os.listdir(WAYPOINTS_DIR)
-        if os.path.isdir(os.path.join(WAYPOINTS_DIR, d))
-    ]
-    list.insert(0, "")
-    return list
+def getHuntList() -> list[str]:
+    hunt_list = Dir.getFolders(Dir.WAYPOINTS, fullPath=False)
+    hunt_list.insert(0, "")
+    return hunt_list
 
 
-SELECTED_HUNT: str = ""
+selected_hunt_dir: str = ""
 _waypoints = []
 
 
 def setHunt(value: str):
-    global SELECTED_HUNT
-    SELECTED_HUNT = f"{WAYPOINTS_DIR}/{value}/"
+    global selected_hunt_dir
+    selected_hunt_dir = f"{Dir.WAYPOINTS}/{value}/"
     global _waypoints
-    _waypoints = [
-        SELECTED_HUNT + f
-        for f in listdir(SELECTED_HUNT)
-        if isfile(join(SELECTED_HUNT, f))
-    ]
+    _waypoints = Dir.getFiles(selected_hunt_dir)
 
 
-def setupWalk():
-    locateMap()
+def _locateOnMap(image: str) -> Box | None:
+    return ImageLocator.get_pos_on_region(
+        image,
+        GameUI.getMap(),
+        grayscale=True,
+    )
 
 
-def _locateOnMap(image):
-    return ImageLocator.get_pos_on_region(image, getMap(), grayscale=True)
-
-
-def _locateOnMapCenter(image, size=28) -> Optional[Box]:
-    if type(getMap()) == Box:
-        _centerx = int(getMap().left + (getMap().width / 2))
-        _centery = int(getMap().top + (getMap().height / 2))
+def _locateOnMapCenter(image: str, size: int = 28) -> Box | None:
+    if type(GameUI.getMap()) == Box:
+        _centerx = int(GameUI.getMap().left + (GameUI.getMap().width / 2))
+        _centery = int(GameUI.getMap().top + (GameUI.getMap().height / 2))
         _region = Box(
-            int(_centerx - (size / 2)), int(_centery - (size / 2)), size, size
+            int(_centerx - (size / 2)),
+            int(_centery - (size / 2)),
+            size,
+            size,
         )
-        return ImageLocator.get_pos_on_region(image, region=_region, grayscale=True)
+        return ImageLocator.get_pos_on_region(
+            image,
+            region=_region,
+            grayscale=True,
+        )
 
 
-def _getWaypointName(image):
+def _getWaypointName(image: str) -> str:
     aux = image.split(".")[0]
     aux = aux.split("/")
     aux = aux[len(aux) - 1]
     return aux
 
 
-def _walk(box: Box):
+def _walk(box: Box) -> None:
     if Status.is_paused():
         return
     if Mouse.is_locked():
@@ -92,7 +90,7 @@ def _walk(box: Box):
 
 
 def walkOnCooldown():
-    if _lastWalkTime == None:
+    if _lastWalkTime is None:
         return False
     return (datetime.now() - _lastWalkTime).seconds < _walk_cooldown
 
@@ -104,7 +102,10 @@ def _repeatLastWaypoint():
 
     global _maybe_stuck
     _maybe_stuck = True
-    pyautogui.screenshot(f"{TEMP_DIR}/lastgetMap()_view.png", region=getMap())
+    pyautogui.screenshot(
+        f"{Dir.TEMP}/lastGameUI.getMap()_view.png",
+        region=GameUI.getMap(),
+    )
 
 
 def _reachedLastWaypoint():
@@ -113,12 +114,14 @@ def _reachedLastWaypoint():
     _box = None
 
     if _try == 10:
-        for i in range(10):
-            _stack_items()
-        for i in range(3):
-            _destroy_items()
-        for i in range(10):
-            _stack_items()
+        for _ in range(5):
+            stack_items()
+            time.sleep(0.5)
+        for _ in range(3):
+            destroy_items()
+        for _ in range(5):
+            stack_items()
+            time.sleep(0.5)
         return True
 
     if "stairs" in _name or "hole" in _name:
@@ -130,13 +133,17 @@ def _reachedLastWaypoint():
     else:
         _box = _locateOnMapCenter(_waypoint)
 
-    return type(_box) == Box
+    return isinstance(_box, Box)
 
 
 def _isLastWaypointVisible():
     _waypoint = _waypoints[len(_waypoints) - 1]
-    _box = ImageLocator.get_pos_on_region(_waypoint, getMap(), grayscale=True)
-    if type(_box) == Box:
+    _box = ImageLocator.get_pos_on_region(
+        _waypoint,
+        GameUI.getMap(),
+        grayscale=True,
+    )
+    if isinstance(_box, Box):
         return True
     return False
 
@@ -151,9 +158,9 @@ def _maybeStuck():
 
 def _isStuck():
     if _maybeStuck():
-        _last_map_view = f"{TEMP_DIR}/lastgetMap()_view.png"
+        _last_map_view = f"{Dir.TEMP}/lastGameUI.getMap()_view.png"
         _box = ImageLocator.get_pos(_last_map_view)
-        if type(_box) == Box:
+        if isinstance(_box, Box):
             return True
     return False
 
@@ -180,167 +187,7 @@ def _checkLastWaypointSpecial():
         disable_attack()
 
 
-def _stack_items():
-    Mouse.lock(True)
-    _initPos = Mouse.get_pos()
-    time.sleep(0.01)
-    Mouse.press_left(
-        (getScreenCenterX() + getSqmSize(), getScreenCenterY() - getSqmSize())
-    )
-    time.sleep(0.01)
-    Mouse.release_left((getScreenCenterX(), getScreenCenterY()))
-    time.sleep(0.01)
-    Mouse.press_left((getScreenCenterX(), getScreenCenterY() - getSqmSize()))
-    time.sleep(0.01)
-    Mouse.release_left((getScreenCenterX(), getScreenCenterY()))
-    time.sleep(0.01)
-    Mouse.press_left(
-        (getScreenCenterX() - getSqmSize(), getScreenCenterY() - getSqmSize())
-    )
-    time.sleep(0.01)
-    Mouse.release_left((getScreenCenterX(), getScreenCenterY()))
-    time.sleep(0.01)
-    Mouse.press_left((getScreenCenterX() - getSqmSize(), getScreenCenterY()))
-    time.sleep(0.01)
-    Mouse.release_left((getScreenCenterX(), getScreenCenterY()))
-    time.sleep(0.01)
-    Mouse.press_left(
-        (getScreenCenterX() - getSqmSize(), getScreenCenterY() + getSqmSize())
-    )
-    time.sleep(0.01)
-    Mouse.release_left((getScreenCenterX(), getScreenCenterY()))
-    time.sleep(0.01)
-    Mouse.press_left((getScreenCenterX(), getScreenCenterY() + getSqmSize()))
-    time.sleep(0.01)
-    Mouse.release_left((getScreenCenterX(), getScreenCenterY()))
-    time.sleep(0.01)
-    Mouse.press_left(
-        (getScreenCenterX() + getSqmSize(), getScreenCenterY() + getSqmSize())
-    )
-    time.sleep(0.01)
-    Mouse.release_left((getScreenCenterX(), getScreenCenterY()))
-    time.sleep(0.01)
-    Mouse.press_left((getScreenCenterX() + getSqmSize(), getScreenCenterY()))
-    time.sleep(0.01)
-    Mouse.release_left((getScreenCenterX(), getScreenCenterY()))
-    time.sleep(0.01)
-    Mouse.press_left(
-        (getScreenCenterX() + getSqmSize(), getScreenCenterY() - getSqmSize())
-    )
-    time.sleep(0.01)
-    Mouse.release_left(
-        (
-            getScreenCenterX() + (getSqmSize() * 2),
-            getScreenCenterY() - (getSqmSize() * 2),
-        )
-    )
-    time.sleep(0.01)
-    Mouse.press_left((getScreenCenterX(), getScreenCenterY() - getSqmSize()))
-    time.sleep(0.01)
-    Mouse.release_left((getScreenCenterX(), getScreenCenterY() - (getSqmSize() * 2)))
-    time.sleep(0.01)
-    Mouse.press_left(
-        (getScreenCenterX() - getSqmSize(), getScreenCenterY() - getSqmSize())
-    )
-    time.sleep(0.01)
-    Mouse.release_left(
-        (
-            getScreenCenterX() - (getSqmSize() * 2),
-            getScreenCenterY() - (getSqmSize() * 2),
-        )
-    )
-    time.sleep(0.01)
-    Mouse.press_left((getScreenCenterX() - getSqmSize(), getScreenCenterY()))
-    time.sleep(0.01)
-    Mouse.release_left((getScreenCenterX() - (getSqmSize() * 2), getScreenCenterY()))
-    time.sleep(0.01)
-    Mouse.press_left(
-        (getScreenCenterX() - getSqmSize(), getScreenCenterY() + getSqmSize())
-    )
-    time.sleep(0.01)
-    Mouse.release_left(
-        (
-            getScreenCenterX() - (getSqmSize() * 2),
-            getScreenCenterY() + (getSqmSize() * 2),
-        )
-    )
-    time.sleep(0.01)
-    Mouse.press_left((getScreenCenterX(), getScreenCenterY() + getSqmSize()))
-    time.sleep(0.01)
-    Mouse.release_left((getScreenCenterX(), getScreenCenterY() + (getSqmSize() * 2)))
-    time.sleep(0.01)
-    Mouse.press_left(
-        (getScreenCenterX() + getSqmSize(), getScreenCenterY() + getSqmSize())
-    )
-    time.sleep(0.01)
-    Mouse.release_left(
-        (
-            getScreenCenterX() + (getSqmSize() * 2),
-            getScreenCenterY() + (getSqmSize() * 2),
-        )
-    )
-    time.sleep(0.01)
-    Mouse.press_left((getScreenCenterX() + getSqmSize(), getScreenCenterY()))
-    time.sleep(0.01)
-    Mouse.release_left((getScreenCenterX() + (getSqmSize() * 2), getScreenCenterY()))
-    time.sleep(0.01)
-    Mouse.set_pos(_initPos, useOffSet=False)
-    Mouse.lock(False)
-
-
-def _destroy_items():
-    Mouse.lock(True)
-    _initPos = Mouse.get_pos()
-    time.sleep(0.01)
-    Keyboard.press(DESTROY_KEY)
-    time.sleep(0.3)
-    Mouse.click_left(
-        (getScreenCenterX() + getSqmSize(), getScreenCenterY() - getSqmSize())
-    )
-    time.sleep(0.3)
-    Keyboard.press(DESTROY_KEY)
-    time.sleep(0.3)
-    Mouse.click_left((getScreenCenterX(), getScreenCenterY() - getSqmSize()))
-    time.sleep(0.3)
-    Keyboard.press(DESTROY_KEY)
-    time.sleep(0.3)
-    Mouse.click_left(
-        (getScreenCenterX() - getSqmSize(), getScreenCenterY() - getSqmSize())
-    )
-    time.sleep(0.3)
-    Keyboard.press(DESTROY_KEY)
-    time.sleep(0.3)
-    Mouse.click_left((getScreenCenterX() - getSqmSize(), getScreenCenterY()))
-    time.sleep(0.3)
-    Keyboard.press(DESTROY_KEY)
-    time.sleep(0.3)
-    Mouse.click_left(
-        (getScreenCenterX() - getSqmSize(), getScreenCenterY() + getSqmSize())
-    )
-    time.sleep(0.3)
-    Keyboard.press(DESTROY_KEY)
-    time.sleep(0.3)
-    Mouse.click_left((getScreenCenterX(), getScreenCenterY() + getSqmSize()))
-    time.sleep(0.3)
-    Keyboard.press(DESTROY_KEY)
-    time.sleep(0.3)
-    Mouse.click_left(
-        (getScreenCenterX() + getSqmSize(), getScreenCenterY() + getSqmSize())
-    )
-    time.sleep(0.3)
-    Keyboard.press(DESTROY_KEY)
-    time.sleep(0.3)
-    Mouse.click_left((getScreenCenterX() + getSqmSize(), getScreenCenterY()))
-    time.sleep(0.3)
-    Keyboard.press(DESTROY_KEY)
-    time.sleep(0.3)
-    Mouse.click_left((getScreenCenterX(), getScreenCenterY()))
-    time.sleep(0.3)
-    Mouse.set_pos(_initPos, useOffSet=False)
-    Mouse.lock(False)
-
-
-def _useLadder():
+def _useLadder() -> None:
     if Mouse.is_locked():
         time.sleep(0.1)
         return _useLadder()
@@ -348,75 +195,42 @@ def _useLadder():
     time.sleep(0.5)
     Mouse.lock(True)
     _initPos = Mouse.get_pos()
-    Mouse.click_left((getScreenCenterX(), getScreenCenterY()))
+    Mouse.click_left(
+        (
+            Config.getScreenCenterX(),
+            Config.getScreenCenterY(),
+        ),
+    )
     Mouse.set_pos(_initPos, useOffSet=False)
     Mouse.lock(False)
 
 
-def _useRope():
+def _useRope() -> None:
     if Mouse.is_locked():
         time.sleep(0.1)
         return _useRope()
     if _try == 10:
-        return _rope_all()
-    Keyboard.press(STOP_ALL_ACTIONS_KEY)
-    time.sleep(0.5)
-    Mouse.lock(True)
-    _initPos = Mouse.get_pos()
-    Keyboard.press(ROPE_KEY)
-    Mouse.click_left((getScreenCenterX(), getScreenCenterY()))
-    Mouse.set_pos(_initPos, useOffSet=False)
-    Mouse.lock(False)
-
-
-def _rope_all():
+        return rope_all()
     Keyboard.press(STOP_ALL_ACTIONS_KEY)
     time.sleep(0.5)
     Mouse.lock(True)
     _initPos = Mouse.get_pos()
     Keyboard.press(ROPE_KEY)
     Mouse.click_left(
-        (getScreenCenterX() + getSqmSize(), getScreenCenterY() - getSqmSize())
+        (
+            Config.getScreenCenterX(),
+            Config.getScreenCenterY(),
+        ),
     )
-    time.sleep(1)
-    Keyboard.press(ROPE_KEY)
-    Mouse.click_left((getScreenCenterX(), getScreenCenterY() - getSqmSize()))
-    time.sleep(1)
-    Keyboard.press(ROPE_KEY)
-    Mouse.click_left(
-        (getScreenCenterX() - getSqmSize(), getScreenCenterY() - getSqmSize())
-    )
-    time.sleep(1)
-    Keyboard.press(ROPE_KEY)
-    Mouse.click_left((getScreenCenterX() - getSqmSize(), getScreenCenterY()))
-    time.sleep(1)
-    Keyboard.press(ROPE_KEY)
-    Mouse.click_left(
-        (getScreenCenterX() - getSqmSize(), getScreenCenterY() + getSqmSize())
-    )
-    time.sleep(1)
-    Keyboard.press(ROPE_KEY)
-    Mouse.click_left((getScreenCenterX(), getScreenCenterY() + getSqmSize()))
-    time.sleep(1)
-    Keyboard.press(ROPE_KEY)
-    Mouse.click_left(
-        (getScreenCenterX() + getSqmSize(), getScreenCenterY() + getSqmSize())
-    )
-    time.sleep(1)
-    Keyboard.press(ROPE_KEY)
-    Mouse.click_left((getScreenCenterX() + getSqmSize(), getScreenCenterY()))
-    time.sleep(1)
-    Keyboard.press(ROPE_KEY)
-    Mouse.click_left((getScreenCenterX(), getScreenCenterY()))
     Mouse.set_pos(_initPos, useOffSet=False)
     Mouse.lock(False)
 
 
 def walk():
     if len(_waypoints) == 0:
-        Console.log(f"No hunt selected")
+        Console.log("No hunt selected")
         return
-    if not _lastWalkTime == None:
+    if _lastWalkTime is not None:
         if _reachedLastWaypoint():
             _checkLastWaypointSpecial()
             global _try
@@ -428,7 +242,7 @@ def walk():
                 _repeatLastWaypoint()
     _waypoint = _waypoints[0]
     _box = _locateOnMap(_waypoint)
-    if type(_box) == Box:
+    if isinstance(_box, Box):
         Console.log(f"walking to waypoint {_getWaypointName(_waypoint)}")
         _walk(_box)
     _waypoints.remove(_waypoint)

@@ -1,33 +1,27 @@
 import random
 import time
+from typing import Any
 
-import pyautogui
-from pyscreeze import Box
-
-from lib.config import *
-from lib.utils.colors import Colors
+from lib.config import Config
 from lib.utils.console import Console
-from lib.utils.cwd import CWD
-from lib.utils.image_locator import ImageLocator
 from lib.utils.keyboard import Key, Keyboard
 from lib.utils.mouse import Mouse
-from lib.utils.status import Status
 
-_hasLoot = False
+_hasLoot: bool = False
 
 
-def hasLoot():
-    if not getLoot():
+def hasLoot() -> bool:
+    if not Config.getLoot():
         return False
     return _hasLoot
 
 
-def setHasLoot(value):
+def setHasLoot(value: bool):
     global _hasLoot
     _hasLoot = value
 
 
-def loot():
+def loot() -> None:
     if Mouse.is_locked():
         time.sleep(0.1)
         return loot()
@@ -36,16 +30,43 @@ def loot():
     _initPos = Mouse.get_pos()
     time.sleep(0.3)
     Keyboard.hold(Key.alt)
-    sqm_list: list[tuple] = [
-        (getScreenCenterX() + getSqmSize(), getScreenCenterY() - getSqmSize()),
-        (getScreenCenterX(), getScreenCenterY() - getSqmSize()),
-        (getScreenCenterX() - getSqmSize(), getScreenCenterY() - getSqmSize()),
-        (getScreenCenterX() - getSqmSize(), getScreenCenterY()),
-        (getScreenCenterX() - getSqmSize(), getScreenCenterY() + getSqmSize()),
-        (getScreenCenterX(), getScreenCenterY() + getSqmSize()),
-        (getScreenCenterX() + getSqmSize(), getScreenCenterY() + getSqmSize()),
-        (getScreenCenterX() + getSqmSize(), getScreenCenterY()),
-        (getScreenCenterX(), getScreenCenterY()),
+    sqm_list: list[tuple[Any, Any]] = [
+        (
+            Config.getScreenCenterX() + Config.getSqmSize(),
+            Config.getScreenCenterY() - Config.getSqmSize(),
+        ),
+        (
+            Config.getScreenCenterX(),
+            Config.getScreenCenterY() - Config.getSqmSize(),
+        ),
+        (
+            Config.getScreenCenterX() - Config.getSqmSize(),
+            Config.getScreenCenterY() - Config.getSqmSize(),
+        ),
+        (
+            Config.getScreenCenterX() - Config.getSqmSize(),
+            Config.getScreenCenterY(),
+        ),
+        (
+            Config.getScreenCenterX() - Config.getSqmSize(),
+            Config.getScreenCenterY() + Config.getSqmSize(),
+        ),
+        (
+            Config.getScreenCenterX(),
+            Config.getScreenCenterY() + Config.getSqmSize(),
+        ),
+        (
+            Config.getScreenCenterX() + Config.getSqmSize(),
+            Config.getScreenCenterY() + Config.getSqmSize(),
+        ),
+        (
+            Config.getScreenCenterX() + Config.getSqmSize(),
+            Config.getScreenCenterY(),
+        ),
+        (
+            Config.getScreenCenterX(),
+            Config.getScreenCenterY(),
+        ),
     ]
     random.shuffle(sqm_list)
     for i in range(len(sqm_list)):

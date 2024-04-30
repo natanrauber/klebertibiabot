@@ -1,66 +1,41 @@
 import random
 import time
 from ctypes import windll
-from typing import Optional
+from typing import Any, Optional
 
 import win32api
 import win32con
 
-from lib.config import getOTServer, getScreenCenterX, getScreenCenterY, getSqmSize
-from lib.utils.console import Console
+from lib.config import Config
 from lib.utils.math import Math
 
 
 class Mouse:
-    """
-    A class for simulating mouse input.
-
-    Note:
-        Documented using Google style docstrings by ChatGPT, an OpenAI language model.
-    """
 
     _lock: bool = False
 
     @staticmethod
     def is_locked() -> bool:
-        """
-        Returns True if the mouse is locked, False otherwise.
-
-        Returns:
-            bool: True if the mouse is locked, False otherwise.
-        """
         return Mouse._lock
 
     @staticmethod
     def lock(value: bool) -> None:
-        """
-        Locks or unlocks the mouse.
-
-        Args:
-            value (bool): True to lock the mouse, False to unlock it.
-        """
         Mouse._lock = value
         windll.user32.BlockInput(value)
 
     @staticmethod
-    def get_pos() -> tuple:
-        """
-        Returns the current position of the mouse.
-
-        Returns:
-            tuple: The x and y coordinates of the mouse position.
-        """
+    def get_pos() -> tuple[Any, Any]:
         return win32api.GetCursorPos()
 
     @staticmethod
     def set_pos(
-        end_pos: tuple,
+        end_pos: tuple[Any, Any],
         duration: float = 0.1,
         useOffSet: Optional[bool] = None,
     ) -> None:
-        if useOffSet == None:
-            useOffSet = not getOTServer()
-        if getOTServer():
+        if useOffSet is None:
+            useOffSet = not Config.getOTServer()
+        if Config.getOTServer():
             win32api.SetCursorPos(end_pos)
         else:
             if useOffSet:
@@ -73,43 +48,46 @@ class Mouse:
                 # Calculate point on bezier curve
                 new_x, new_y = Math.bezier_curve(start_pos, end_pos, t)
                 # Add noise to the curve
-                noise_x = random.randint(-10, 10)  # Adjust the range of noise as needed
-                noise_y = random.randint(-10, 10)  # Adjust the range of noise as needed
+                noise_x = random.randint(-10, 10)
+                noise_y = random.randint(-10, 10)
                 new_x += noise_x
                 new_y += noise_y
                 win32api.SetCursorPos((new_x, new_y))
             win32api.SetCursorPos(end_pos)
 
     @staticmethod
-    def click_left(pos: tuple, duration: float = 0.1) -> None:
-        """
-        Simulates a left mouse click at the specified position.
-
-        Args:
-            pos (tuple): The x and y coordinates of the mouse position.
-        """
+    def click_left(pos: tuple[Any, Any], duration: float = 0.1) -> None:
         Mouse.set_pos(pos, duration=duration)
-        win32api.mouse_event(win32con.MOUSEEVENTF_LEFTDOWN, 0, 0)
-        win32api.mouse_event(win32con.MOUSEEVENTF_LEFTUP, 0, 0)
+        win32api.mouse_event(  # type: ignore
+            win32con.MOUSEEVENTF_LEFTDOWN,
+            0,
+            0,
+        )
+        win32api.mouse_event(  # type: ignore
+            win32con.MOUSEEVENTF_LEFTUP,
+            0,
+            0,
+        )
 
     @staticmethod
-    def press_left(pos: tuple) -> None:
-        """
-        Simulates a left mouse button press at the specified position.
-
-        Args:
-            pos (tuple): The x and y coordinates of the mouse position.
-        """
+    def press_left(pos: tuple[Any, Any]) -> None:
         Mouse.set_pos(pos)
-        win32api.mouse_event(win32con.MOUSEEVENTF_LEFTDOWN, 0, 0)
+        win32api.mouse_event(  # type: ignore
+            win32con.MOUSEEVENTF_LEFTDOWN,
+            0,
+            0,
+        )
 
     @staticmethod
-    def release_left(pos: tuple) -> None:
-        """
-        Simulates a left mouse button release at the specified position.
-
-        Args:
-            pos (tuple): The x and y coordinates of the mouse position.
-        """
+    def release_left(pos: tuple[Any, Any]) -> None:
         Mouse.set_pos(pos)
-        win32api.mouse_event(win32con.MOUSEEVENTF_LEFTUP, 0, 0)
+        win32api.mouse_event(  # type: ignore
+            win32con.MOUSEEVENTF_LEFTUP,
+            0,
+            0,
+        )
+
+    @staticmethod
+    def drag_left(start: tuple[Any, Any], end: tuple[Any, Any]) -> None:
+        Mouse.press_left(start)
+        Mouse.release_left(end)

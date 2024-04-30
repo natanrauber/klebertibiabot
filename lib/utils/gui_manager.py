@@ -2,57 +2,28 @@ import datetime as dt
 import threading
 import tkinter as tk
 from ctypes import byref, c_int, sizeof, windll
-from tkinter import ttk
+from tkinter import StringVar, ttk
 
-import lib.config as cfg
+from lib.config import Config
 from lib.main_loop import main_loop
-from lib.modules.attack import *
-from lib.modules.heal import setupHeal
-from lib.modules.walk import getHuntList, setHunt, setupWalk
+from lib.modules.attack import disable_attack, enable_attack, setupAttack
+from lib.modules.walk import getHuntList, setHunt
 from lib.uid import uid
 from lib.utils.console import Console
+from lib.utils.dir import Dir
 from lib.utils.folder_manager import FolderManager
-from lib.utils.interface import *
+from lib.utils.interface import GameUI
 from lib.utils.status import Status
 
 
 class GUIManager:
-    """
-    A class for managing the GUI of the Kleber application.
-
-    Attributes:
-        rootWindow (Tk): The root window of the GUI.
-        frame (ttk.Frame): The frame of the GUI.
-        buttons_frame (ttk.Frame): The frame containing the pause and resume buttons.
-        button_pause (ttk.Button): The button to pause the main loop.
-        buttons_separator (ttk.Separator): The separator between the pause and resume buttons.
-        button_resume (ttk.Button): The button to resume the main loop.
-        console (Console): The console widget for displaying logs.
-        option_vars (list): List to hold the variables for the checkboxes.
-
-    Methods:
-        close(): Close the window and quit the application
-        pause(): Pauses the main loop and updates the GUI accordingly.
-        resume(): Resumes the main loop and updates the GUI accordingly.
-        configure_widgets(): Configures the styles and layout of the GUI widgets.
-        start(): Starts the GUI loop.
-
-    Usage:
-        To start the GUI, create an instance of this class and call its "start" method:
-        gui_manager = GUIManager()
-        gui_manager.start()
-
-    Note:
-        Documented using Google style docstrings by ChatGPT, an OpenAI language model.
-    """
 
     def __init__(self):
-        """
-        Initializes a new instance of the GUIManager class.
-        """
+        # root
         self.rootWindow = tk.Tk()
-        self.rootWindow.attributes(
-            "-topmost", not self.rootWindow.attributes("-topmost")
+        self.rootWindow.attributes(  # type: ignore
+            "-topmost",
+            not self.rootWindow.attributes("-topmost"),  # type: ignore
         )
         self.frame = ttk.Frame(self.rootWindow, style="Custom.TFrame")
         self.buttons_frame = ttk.Frame(self.frame, style="Custom.TFrame")
@@ -87,8 +58,8 @@ class GUIManager:
         )
 
         # checkboxes
-        self.option_vars = []
-        for i in range(7):
+        self.option_vars: list[tk.BooleanVar] = []
+        for _ in range(7):
             option_var = tk.BooleanVar()
             option_var.set(False)
             self.option_vars.append(option_var)
@@ -98,28 +69,28 @@ class GUIManager:
         self.checkbox_frame1 = ttk.Frame(self.frame, style="Custom.TFrame")
         self.checkbox_otserver = ttk.Checkbutton(
             self.checkbox_frame1,
-            text=f"OTServer",
+            text="OTServer",
             variable=self.option_vars[0],
             style="Custom.TCheckbutton",
             command=self.toggle_otserver,
         )
         self.checkbox_attack = ttk.Checkbutton(
             self.checkbox_frame1,
-            text=f"Attack",
+            text="Attack",
             variable=self.option_vars[1],
             style="Custom.TCheckbutton",
             command=self.toggleAttack,
         )
         self.checkbox_heal = ttk.Checkbutton(
             self.checkbox_frame1,
-            text=f"Heal",
+            text="Heal",
             variable=self.option_vars[2],
             style="Custom.TCheckbutton",
             command=self.toggleHeal,
         )
         self.checkbox_walk = ttk.Checkbutton(
             self.checkbox_frame1,
-            text=f"Walk",
+            text="Walk",
             variable=self.option_vars[3],
             style="Custom.TCheckbutton",
             command=self.toggleWalk,
@@ -130,21 +101,21 @@ class GUIManager:
         self.checkbox_frame2 = ttk.Frame(self.frame, style="Custom.TFrame")
         self.checkbox_loot = ttk.Checkbutton(
             self.checkbox_frame2,
-            text=f"Loot",
+            text="Loot",
             variable=self.option_vars[4],
             style="Custom.TCheckbutton",
             command=self.toggleLoot,
         )
         self.checkbox_eat = ttk.Checkbutton(
             self.checkbox_frame2,
-            text=f"Eat",
+            text="Eat",
             variable=self.option_vars[5],
             style="Custom.TCheckbutton",
             command=self.toggleEat,
         )
         self.checkbox_drop = ttk.Checkbutton(
             self.checkbox_frame2,
-            text=f"Drop",
+            text="Drop",
             variable=self.option_vars[6],
             style="Custom.TCheckbutton",
             command=self.toggleDrop,
@@ -153,7 +124,7 @@ class GUIManager:
         # dropdowns
         selected_hunt = tk.StringVar(self.frame)
         selected_hunt.set(getHuntList()[1])
-        self.selectHunt(getHuntList()[1])
+        self.selectHunt(value=getHuntList()[1])
         self.dropdown_separator1 = ttk.Frame(
             self.frame, height=10, width=10, style="Custom.TFrame"
         )
@@ -165,15 +136,15 @@ class GUIManager:
             command=self.selectHunt,
         )
         selected_container = tk.StringVar(self.frame)
-        selected_container.set(getContainerList()[1])
-        setContainer(getContainerList()[1])
+        selected_container.set(GameUI.getContainerList()[1])
+        GameUI.setContainer(GameUI.getContainerList()[1])
         self.dropdown_separator2 = ttk.Frame(
             self.dropdown_frame, height=10, width=8, style="Custom.TFrame"
         )
         self.dropdown_container = ttk.OptionMenu(
             self.dropdown_frame,
             selected_container,
-            *getContainerList(),
+            *GameUI.getContainerList(),
             command=self.selectContainer,
         )
 
@@ -209,7 +180,7 @@ class GUIManager:
 
     def pause(self):
         self.rootWindow.focus()
-        Status.pause()  # stops the "main_loop", consequently the "loop_thread" is terminated
+        Status.pause()  # stops the "main_loop"
         self.button_pause.config(state=tk.DISABLED, text="Paused")
         self.button_resume.config(state=tk.NORMAL, text="Resume")
 
@@ -217,138 +188,166 @@ class GUIManager:
         self.rootWindow.focus()
         self.pause()
         Console.log("Reloading...")
-        FolderManager.clear_folder(SESSION_DIR)
-        if getAttack():
+        FolderManager.clear_folder(Dir.SESSION)
+        if Config.getAttack():
             setupAttack()
-        if getHeal():
-            setupHeal()
-        if getWalk():
-            setupWalk()
-        if getLoot() or getDrop():
-            locateGameWindow()
-        if getEat() or getDrop():
-            locateDropContainer()
+        if Config.getHeal():
+            GameUI.locateHealthBar()
+        if Config.getWalk():
+            GameUI.locateMap()
+        if Config.getLoot() or Config.getDrop():
+            GameUI.locateGameWindow()
+        if Config.getEat() or Config.getDrop():
+            GameUI.locateDropContainer()
+        if Config.getEat():
+            GameUI.locateStatsWindow()
         Console.log("Reload complete")
 
     def toggle_otserver(self):
-        self.checkbox_otserver.state(["!selected" if cfg.getOTServer() else "selected"])
-        if cfg.getOTServer():
-            cfg.setOTServer(False)
+        self.checkbox_otserver.state(  # type: ignore
+            ["!selected" if Config.getOTServer() else "selected"],
+        )
+        if Config.getOTServer():
+            Config.setOTServer(False)
         else:
-            cfg.setOTServer(True)
+            Config.setOTServer(True)
         self.reload()
-        Console.log(f"OTServer: {cfg.getOTServer()}")
+        Console.log(f"OTServer: {Config.getOTServer()}")
 
     def toggleAttack(self):
-        self.checkbox_attack.state(["!selected" if cfg.getAttack() else "selected"])
-        if cfg.getAttack() == True:
-            cfg.setAttack(False)
+        self.checkbox_attack.state(  # type: ignore
+            ["!selected" if Config.getAttack() else "selected"],
+        )
+        if Config.getAttack():
+            Config.setAttack(False)
             disable_attack()
-            FolderManager.delete_file(f"{cfg.SESSION_DIR}/battle.png")
+            FolderManager.delete_file(f"{Dir.SESSION}/battle.png")
         else:
-            cfg.setAttack(True)
+            Config.setAttack(True)
             enable_attack()
             setupAttack()
-        Console.log(f"Attack: {cfg.getAttack()}")
+        Console.log(f"Attack: {Config.getAttack()}")
 
     def toggleHeal(self):
-        self.checkbox_heal.state(["!selected" if cfg.getHeal() else "selected"])
-        if cfg.getHeal() == True:
-            cfg.setHeal(False)
+        self.checkbox_heal.state(  # type: ignore
+            ["!selected" if Config.getHeal() else "selected"],
+        )
+        if Config.getHeal():
+            Config.setHeal(False)
         else:
-            cfg.setHeal(True)
-            setupHeal()
-        Console.log(f"Heal: {cfg.getHeal()}")
+            Config.setHeal(True)
+            GameUI.locateHealthBar()
+        Console.log(f"Heal: {Config.getHeal()}")
 
     def toggleWalk(self):
-        self.checkbox_walk.state(["!selected" if cfg.getWalk() else "selected"])
-        if cfg.getWalk() == True:
-            cfg.setWalk(False)
+        self.checkbox_walk.state(  # type: ignore
+            ["!selected" if Config.getWalk() else "selected"],
+        )
+        if Config.getWalk():
+            Config.setWalk(False)
         else:
-            cfg.setWalk(True)
-            setupWalk()
-        Console.log(f"Walk: {cfg.getWalk()}")
+            Config.setWalk(True)
+            GameUI.locateMap()
+        Console.log(f"Walk: {Config.getWalk()}")
 
     def toggleLoot(self):
-        self.checkbox_loot.state(["!selected" if cfg.getLoot() else "selected"])
-        if cfg.getLoot() == True:
-            cfg.setLoot(False)
+        self.checkbox_loot.state(  # type: ignore
+            ["!selected" if Config.getLoot() else "selected"],
+        )
+        if Config.getLoot():
+            Config.setLoot(False)
         else:
-            cfg.setLoot(True)
-            if cfg.getDrop() == False:
-                locateGameWindow()
-        Console.log(f"Loot: {cfg.getLoot()}")
+            Config.setLoot(True)
+            if not Config.getDrop():
+                GameUI.locateGameWindow()
+        Console.log(f"Loot: {Config.getLoot()}")
 
     def toggleEat(self):
-        self.checkbox_eat.state(["!selected" if cfg.getEat() else "selected"])
-        if cfg.getEat():
-            cfg.setEat(False)
+        self.checkbox_eat.state(  # type: ignore
+            ["!selected" if Config.getEat() else "selected"],
+        )
+        if Config.getEat():
+            Config.setEat(False)
         else:
-            cfg.setEat(True)
-            if cfg.getDrop() == False:
-                locateDropContainer()
-                locateStatsWindow()
-        Console.log(f"Eat: {cfg.getEat()}")
+            Config.setEat(True)
+            GameUI.locateStatsWindow()
+            if not Config.getDrop():
+                GameUI.locateDropContainer()
+        Console.log(f"Eat: {Config.getEat()}")
 
     def toggleDrop(self):
-        self.checkbox_drop.state(["!selected" if cfg.getDrop() else "selected"])
-        if cfg.getDrop():
-            cfg.setDrop(False)
+        self.checkbox_drop.state(  # type: ignore
+            ["!selected" if Config.getDrop() else "selected"],
+        )
+        if Config.getDrop():
+            Config.setDrop(False)
         else:
-            cfg.setDrop(True)
-            if cfg.getEat() == False:
-                locateDropContainer()
-            if cfg.getLoot() == False:
-                locateGameWindow()
-        Console.log(f"Drop: {cfg.getDrop()}")
+            Config.setDrop(True)
+            if not Config.getEat():
+                GameUI.locateDropContainer()
+            if not Config.getLoot():
+                GameUI.locateGameWindow()
+        Console.log(f"Drop: {Config.getDrop()}")
 
-    def selectHunt(self, value):
-        setHunt(value)
+    def selectHunt(self, value: StringVar | str) -> None:
+        if isinstance(value, StringVar):
+            setHunt(value.get())
+        else:
+            setHunt(value)
         self.reload()
         Console.log(f"Selected hunt: {value}")
 
-    def selectContainer(self, value):
-        setContainer(value)
+    def selectContainer(self, value: StringVar | str):
+        if isinstance(value, StringVar):
+            GameUI.setContainer(value.get())
+        else:
+            GameUI.setContainer(value)
         self.reload()
-        Console.log(f"Selected hunt: {value}")
+        Console.log(f"Selected container: {value}")
 
     def configure_widgets(self):
-        """
-        Configures the style and layout of the widgets in the GUI.
-        """
         style = ttk.Style(self.rootWindow)
         # style.theme_use('clam')
-        style.configure("Custom.TFrame", background="#f9f9f9")
-        style.configure(
+        style.configure("Custom.TFrame", background="#f9f9f9")  # type: ignore
+        style.configure(  # type: ignore
             "Pause.TButton",
             padding=5,
             width=13,
             borderRadius=11,
             background="#f9f9f9",
         )
-        style.map("Pause.TButton", foreground=[("disabled", "red")])
-        style.configure(
+        style.map(  # type: ignore
+            "Pause.TButton",
+            foreground=[("disabled", "red")],
+        )
+        style.configure(  # type: ignore
             "Resume.TButton",
             padding=5,
             width=13,
             borderRadius=11,
             background="#f9f9f9",
         )
-        style.map("Resume.TButton", foreground=[("disabled", "green")])
-        style.configure(
+        style.map(  # type: ignore
+            "Resume.TButton",
+            foreground=[("disabled", "green")],
+        )
+        style.configure(  # type: ignore
             "Reload.TButton",
             padding=5,
             width=13,
             borderRadius=11,
             background="#f9f9f9",
         )
-        style.configure(
+        style.configure(  # type: ignore
             "Custom.TCheckbutton",
             background="#f9f9f9",
             foreground="red",
             width=8,
         )
-        style.map("Custom.TCheckbutton", foreground=[("selected", "green")])
+        style.map(  # type: ignore
+            "Custom.TCheckbutton",
+            foreground=[("selected", "green")],
+        )
 
         self.rootWindow.title(uid)
         self.rootWindow.geometry("334x300")
@@ -403,16 +402,10 @@ class GUIManager:
         )
 
     def start(self):
-        """
-        Starts the Graphical User Interface.
-        """
         self.configure_widgets()
         self.rootWindow.mainloop()
 
 
-"""
-This piece of code checks if the module is being executed as the main program, and if so, it creates an instance of the GUIManager class and calls its start() method to start the graphical user interface (GUI) of the Kleber application. If this module is imported as a module in another program, this code block will not be executed.
-"""
 if __name__ == "__main__":
     gui_manager = GUIManager()
     gui_manager.start()

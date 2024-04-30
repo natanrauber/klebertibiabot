@@ -2,25 +2,26 @@ import os
 
 import pyautogui
 
-import lib.config as cfg
+from lib.config import Config
 from lib.uid import uid
+from lib.utils.dir import Dir
 from lib.utils.folder_manager import FolderManager
 from lib.utils.window_manager import WindowManager
 
 
 def setup() -> None:
-    if not os.path.exists(cfg.SESSION_DIR):
-        os.makedirs(cfg.SESSION_DIR)
+    if not os.path.exists(Dir.SESSION):
+        os.makedirs(Dir.SESSION)
 
-    if not os.path.exists(cfg.TEMP_DIR):
-        os.makedirs(cfg.TEMP_DIR)
+    if not os.path.exists(Dir.TEMP):
+        os.makedirs(Dir.TEMP)
 
     pyautogui.hotkey("winleft", "m")
 
-    FolderManager.clear_folder(cfg.SESSION_DIR)
-    FolderManager.open_folder(cfg.SESSION_DIR)
+    FolderManager.clear_folder(Dir.SESSION)
+    FolderManager.open_folder(Dir.SESSION)
     WindowManager.activate("Tibia -")
-    if not cfg.getOTServer():
+    if not Config.getOTServer():
         WindowManager.activate("Projector")
     WindowManager.activate("session")
     WindowManager.activate(uid)

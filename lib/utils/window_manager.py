@@ -5,12 +5,6 @@ wsh = comclt.Dispatch("WScript.Shell")
 
 
 class WindowManager:
-    """
-    A class that provides methods for managing windows.
-
-    Note:
-        Documented using Google style docstrings by ChatGPT, an OpenAI language model.
-    """
 
     @staticmethod
     def isActive(name: str) -> bool:
