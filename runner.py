@@ -1,8 +1,4 @@
-import random
-import string
 import subprocess
-
-from lib.utils.folder_manager import FolderManager
 
 uid = "Kleber"
 
@@ -11,7 +7,7 @@ with open("./lib/uid.py", "w") as item:
     item.write(f"uid = '{uid}'")
 
 # run
-runCmd = f"python ./main.py"
+runCmd = "python ./main.py"
 subprocess.run(["powershell", "-Command", runCmd])
 
 # Write uid to a file
