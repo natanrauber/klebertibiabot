@@ -9,8 +9,8 @@ class Math:
     ) -> tuple[Any, Any]:
         # Calculate midpoint
         mid_point: tuple[Any, Any] = (
-            (start_pos[0] + end_pos[0]) // 2,
-            (start_pos[1] + end_pos[1]) // 2,
+            (start_pos[0] + end_pos[0]) / 2,
+            (start_pos[1] + end_pos[1]) / 2,
         )
         # Calculate vector from start to end
         dx = end_pos[0] - start_pos[0]
@@ -20,8 +20,8 @@ class Math:
         perpendicular_dy = dx
         # Add perpendicular vector to midpoint
         control_point = (
-            mid_point[0] + (perpendicular_dx // 2),
-            mid_point[1] + (perpendicular_dy // 2),
+            int((mid_point[0] + (perpendicular_dx / 2))),
+            int((mid_point[1] + (perpendicular_dy / 2))),
         )
         return control_point
 

@@ -31,3 +31,7 @@
 - Drop unwanted items
 - Eat food
 - Walk on waypoints
+
+## Dev Related
+[![pytest 8.2.0](https://img.shields.io/badge/pytest-8.2.0-blue.svg)](https://pypi.org/project/pytest/8.2.0/)
+[![pipreqs 0.5.0](https://img.shields.io/badge/pipreqs-0.5.0-blue.svg)](https://pypi.org/project/pipreqs/0.5.0/)
