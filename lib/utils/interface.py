@@ -20,8 +20,9 @@ stats_window: Box = Box(0, 0, 0, 0)
 
 # screen center
 _local_chat = f"{Dir.INTERFACE}/local_chat.png"
-_store_button = f"{Dir.INTERFACE}/store_button.png"
-_store_button_alt = f"{Dir.INTERFACE}/store_button_alt.png"
+_store_button1 = f"{Dir.INTERFACE}/store_button1.png"
+_store_button2 = f"{Dir.INTERFACE}/store_button2.png"
+_store_button3 = f"{Dir.INTERFACE}/store_button3.png"
 game_window: Box = Box(0, 0, 0, 0)
 center_sqm: Box = Box(0, 0, 0, 0)
 
@@ -101,9 +102,11 @@ class GameUI:
         global center_sqm
         try:
             _box1 = ImageLocator.get_pos(_local_chat)
-            _box2 = ImageLocator.get_pos(_store_button)
+            _box2 = ImageLocator.get_pos(_store_button1)
             if not isinstance(_box2, Box):
-                _box2 = ImageLocator.get_pos(_store_button_alt)
+                _box2 = ImageLocator.get_pos(_store_button2)
+            if not isinstance(_box2, Box):
+                _box2 = ImageLocator.get_pos(_store_button3)
             if isinstance(_box1, Box) and isinstance(_box2, Box):
                 _box1 = Box(_box1.left - 13, _box1.top - 84, 50, 50)
                 _box2 = Box(_box2.left - 13, _box2.top + 23, 50, 50)
