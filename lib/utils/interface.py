@@ -77,7 +77,7 @@ class GameUI:
             if isinstance(_box, Box):
                 stats_window = Box(_box.left - 118, _box.top, 108, 13)
                 screenshot_path = f"{Dir.SESSION}/stats_window.png"
-                pyautogui.screenshot(screenshot_path, region=stats_window)
+                ImageLocator.screenshot(screenshot_path, region=stats_window)
             else:
                 Console.log("Cannot find stats window")
                 Status.exit()
@@ -124,10 +124,10 @@ class GameUI:
                     Config.getSqmSize(),
                     Config.getSqmSize(),
                 )
-                pyautogui.screenshot(
+                ImageLocator.screenshot(
                     f"{Dir.SESSION}/game_window.png", region=game_window
                 )
-                pyautogui.screenshot(
+                ImageLocator.screenshot(
                     f"{Dir.SESSION}/center_sqm.png",
                     region=center_sqm,
                 )
@@ -199,7 +199,7 @@ class GameUI:
             if isinstance(_box, Box):
                 health_bar = Box(_box.left, _box.top, 269, 16)
                 screenshot_path = f"{Dir.SESSION}/health.png"
-                pyautogui.screenshot(screenshot_path, region=health_bar)
+                ImageLocator.screenshot(screenshot_path, region=health_bar)
             else:
                 Console.log("Cannot find health bar")
                 Status.exit()
@@ -220,8 +220,8 @@ class GameUI:
             _box = ImageLocator.get_pos(_map_controls)
             if isinstance(_box, Box):
                 map = Box(_box.left - 117, _box.top - 50, 106, 109)
-                pyautogui.screenshot(f"{Dir.SESSION}/map.png", region=map)
-                pyautogui.screenshot(
+                ImageLocator.screenshot(f"{Dir.SESSION}/map.png", region=map)
+                ImageLocator.screenshot(
                     f"{Dir.TEMP}/last_map_view.png",
                     region=map,
                 )

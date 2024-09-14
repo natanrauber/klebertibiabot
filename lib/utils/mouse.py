@@ -39,7 +39,10 @@ class Mouse:
             win32api.SetCursorPos(end_pos)
         else:
             if useOffSet:
-                end_pos = (end_pos[0], end_pos[1] + 350)
+                offSet: int = 350
+                if not Config.getVisibleTaskbar():
+                    offSet += 47
+                end_pos = (end_pos[0], end_pos[1] + offSet)
             start_pos = Mouse.get_pos()
             start_time = time.time()
             while time.time() - start_time < duration:

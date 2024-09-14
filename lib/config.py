@@ -1,5 +1,8 @@
 import os
 
+from screeninfo import get_monitors
+
+from lib.utils.console import Console
 from lib.utils.dir import Dir
 from lib.utils.folder_manager import FolderManager
 from lib.utils.keyboard import Key
@@ -7,6 +10,9 @@ from lib.utils.keyboard import Key
 # Expected Tibia window size: 1020x650
 # Expected projector window size: 1020x318
 
+# Screen
+monitor: int = 1
+visible_taskbar: bool = False
 
 # OT Server
 otserver: bool = False
@@ -43,6 +49,36 @@ DESTROY_KEY = Key.f4
 
 
 class Config:
+    # Screen
+    @staticmethod
+    def getMonitor() -> int:
+        global monitor
+        return monitor
+
+    @staticmethod
+    def getMonitorWidth() -> int:
+        return int((get_monitors()[Config.getMonitor()].width))
+
+    @staticmethod
+    def getMonitorHeight() -> int:
+        return int((get_monitors()[Config.getMonitor()].height))
+
+    @staticmethod
+    def getVisibleTaskbar() -> int:
+        global visible_taskbar
+        return visible_taskbar
+
+    @staticmethod
+    def logScreenInfo():
+        width: int = Config.getMonitorWidth()
+        height: int = Config.getMonitorHeight()
+        taskbar: str = "visible" if Config.getVisibleTaskbar() else "hidden"
+        Console.log("--------------------")
+        Console.log(f"Selected monitor: {Config.getMonitor()}")
+        Console.log(f"Screen size: {width}x{height}")
+        Console.log(f"Taskbar: {taskbar}")
+        Console.log("--------------------")
+
     # OT Server
     @staticmethod
     def getOTServer():

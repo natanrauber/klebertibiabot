@@ -189,6 +189,7 @@ class GUIManager:
         self.pause()
         Console.log("Reloading...")
         FolderManager.clear_folder(Dir.SESSION)
+        Config.logScreenInfo()
         if Config.getAttack():
             setupAttack()
         if Config.getHeal():

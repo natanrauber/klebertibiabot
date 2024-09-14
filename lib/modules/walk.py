@@ -1,7 +1,6 @@
 import time
 from datetime import datetime
 
-import pyautogui
 from pyscreeze import Box
 
 from lib.config import ROPE_KEY, STOP_ALL_ACTIONS_KEY, Config
@@ -102,8 +101,8 @@ def _repeatLastWaypoint():
 
     global _maybe_stuck
     _maybe_stuck = True
-    pyautogui.screenshot(
-        f"{Dir.TEMP}/lastGameUI.getMap()_view.png",
+    ImageLocator.screenshot(
+        f"{Dir.TEMP}/last_map_view.png",
         region=GameUI.getMap(),
     )
 
@@ -158,7 +157,7 @@ def _maybeStuck():
 
 def _isStuck():
     if _maybeStuck():
-        _last_map_view = f"{Dir.TEMP}/lastGameUI.getMap()_view.png"
+        _last_map_view = f"{Dir.TEMP}/last_map_view.png"
         _box = ImageLocator.get_pos(_last_map_view)
         if isinstance(_box, Box):
             return True
