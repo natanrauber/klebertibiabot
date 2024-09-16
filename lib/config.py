@@ -5,7 +5,7 @@ from screeninfo import get_monitors
 from lib.utils.console import Console
 from lib.utils.dir import Dir
 from lib.utils.folder_manager import FolderManager
-from lib.utils.keyboard import Key
+from lib.utils.keyboard import Key, KeyCode
 
 # Expected Tibia window size: 1020x650
 # Expected projector window size: 1020x318
@@ -19,22 +19,23 @@ otserver: bool = False
 
 # Attack
 attack: bool = False
-ATTACK_KEY = Key.space
+ATTACK_KEY: Key | KeyCode = Key.space
 
 # Heal
 heal: bool = False
-HEAL_KEY = Key.f9
+HEAL_KEY: Key | KeyCode = Key.f9
 
 # Loot
 loot: bool = False
 screenCenterX = 0
 screenCenterY = 0
 sqmSize = 0
+LOOT_KEY: Key | KeyCode = Key.backspace
 
 # Walk
 walk: bool = False
-ROPE_KEY = Key.f5
-STOP_ALL_ACTIONS_KEY = Key.pause
+ROPE_KEY: Key | KeyCode = Key.f5
+STOP_ALL_ACTIONS_KEY: Key | KeyCode = Key.pause
 
 # Eat
 eat: bool = False
@@ -45,7 +46,7 @@ MAX_CLEANER_AMOUNT = 2  # each cleaner runs in a CPU thread
 
 # Destroy
 DESTROY: bool = False
-DESTROY_KEY = Key.f4
+DESTROY_KEY: Key | KeyCode = Key.f4
 
 
 class Config:

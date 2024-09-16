@@ -1,6 +1,6 @@
-from lib.config import Config
+from lib.config import LOOT_KEY, Config
 from lib.utils.console import Console
-from lib.utils.keyboard import Key, Keyboard
+from lib.utils.keyboard import Keyboard
 
 _hasLoot: bool = False
 
@@ -18,5 +18,5 @@ def setHasLoot(value: bool):
 
 def loot() -> None:
     Console.log("looting...")
-    Keyboard.press(Key.backspace)
+    Keyboard.press(LOOT_KEY)
     setHasLoot(False)
