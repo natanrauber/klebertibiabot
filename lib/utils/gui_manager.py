@@ -376,7 +376,6 @@ class GUIManager:
         self.checkbox_loot.pack(side=tk.LEFT, padx=(0, 10))
         self.checkbox_eat.pack(side=tk.LEFT, padx=(0, 10))
         self.checkbox_drop.pack(side=tk.LEFT, padx=(0, 10))
-        self.toggle_otserver()
 
         # dropdowns
         self.dropdown_separator1.pack()
@@ -404,6 +403,7 @@ class GUIManager:
 
     def start(self):
         self.configure_widgets()
+        self.toggle_otserver()
         self.rootWindow.mainloop()
 
 
