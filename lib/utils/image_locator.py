@@ -18,7 +18,7 @@ class ImageLocator:
     @staticmethod
     def screenshot(
         imageFilename: str | None = None,
-        region: Box | None = None,
+        region: Optional[Box] = None,
     ):
         if region is None:
             region = Box(
@@ -27,7 +27,15 @@ class ImageLocator:
                 Config.getMonitorWidth(),
                 Config.getMonitorHeight(),
             )
-        return pyautogui.screenshot(imageFilename, region=region)
+        return pyautogui.screenshot(
+            imageFilename,
+            region=(
+                int(region.left),
+                int(region.top),
+                int(region.width),
+                int(region.height),
+            ),
+        )
 
     @staticmethod
     def get_pos(
@@ -60,7 +68,7 @@ class ImageLocator:
         )
         res = cv2.matchTemplate(screenshot, template, cv2.TM_CCOEFF_NORMED)
         loc = np.where(res >= np.full(res.shape, confidence))
-        boxes = []
+        boxes: list[Box] = []
         for pt in zip(*loc[::-1]):
             left = pt[0]
             top = pt[1]  # type: ignore
@@ -72,14 +80,25 @@ class ImageLocator:
     @staticmethod
     def get_pos_on_region(
         image: str,
-        region: Optional[Box] = None,
+        region: Box,
         grayscale: bool = False,
         confidence: float = 0.9,
     ) -> Optional[Box]:
-        _box = pyautogui.locateOnScreen(
-            image, region=region, grayscale=grayscale, confidence=confidence
-        )
-        return _box
+        try:
+            _box = pyautogui.locateOnScreen(
+                image,
+                region=(
+                    int(region.left),
+                    int(region.top),
+                    int(region.width),
+                    int(region.height),
+                ),
+                grayscale=grayscale,
+                confidence=confidence,
+            )
+            return _box
+        except Exception:
+            return None
 
     @staticmethod
     def locate_window(
@@ -91,7 +110,12 @@ class ImageLocator:
         try:
             footer = None
             for i in range(int(Config.getMonitorHeight() - header.top) // 100):
-                region = Box(header.left, header.top, header.width, (i + 1) * 100)
+                region = Box(
+                    header.left,
+                    header.top,
+                    header.width,
+                    (i + 1) * 100,
+                )
                 footer = ImageLocator.get_pos_on_region(footer_image, region)
                 if footer is not None:
                     break
@@ -111,7 +135,7 @@ class ImageLocator:
                 footer.left + footer.width - header.left,
                 footer.top + footer.height - header.top,
             )
-            if save_as is not None and isinstance(window, Box):
+            if save_as is not None:
                 screenshot_path = f"{Dir.SESSION}/{save_as}.png"
                 ImageLocator.screenshot(screenshot_path, region=window)
             return window
@@ -127,9 +151,19 @@ class ImageLocator:
         try:
             for header in ImageLocator.get_all_pos(header_image):
                 footer: Optional[Box] = None
-                for i in range(int(Config.getMonitorHeight() - header.top) // 100):
-                    region = Box(header.left, header.top, header.width, (i + 1) * 100)
-                    footer = ImageLocator.get_pos_on_region(footer_image, region)
+                for i in range(
+                    int(Config.getMonitorHeight() - header.top) // 100,
+                ):
+                    region = Box(
+                        header.left,
+                        header.top,
+                        header.width,
+                        (i + 1) * 100,
+                    )
+                    footer = ImageLocator.get_pos_on_region(
+                        footer_image,
+                        region,
+                    )
                     if footer is not None:
                         break
                 if footer is None:
@@ -139,7 +173,10 @@ class ImageLocator:
                         header.width,
                         Config.getMonitorHeight() - header.top,
                     )
-                    footer = ImageLocator.get_pos_on_region(footer_image, region)
+                    footer = ImageLocator.get_pos_on_region(
+                        footer_image,
+                        region,
+                    )
                 if isinstance(footer, Box):
                     window = Box(
                         header.left,

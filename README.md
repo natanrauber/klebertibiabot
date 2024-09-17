@@ -5,7 +5,7 @@
 [![License](https://img.shields.io/github/license/natanrauber/klebertibiabot)](https://github.com/natanrauber/klebertibiabot/blob/master/LICENSE)
     
 ## Dependencies
-[![Python 3.10.11](https://img.shields.io/badge/python-3.10.11-blue.svg)](https://www.python.org/downloads/release/python-31011/)
+[![Python 3.12.6](https://img.shields.io/badge/python-3.12.6-blue.svg)](https://www.python.org/downloads/release/python-3126/)
 
 ## Features
 - Attack
