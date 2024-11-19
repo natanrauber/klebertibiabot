@@ -4,7 +4,15 @@ import tkinter as tk
 from ctypes import byref, c_int, sizeof, windll
 from tkinter import StringVar, ttk
 
-from lib.config import Config
+from lib.config import (
+    FOOD_KEY,
+    HASTE_KEY,
+    HEAL_KEY,
+    RING_KEY,
+    STRIKE_KEY,
+    UTURA_KEY,
+    Config,
+)
 from lib.main_loop import main_loop
 from lib.modules.attack import disable_attack, enable_attack, setupAttack
 from lib.modules.walk import getHuntList, setHunt
@@ -59,7 +67,7 @@ class GUIManager:
 
         # checkboxes
         self.option_vars: list[tk.BooleanVar] = []
-        for _ in range(7):
+        for _ in range(100):
             option_var = tk.BooleanVar()
             option_var.set(False)
             self.option_vars.append(option_var)
@@ -74,51 +82,83 @@ class GUIManager:
             style="Custom.TCheckbutton",
             command=self.toggle_otserver,
         )
-        self.checkbox_attack = ttk.Checkbutton(
-            self.checkbox_frame1,
-            text="Attack",
-            variable=self.option_vars[1],
-            style="Custom.TCheckbutton",
-            command=self.toggleAttack,
-        )
-        self.checkbox_heal = ttk.Checkbutton(
-            self.checkbox_frame1,
-            text="Heal",
-            variable=self.option_vars[2],
-            style="Custom.TCheckbutton",
-            command=self.toggleHeal,
-        )
         self.checkbox_walk = ttk.Checkbutton(
             self.checkbox_frame1,
             text="Walk",
-            variable=self.option_vars[3],
+            variable=self.option_vars[1],
             style="Custom.TCheckbutton",
             command=self.toggleWalk,
+        )
+        self.checkbox_loot = ttk.Checkbutton(
+            self.checkbox_frame1,
+            text="Loot",
+            variable=self.option_vars[2],
+            style="Custom.TCheckbutton",
+            command=self.toggleLoot,
+        )
+        self.checkbox_drop = ttk.Checkbutton(
+            self.checkbox_frame1,
+            text="Drop",
+            variable=self.option_vars[3],
+            style="Custom.TCheckbutton",
+            command=self.toggleDrop,
         )
         self.checkbox_separator2 = ttk.Frame(
             self.frame, height=10, width=10, style="Custom.TFrame"
         )
         self.checkbox_frame2 = ttk.Frame(self.frame, style="Custom.TFrame")
-        self.checkbox_loot = ttk.Checkbutton(
+        self.checkbox_heal = ttk.Checkbutton(
             self.checkbox_frame2,
-            text="Loot",
+            text=f"Heal [{HEAL_KEY.name.upper()}]",  # type: ignore
             variable=self.option_vars[4],
             style="Custom.TCheckbutton",
-            command=self.toggleLoot,
+            command=self.toggleHeal,
         )
-        self.checkbox_eat = ttk.Checkbutton(
+        self.checkbox_attack = ttk.Checkbutton(
             self.checkbox_frame2,
-            text="Eat",
+            text="Attack",
             variable=self.option_vars[5],
+            style="Custom.TCheckbutton",
+            command=self.toggleAttack,
+        )
+        self.checkbox_strike = ttk.Checkbutton(
+            self.checkbox_frame2,
+            text=f"Strike [{STRIKE_KEY.name.upper()}]",  # type: ignore
+            variable=self.option_vars[6],
+            style="Custom.TCheckbutton",
+            command=self.toggleStrike,
+        )
+        self.checkbox_separator3 = ttk.Frame(
+            self.frame, height=10, width=10, style="Custom.TFrame"
+        )
+        self.checkbox_frame3 = ttk.Frame(self.frame, style="Custom.TFrame")
+        self.checkbox_eat = ttk.Checkbutton(
+            self.checkbox_frame3,
+            text=f"Eat [{FOOD_KEY.name.upper()}]",  # type: ignore
+            variable=self.option_vars[7],
             style="Custom.TCheckbutton",
             command=self.toggleEat,
         )
-        self.checkbox_drop = ttk.Checkbutton(
-            self.checkbox_frame2,
-            text="Drop",
-            variable=self.option_vars[6],
+        self.checkbox_ring = ttk.Checkbutton(
+            self.checkbox_frame3,
+            text=f"Ring [{RING_KEY.name.upper()}]",  # type: ignore
+            variable=self.option_vars[8],
             style="Custom.TCheckbutton",
-            command=self.toggleDrop,
+            command=self.toggleRing,
+        )
+        self.checkbox_utura = ttk.Checkbutton(
+            self.checkbox_frame3,
+            text=f"Utura [{UTURA_KEY.name.upper()}]",  # type: ignore
+            variable=self.option_vars[9],
+            style="Custom.TCheckbutton",
+            command=self.toggleUtura,
+        )
+        self.checkbox_haste = ttk.Checkbutton(
+            self.checkbox_frame3,
+            text=f"Haste [{HASTE_KEY.name.upper()}]",  # type: ignore
+            variable=self.option_vars[10],
+            style="Custom.TCheckbutton",
+            command=self.toggleHaste,
         )
 
         # dropdowns
@@ -173,6 +213,7 @@ class GUIManager:
         self.rootWindow.focus()
         self.button_pause.config(state=tk.NORMAL, text="Pause")
         self.button_resume.config(state=tk.DISABLED, text="Running")
+        self.button_reload.config(state=tk.DISABLED)
         loop_thread = threading.Thread(
             target=main_loop
         )  # create a "loop_thread" thread to run "main_loop"
@@ -181,12 +222,12 @@ class GUIManager:
     def pause(self):
         self.rootWindow.focus()
         Status.pause()  # stops the "main_loop"
-        self.button_pause.config(state=tk.DISABLED, text="Paused")
         self.button_resume.config(state=tk.NORMAL, text="Resume")
+        self.button_pause.config(state=tk.DISABLED, text="Paused")
+        self.button_reload.config(state=tk.NORMAL)
 
     def reload(self):
         self.rootWindow.focus()
-        self.pause()
         Console.log("Reloading...")
         FolderManager.clear_folder(Dir.SESSION)
         Config.logScreenInfo()
@@ -200,8 +241,11 @@ class GUIManager:
             GameUI.locateGameWindow()
         if Config.getEat() or Config.getDrop():
             GameUI.locateDropContainer()
-        if Config.getEat():
+        if Config.anyStat():
             GameUI.locateStatsWindow()
+        if Config.getRing():
+            GameUI.locateRingSlot()
+
         Console.log("Reload complete")
 
     def toggle_otserver(self):
@@ -290,6 +334,49 @@ class GUIManager:
                 GameUI.locateGameWindow()
         Console.log(f"Drop: {Config.getDrop()}")
 
+    def toggleHaste(self):
+        self.checkbox_haste.state(  # type: ignore
+            ["!selected" if Config.getHaste() else "selected"],
+        )
+        if Config.getHaste():
+            Config.setHaste(False)
+        else:
+            Config.setHaste(True)
+            GameUI.locateStatsWindow()
+        Console.log(f"Haste: {Config.getHaste()}")
+
+    def toggleRing(self):
+        self.checkbox_ring.state(  # type: ignore
+            ["!selected" if Config.getRing() else "selected"],
+        )
+        if Config.getRing():
+            Config.setRing(False)
+        else:
+            Config.setRing(True)
+            GameUI.locateRingSlot()
+        Console.log(f"Ring: {Config.getRing()}")
+
+    def toggleUtura(self):
+        self.checkbox_utura.state(  # type: ignore
+            ["!selected" if Config.getUtura() else "selected"],
+        )
+        if Config.getUtura():
+            Config.setUtura(False)
+        else:
+            Config.setUtura(True)
+            GameUI.locateStatsWindow()
+        Console.log(f"Utura: {Config.getUtura()}")
+
+    def toggleStrike(self):
+        self.checkbox_strike.state(  # type: ignore
+            ["!selected" if Config.getStrike() else "selected"],
+        )
+        if Config.getStrike():
+            Config.setStrike(False)
+        else:
+            Config.setStrike(True)
+        Console.log(f"Strike: {Config.getStrike()}")
+
     def selectHunt(self, value: StringVar | str) -> None:
         if isinstance(value, StringVar):
             setHunt(value.get())
@@ -313,7 +400,7 @@ class GUIManager:
         style.configure(  # type: ignore
             "Pause.TButton",
             padding=5,
-            width=13,
+            width=16,
             borderRadius=11,
             background="#f9f9f9",
         )
@@ -324,7 +411,7 @@ class GUIManager:
         style.configure(  # type: ignore
             "Resume.TButton",
             padding=5,
-            width=13,
+            width=16,
             borderRadius=11,
             background="#f9f9f9",
         )
@@ -335,7 +422,7 @@ class GUIManager:
         style.configure(  # type: ignore
             "Reload.TButton",
             padding=5,
-            width=13,
+            width=16,
             borderRadius=11,
             background="#f9f9f9",
         )
@@ -343,7 +430,7 @@ class GUIManager:
             "Custom.TCheckbutton",
             background="#f9f9f9",
             foreground="red",
-            width=8,
+            width=10,
         )
         style.map(  # type: ignore
             "Custom.TCheckbutton",
@@ -351,7 +438,7 @@ class GUIManager:
         )
 
         self.rootWindow.title(uid)
-        self.rootWindow.geometry("334x300")
+        self.rootWindow.geometry("382x352")
         self.rootWindow.configure(bg="#f9f9f9")
         self.rootWindow.resizable(False, False)
         self.frame.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
@@ -368,22 +455,28 @@ class GUIManager:
         self.checkbox_separator1.pack()
         self.checkbox_frame1.pack(fill=tk.BOTH, expand=True)
         self.checkbox_otserver.pack(side=tk.LEFT, padx=(0, 10))
-        self.checkbox_attack.pack(side=tk.LEFT, padx=(0, 10))
-        self.checkbox_heal.pack(side=tk.LEFT, padx=(0, 10))
-        self.checkbox_walk.pack(side=tk.LEFT, padx=(0, 0))
+        self.checkbox_walk.pack(side=tk.LEFT, padx=(0, 10))
+        self.checkbox_loot.pack(side=tk.LEFT, padx=(0, 10))
+        self.checkbox_drop.pack(side=tk.LEFT, padx=(0, 0))
         self.checkbox_separator2.pack()
         self.checkbox_frame2.pack(fill=tk.BOTH, expand=True)
-        self.checkbox_loot.pack(side=tk.LEFT, padx=(0, 10))
+        self.checkbox_heal.pack(side=tk.LEFT, padx=(0, 10))
+        self.checkbox_attack.pack(side=tk.LEFT, padx=(0, 10))
+        self.checkbox_strike.pack(side=tk.LEFT, padx=(0, 10))
+        self.checkbox_separator3.pack()
+        self.checkbox_frame3.pack(fill=tk.BOTH, expand=True)
         self.checkbox_eat.pack(side=tk.LEFT, padx=(0, 10))
-        self.checkbox_drop.pack(side=tk.LEFT, padx=(0, 10))
+        self.checkbox_ring.pack(side=tk.LEFT, padx=(0, 10))
+        self.checkbox_utura.pack(side=tk.LEFT, padx=(0, 10))
+        self.checkbox_haste.pack(side=tk.LEFT, padx=(0, 0))
 
         # dropdowns
         self.dropdown_separator1.pack()
         self.dropdown_frame.pack()
-        self.dropdown_container.configure(width=20)
+        self.dropdown_container.configure(width=24)
         self.dropdown_container.pack(side=tk.LEFT)
         self.dropdown_separator2.pack(side=tk.LEFT)
-        self.dropdown_hunt.configure(width=20)
+        self.dropdown_hunt.configure(width=24)
         self.dropdown_hunt.pack(side=tk.LEFT)
 
         # console

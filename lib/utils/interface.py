@@ -1,6 +1,5 @@
 from typing import List, Optional
 
-import pyautogui
 from pyscreeze import Box
 
 from lib.config import Config
@@ -38,6 +37,10 @@ health_bar: Box = Box(0, 0, 0, 0)
 # map
 _map_controls = f"{Dir.INTERFACE}/map_controls.png"
 map: Box = Box(0, 0, 0, 0)
+
+# slots
+_empty_ring_slot = f"{Dir.INTERFACE}/empty_ring_slot.png"
+ring_slot: Box = Box(0, 0, 0, 0)
 
 
 class GameUI:
@@ -83,6 +86,27 @@ class GameUI:
                 Status.exit()
         except Exception:
             Console.log("Cannot find stats window")
+            Status.exit()
+
+    @staticmethod
+    def getRingSlot() -> Box:
+        global ring_slot
+        return ring_slot
+
+    @staticmethod
+    def locateRingSlot():
+        global ring_slot
+        try:
+            _box = ImageLocator.get_pos(_empty_ring_slot)
+            if isinstance(_box, Box):
+                ring_slot = Box(_box.left - 7, _box.top - 10, 34, 34)
+                screenshot_path = f"{Dir.SESSION}/ring_slot.png"
+                ImageLocator.screenshot(screenshot_path, region=ring_slot)
+            else:
+                Console.log("Cannot find ring slot")
+                Status.exit()
+        except Exception:
+            Console.log("Cannot find ring slot")
             Status.exit()
 
     # screen center

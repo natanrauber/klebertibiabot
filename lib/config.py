@@ -23,7 +23,7 @@ ATTACK_KEY: Key | KeyCode = Key.space
 
 # Heal
 heal: bool = False
-HEAL_KEY: Key | KeyCode = Key.f9
+HEAL_KEY: Key | KeyCode = Key.f1
 
 # Loot
 loot: bool = False
@@ -39,10 +39,27 @@ STOP_ALL_ACTIONS_KEY: Key | KeyCode = Key.pause
 
 # Eat
 eat: bool = False
+FOOD_KEY: Key | KeyCode = Key.f9
 
 # Drop
 drop: bool = False
 MAX_CLEANER_AMOUNT = 2  # each cleaner runs in a CPU thread
+
+# Haste
+haste: bool = False
+HASTE_KEY: Key | KeyCode = Key.f12
+
+# Ring
+ring: bool = False
+RING_KEY: Key | KeyCode = Key.f10
+
+# Utura
+utura: bool = False
+UTURA_KEY: Key | KeyCode = Key.f11
+
+# Strike
+strike: bool = False
+STRIKE_KEY: Key | KeyCode = Key.f5
 
 # Destroy
 DESTROY: bool = False
@@ -65,7 +82,7 @@ class Config:
         return int((get_monitors()[Config.getMonitor()].height))
 
     @staticmethod
-    def getVisibleTaskbar() -> int:
+    def getVisibleTaskbar() -> bool:
         global visible_taskbar
         return visible_taskbar
 
@@ -82,7 +99,7 @@ class Config:
 
     # OT Server
     @staticmethod
-    def getOTServer():
+    def getOTServer() -> bool:
         global otserver
         return otserver
 
@@ -93,7 +110,7 @@ class Config:
 
     # Attack
     @staticmethod
-    def getAttack():
+    def getAttack() -> bool:
         global attack
         return attack
 
@@ -104,7 +121,7 @@ class Config:
 
     # Heal
     @staticmethod
-    def getHeal():
+    def getHeal() -> bool:
         global heal
         return heal
 
@@ -117,7 +134,7 @@ class Config:
 
     # Loot
     @staticmethod
-    def getLoot():
+    def getLoot() -> bool:
         global loot
         return loot
 
@@ -130,12 +147,12 @@ class Config:
             FolderManager.delete_file(f"{Dir.SESSION}/center_sqm.png")
 
     @staticmethod
-    def getScreenCenterX():
+    def getScreenCenterX() -> int:
         global screenCenterX
         return screenCenterX
 
     @staticmethod
-    def getScreenCenterY():
+    def getScreenCenterY() -> int:
         global screenCenterY
         return screenCenterY
 
@@ -147,7 +164,7 @@ class Config:
         screenCenterY = y
 
     @staticmethod
-    def getSqmSize():
+    def getSqmSize() -> int:
         global sqmSize
         return sqmSize
 
@@ -158,7 +175,7 @@ class Config:
 
     # Walk
     @staticmethod
-    def getWalk():
+    def getWalk() -> bool:
         global walk
         return walk
 
@@ -171,7 +188,7 @@ class Config:
 
     # Eat
     @staticmethod
-    def getEat():
+    def getEat() -> bool:
         global eat
         return eat
 
@@ -180,15 +197,16 @@ class Config:
         global eat
         eat = value
         if eat is False:
-            FolderManager.delete_file(f"{Dir.SESSION}/stats_window.png")
             if Config.getDrop() is False:
                 for file_name in os.listdir(Dir.SESSION):
                     if "container" in file_name:
                         os.remove(os.path.join(Dir.SESSION, file_name))
+        if Config.anyStat() is False:
+            FolderManager.delete_file(f"{Dir.SESSION}/stats_window.png")
 
     # Drop
     @staticmethod
-    def getDrop():
+    def getDrop() -> bool:
         global drop
         return drop
 
@@ -203,3 +221,63 @@ class Config:
         if drop is False and not Config.getLoot():
             FolderManager.delete_file(f"{Dir.SESSION}/game_window.png")
             FolderManager.delete_file(f"{Dir.SESSION}/center_sqm.png")
+
+    # Haste
+    @staticmethod
+    def getHaste() -> bool:
+        global haste
+        return haste
+
+    @staticmethod
+    def setHaste(value: bool):
+        global haste
+        haste = value
+        if Config.anyStat() is False:
+            FolderManager.delete_file(f"{Dir.SESSION}/stats_window.png")
+
+    # Ring
+    @staticmethod
+    def getRing() -> bool:
+        global ring
+        return ring
+
+    @staticmethod
+    def setRing(value: bool):
+        global ring
+        ring = value
+        if ring is False:
+            FolderManager.delete_file(f"{Dir.SESSION}/ring_slot.png")
+
+    # Utura
+    @staticmethod
+    def getUtura() -> bool:
+        global utura
+        return utura
+
+    @staticmethod
+    def setUtura(value: bool):
+        global utura
+        utura = value
+        if Config.anyStat() is False:
+            FolderManager.delete_file(f"{Dir.SESSION}/stats_window.png")
+
+    # Strike
+    @staticmethod
+    def getStrike() -> bool:
+        global strike
+        return strike
+
+    @staticmethod
+    def setStrike(value: bool):
+        global strike
+        strike = value
+
+    @staticmethod
+    def anyStat() -> bool:
+        if Config.getEat():
+            return True
+        if Config.getHaste():
+            return True
+        if Config.getUtura():
+            return True
+        return False

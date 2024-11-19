@@ -12,6 +12,7 @@ from lib.utils.keyboard import Keyboard
 from lib.utils.status import Status
 
 _low_health_list = [
+    f"{Dir.HEALTH}/health_green2.png",
     f"{Dir.HEALTH}/health_yellow.png",
     f"{Dir.HEALTH}/health_red1.png",
     f"{Dir.HEALTH}/health_red2.png",
@@ -26,12 +27,14 @@ class Healer(threading.Thread):
     def run(self):
         global healing
         healing = True
+        Console.log("Healer started...")
         while not Status.is_paused() and Config.getHeal():
             if self.isWounded():
                 Console.log("Healing...")
                 Keyboard.press(HEAL_KEY)
             time.sleep(0.5)
         healing = False
+        Console.log("Healer stopped...")
 
     def isWounded(self):
         for _image in _low_health_list:

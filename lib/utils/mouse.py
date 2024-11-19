@@ -8,6 +8,7 @@ import win32con
 
 from lib.config import Config
 from lib.utils.math import Math
+from lib.utils.window_manager import WindowManager
 
 
 class Mouse:
@@ -60,6 +61,7 @@ class Mouse:
 
     @staticmethod
     def click_left(pos: tuple[Any, Any], duration: float = 0.1) -> None:
+        WindowManager.activate("Tibia -")
         Mouse.set_pos(pos, duration=duration)
         win32api.mouse_event(  # type: ignore
             win32con.MOUSEEVENTF_LEFTDOWN,
@@ -74,6 +76,7 @@ class Mouse:
 
     @staticmethod
     def press_left(pos: tuple[Any, Any]) -> None:
+        WindowManager.activate("Tibia -")
         Mouse.set_pos(pos)
         win32api.mouse_event(  # type: ignore
             win32con.MOUSEEVENTF_LEFTDOWN,
@@ -83,6 +86,7 @@ class Mouse:
 
     @staticmethod
     def release_left(pos: tuple[Any, Any]) -> None:
+        WindowManager.activate("Tibia -")
         Mouse.set_pos(pos)
         win32api.mouse_event(  # type: ignore
             win32con.MOUSEEVENTF_LEFTUP,
@@ -92,5 +96,6 @@ class Mouse:
 
     @staticmethod
     def drag_left(start: tuple[Any, Any], end: tuple[Any, Any]) -> None:
+        WindowManager.activate("Tibia -")
         Mouse.press_left(start)
         Mouse.release_left(end)

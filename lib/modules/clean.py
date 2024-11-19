@@ -5,7 +5,6 @@ from typing import Any
 from pyscreeze import Box
 
 from lib.config import MAX_CLEANER_AMOUNT, Config
-from lib.modules.eat import eat, food_list, isFood, isHungry
 from lib.utils.console import Console
 from lib.utils.dir import Dir
 from lib.utils.image_locator import ImageLocator
@@ -16,7 +15,7 @@ from lib.utils.status import Status
 _active_cleaners: list[int] = []
 _last_checked: list[int] = []
 _lock_drop: bool = False
-_blackList: list[str] = food_list + Dir.getFiles(Dir.BLACKLIST)
+_blackList: list[str] = Dir.getFiles(Dir.BLACKLIST)
 
 
 def cleanerAmount():
@@ -99,10 +98,7 @@ def dropBlackList():
                     _found = isinstance(_box, Box)
                     if _found and not _isLocked():
                         _lockDrop(True)
-                        if Config.getEat() and isFood(_image) and isHungry():
-                            Console.log(f"Eating {_getItemName(_image)}")
-                            eat(_box)
-                        elif Config.getDrop():
+                        if Config.getDrop():
                             Console.log(f"Dropping {_getItemName(_image)}")
                             _drop(_box)
                         time.sleep(0.5)
