@@ -1,4 +1,5 @@
 import os
+from typing import Any
 
 from screeninfo import get_monitors
 
@@ -11,8 +12,9 @@ from lib.utils.keyboard import Key, KeyCode
 # Expected projector window size: 1020x318
 
 # Screen
-monitor: int = 1
+monitor: int = 0
 visible_taskbar: bool = False
+mouse_offset: tuple[Any, Any] = (1366, 0)
 
 # OT Server
 otserver: bool = False
@@ -43,7 +45,7 @@ FOOD_KEY: Key | KeyCode = Key.f9
 
 # Drop
 drop: bool = False
-MAX_CLEANER_AMOUNT = 2  # each cleaner runs in a CPU thread
+MAX_CLEANER_AMOUNT: int = 3  # each cleaner runs in a CPU thread
 
 # Haste
 haste: bool = False
@@ -85,6 +87,11 @@ class Config:
     def getVisibleTaskbar() -> bool:
         global visible_taskbar
         return visible_taskbar
+
+    @staticmethod
+    def getMouseOffset() -> tuple[Any, Any]:
+        global mouse_offset
+        return mouse_offset
 
     @staticmethod
     def logScreenInfo():

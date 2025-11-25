@@ -34,16 +34,12 @@ class Mouse:
         duration: float = 0.1,
         useOffSet: Optional[bool] = None,
     ) -> None:
-        if useOffSet is None:
-            useOffSet = not Config.getOTServer()
         if Config.getOTServer():
             win32api.SetCursorPos(end_pos)
         else:
             if useOffSet:
-                offSet: int = 350
-                if not Config.getVisibleTaskbar():
-                    offSet += 47
-                end_pos = (end_pos[0], end_pos[1] + offSet)
+                offset: tuple[Any, Any] = Config.getMouseOffset()
+                end_pos = (end_pos[0] + offset[0], end_pos[1] + offset[1])
             start_pos = Mouse.get_pos()
             start_time = time.time()
             while time.time() - start_time < duration:
@@ -62,7 +58,7 @@ class Mouse:
     @staticmethod
     def click_left(pos: tuple[Any, Any], duration: float = 0.1) -> None:
         WindowManager.activate("Tibia -")
-        Mouse.set_pos(pos, duration=duration)
+        Mouse.set_pos(pos, duration=duration, useOffSet=True)
         win32api.mouse_event(  # type: ignore
             win32con.MOUSEEVENTF_LEFTDOWN,
             0,
@@ -77,7 +73,7 @@ class Mouse:
     @staticmethod
     def press_left(pos: tuple[Any, Any]) -> None:
         WindowManager.activate("Tibia -")
-        Mouse.set_pos(pos)
+        Mouse.set_pos(pos, useOffSet=True)
         win32api.mouse_event(  # type: ignore
             win32con.MOUSEEVENTF_LEFTDOWN,
             0,
@@ -87,7 +83,7 @@ class Mouse:
     @staticmethod
     def release_left(pos: tuple[Any, Any]) -> None:
         WindowManager.activate("Tibia -")
-        Mouse.set_pos(pos)
+        Mouse.set_pos(pos, useOffSet=True)
         win32api.mouse_event(  # type: ignore
             win32con.MOUSEEVENTF_LEFTUP,
             0,

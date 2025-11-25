@@ -303,8 +303,6 @@ class GUIManager:
             Config.setLoot(False)
         else:
             Config.setLoot(True)
-            if not Config.getDrop():
-                GameUI.locateGameWindow()
         Console.log(f"Loot: {Config.getLoot()}")
 
     def toggleEat(self):
@@ -328,10 +326,8 @@ class GUIManager:
             Config.setDrop(False)
         else:
             Config.setDrop(True)
-            if not Config.getEat():
-                GameUI.locateDropContainer()
-            if not Config.getLoot():
-                GameUI.locateGameWindow()
+            GameUI.locateDropContainer()
+            GameUI.locateGameWindow()
         Console.log(f"Drop: {Config.getDrop()}")
 
     def toggleHaste(self):

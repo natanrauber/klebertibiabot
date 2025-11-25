@@ -1,7 +1,8 @@
 import time
 
-from lib.config import Config
+from lib.config import MAX_CLEANER_AMOUNT, Config
 from lib.modules.attack import attack, hasTarget, isAttackEnabled, isAttacking
+from lib.modules.clean import Cleaner, cleanerAmount
 from lib.modules.heal import Healer
 from lib.modules.loot import hasLoot, loot
 from lib.modules.stats_worker import StatsWorker
@@ -37,11 +38,16 @@ def executeAction() -> None:
     #         destroyer.daemon = True
     #         destroyer.start()
 
-    # if Config.getDrop():
-    #     for _ in range(MAX_CLEANER_AMOUNT - cleanerAmount()):
-    #         cleaner = Cleaner()
-    #         cleaner.daemon = True
-    #         cleaner.start()
+    if Config.getDrop() is True:
+        # cleaner = Cleaner()
+        # cleaner.daemon = True
+        # return cleaner.start()
+
+        for _ in range(MAX_CLEANER_AMOUNT - cleanerAmount()):
+            cleaner = Cleaner()
+            cleaner.daemon = True
+            cleaner.start()
+            time.sleep(0.5)
 
     if Config.getLoot() and hasLoot() and not isAttacking():
         return loot()

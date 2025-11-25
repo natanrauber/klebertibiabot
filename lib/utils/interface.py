@@ -10,7 +10,7 @@ from lib.utils.status import Status
 
 # battle
 _battle_window_header = f"{Dir.INTERFACE}/battle_window_title.png"
-_battle_window_footer = f"{Dir.INTERFACE}/window_footer.png"
+_battle_window_footer = f"{Dir.INTERFACE}/battle_window_footer.png"
 battle_window: Box = Box(0, 0, 0, 0)
 
 # stats
@@ -26,7 +26,7 @@ game_window: Box = Box(0, 0, 0, 0)
 center_sqm: Box = Box(0, 0, 0, 0)
 
 # containers
-_container_window_footer = f"{Dir.INTERFACE}/window_footer.png"
+_container_window_footer = f"{Dir.INTERFACE}/container_window_footer.png"
 container_window_list: List[Box] = []
 selected_container: str = ""
 

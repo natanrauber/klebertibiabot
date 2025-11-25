@@ -45,7 +45,7 @@ def _defTargetPixel():
     if type(GameUI.getBattleWindow()) == Box:
         global _target_pixel_x
         global _target_pixel_y
-        _target_pixel_x = int(GameUI.getBattleWindow().left + 26)
+        _target_pixel_x = int(GameUI.getBattleWindow().left + 27)
         _target_pixel_y = int(GameUI.getBattleWindow().top + 32)
 
 
@@ -71,7 +71,7 @@ def isAttacking():
             return False
         for i in range(int(GameUI.getBattleWindow().height / 20)):
             _pixel = pyautogui.pixel(
-                int(GameUI.getBattleWindow().left + 22),
+                int(GameUI.getBattleWindow().left + 23),
                 int(GameUI.getBattleWindow().top + (i * 20)),
             )
             _is_attacking = _pixel[0] > 250

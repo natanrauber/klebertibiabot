@@ -12,10 +12,28 @@ from lib.utils.interface import GameUI
 from lib.utils.mouse import Mouse
 from lib.utils.status import Status
 
+cleaning: bool = False
 _active_cleaners: list[int] = []
 _last_checked: list[int] = []
 _lock_drop: bool = False
 _blackList: list[str] = Dir.getFiles(Dir.BLACKLIST)
+
+
+class Cleaner(threading.Thread):
+    def __init__(self):
+        threading.Thread.__init__(self)
+
+    def run(self):
+        global cleaning
+        cleaning = True
+        while not Status.is_paused() and Config.getDrop():
+            dropBlackList()
+        cleaning = False
+
+    @staticmethod
+    def active() -> bool:
+        global cleaning
+        return cleaning
 
 
 def cleanerAmount():
@@ -88,7 +106,8 @@ def dropBlackList():
     _id = getCleanerId()
     _list = getList(_id)
     addCleaner(_id)
-    while not Status.is_paused() and (Config.getEat() or Config.getDrop()):
+    Console.log(f"Cleaner {_id} started...")
+    while not Status.is_paused() and Config.getDrop():
         if GameUI.getContainerWindows():
             for _window in GameUI.getContainerWindows():
                 for _image in _list:
@@ -103,13 +122,5 @@ def dropBlackList():
                             _drop(_box)
                         time.sleep(0.5)
                         _lockDrop(False)
-    Console.log(f"Removing cleaner {_id}")
+    Console.log(f"Cleaner {_id} stopped...")
     removeCleaner(_id)
-
-
-class Cleaner(threading.Thread):
-    def __init__(self):
-        threading.Thread.__init__(self)
-
-    def run(self):
-        dropBlackList()
