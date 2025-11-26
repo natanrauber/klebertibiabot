@@ -3,7 +3,7 @@ $ErrorActionPreference = "Stop"
 
 # Define the GitHub repository URL and the branch or release tag
 $GitHubRepoURL = "https://github.com/natanrauber/klebertibiabot"
-$BranchOrTag = "pagodera" # or whatever branch or tag you want to download
+$BranchOrTag = "master-windows" # or whatever branch or tag you want to download
 
 # Define the temporary folder path
 $TempFolder = "$env:TEMP\kleber"
